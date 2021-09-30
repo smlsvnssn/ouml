@@ -1,0 +1,22 @@
+{
+  "name": "ouml",
+  "version": "0.0.1",
+  "description": "smlsvnssn",
+  "main": "ö.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smlsvnssn/ouml.git"
+  },
+  "keywords": [
+    "ö"
+  ],
+  "author": "smlsvnssn",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/smlsvnssn/ouml/issues"
+  },
+  "homepage": "https://github.com/smlsvnssn/ouml#readme"
+}
