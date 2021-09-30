@@ -1,5 +1,5 @@
 # ö.js
-Lörem Ipsum - generated faux Swedish for the masses! 
+ö.js - a small collection of useful stuff.
 
 Usage: 
 ```
@@ -35,16 +35,12 @@ Methods for manipulating arrays or array-like objects. Inputs are coerced to `Ar
 #### ö.rangeArray( start, end, step = 1 ) → Array
 Returns an `Array` populated with given range.
 
-Example: <code class="runnable">ö('code').html((_, v) => ö.rangeArray(v.length/2).map(() => '🐥').join('🥚'));</code>
-
 #### ö.unique( arr ) → Array
 Returns an `Array` with unique entries.
 	
 #### ö.shuffle( arr ) → Array
 Returns a new shuffled `Array`.
 	
-Example: <code class="runnable">ö('code').html((_, v) => ö.shuffle(Array.from(v)).join(''));</code>
-
 #### ö.sample( arr, samples = 1 ) → Array item | Array
 Returns random sample from `arr`, or an array of samples if `samples` is larger than one. 
 	
@@ -138,9 +134,7 @@ Returns `n` rounded to `precision` decimals and formatted by `n.toLocaleString()
 	
 #### ö.wrapFirstWords( s, numWords = 3, startWrap = '\<span\>', endWrap = '\</span\>', startAtChar = 0 ) → String
 Returns `s` with first `numWords` words wrapped in `startWrap` and `endWrap`. Matches first words up to and including first punctuation. Optionally starts matching at index `startAtChar`. Matches special chars for nordic languages as well as \', ’ and -.
-	
-Example: <code class="runnable">ö('p').html((_, v) => ö.wrapFirstWords(v, 2, '\<b\>', '\</b\>'));</code>
-	
+		
 #### ö.toCamelCase( str ) → String
 Returns regular sentence, kebab-case or snake_case string converted to camelCase. Leaves `--custom-properties` alone.
 		
@@ -155,16 +149,8 @@ Returns `colour` converted to an object with `hsla` values. Optionally returns a
 	
 Hsla is really easy to work with compared to rgb. For example, a `darken` method could look like this, given a `hsla` object as input: `const darken = (c, amount) => (c.l-=amount, c)`
 	
-Another example: 
-<code class="runnable">const c = ö.toHsla(ö('body').bg()); 
-ö('p, code').bg(() => ö.hsla(c.h + ö.randomNormal(0, 10), c.s, c.l-5));</code>
-	
 #### ö.hsla( h, s = 70, l = 50, a = 1 ) → String
 Returns colour string in `hsla` format, for css input. Takes separate values, or a single object with properties `{ h, s, l, a }`.
-	
-Example: <code class="runnable">const h = ö.random(360); 
-ö('body').css({'--bgcolor': ö.hsla(h, 70, 20), '--codecolor': ö.hsla(h+180, 70, 80)});</code>
-
 		
 ### Async
 Awaitable wrappers for `setTimeout`, `requestAnimationFrame` and events. Takes an optional awaited `f` with no arguments.
@@ -195,31 +181,6 @@ Debounces execution of `f` until no calls are made within `t` milliseconds. If c
 #### ö.onAnimationFrame( f ) → Function
 Defers execution of `f` to next animation frame. If called multiple times per frame, the last call gets executed.
 	
-
-### Event handling	
-#### ö.addEvent( element, event, f, once = false )
-Caches events using `ö.data()`, handles custom events, and adds event listeners to `element`.
-	
-#### ö.removeEvent( element, event, f )
-Removes event listeners from cache and `element`, and unobserves custom events. If `event` is omitted, all events on `element` get removed. If `event` is provided, all events of that type get removed. If `f` is provided and matches an active listener, that specific listener gets removed. 	
-	
-#### ö.registerCustomEvent( eventtype, on, off )
-Registers a custom `eventtype`, enabling listening for the eventtype through the `ö` event handling system. Requires an `eventtype` as `string`, an `on` handler with `element` as argument, responsible for dispatching an event from `element` as desired, and an `off` handler with `element` as argument, responsible for turning off event dispatching for `element`.
-	
-In its simplest form it would look like this, by simply hijacking the `click` event:
-
-<pre>
-const callback = e => {
-	e.target.dispatchEvent(new Event('myCustomEvent'));
-};
-ö.registerCustomEvent(
-	'myCustomEvent', 
-	element => element.addEventListener('click', callback), 
-	element => element.removeEventListener('click', callback)
-);
-ö('code').on('myCustomEvent', e => ö.log(e.type));
-</pre>
-
 	
 ### Error handling and logging	
 #### ö.verbose( isVerbose, isThrowing = false ) → Boolean
@@ -274,10 +235,7 @@ Less verbose than `typeof`/`Array.isArray`/`instanceof`:
 #### ö.isIterable( v ) → Boolean
 Checks for `[Symbol.iterator]` in `v`.
 
-### Internal
-#### ö.checkSelector( selector, ...rest ) → Array of Elements
-Core method for `Ö` creation. Checks selector in various ways in order to create an `Array` of `Element`s. Can be used as a template tag.
-	
+### DOM	
 #### ö.createElement( html, isSvg = false ) → Element
 Creates an `Element` from an html string. Optionally creates an `SVGElement`.
 		
@@ -292,8 +250,5 @@ Finds deepest `Element` in `element`, optionally matching `selector`.
 
 	
 ### Random stuff
-#### ö.toString() → 'Hello ö🍳uery!'
-Politeness.
-
 #### ö.rorövovarorsospoproråkoketot( str ) → String
 Converts string to Rövarspråket, like so: <code class="runnable">ö('code').text((_, v) => ö.rorövovarorsospoproråkoketot(v) );</code> 
