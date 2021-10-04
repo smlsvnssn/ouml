@@ -16,6 +16,7 @@ export const range = function* (start, end, step = 1) {
 	do { yield start } while (count() !== false);
 };
 
+// iterators
 export const times = (times, f = i => i, ...rest) => {
 	const a = [];
 	for (let i of range(Math.abs(times))) a.push(f(i, ...rest));
@@ -23,7 +24,6 @@ export const times = (times, f = i => i, ...rest) => {
 };
 
 // arr
-
 export const rangeArray = (start, end, step = 1) => {
 	let arr = [], i = 0;
 	for (const n of range(start, end, step)) arr[i++] = n;
@@ -74,7 +74,6 @@ export const max = arr => Math.max(...arr);
 export const min = arr => Math.min(...arr);
 
 // SET OPS
-
 export const intersect = (a, b) => Array.from(a).filter(v => Array.from(b).includes(v));
 
 export const subtract = (a, b) => Array.from(a).filter(v => !Array.from(b).includes(v));
@@ -93,7 +92,6 @@ export const isSubset = (a, b) => {
 }
 
 // DOM
-
 export const createElement = (html, isSvg = false) => {
 	const template = document.createElement('template');
 	if (isSvg) {
@@ -175,6 +173,19 @@ export const clone = (v, deep = true) => {
 };
 
 export const pipe = (v, ...funcs) => funcs.reduce((x, f) => f(x), v);
+	
+export const memoise = (f, keymaker) => {
+	const cache = new Map();
+	return (...args) => {
+		const key = keymaker ? keymaker(...args) 
+			: args.length > 1 ? args.join('-') : args[0];
+
+		if (cache.has(key))	return cache.get(key);
+		const result = f(...args);
+		cache.set(key, result);
+		return result;
+	}
+};
 
 // Untested 
 // pipeAsync = async (v, ...funcs) => await funcs.reduce( async (x, f) => await f(x), v);
@@ -350,6 +361,7 @@ const isof = t => v => v instanceof t;
 
 export const isBool = istype('boolean');
 export const isNum = istype('number');
+export const isInt = v => Number.isInteger(v);
 export const isBigInt = istype('bigint');
 export const isStr = istype('string');
 export const isSym = istype('symbol');
