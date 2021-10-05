@@ -68,22 +68,22 @@ Methods for comparing arrays or array-like objects. Inputs are coerced to `Array
 If all inputs to these methods are `Set`s, the outputs adhere to strict set logic. If the inputs are `Array`s, duplicate items are allowed (except in `union()`).
 	
 #### ö.intersect( a, b ) → Array
-<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="9" height="9" stroke="white"/><rect x="5.5" y="5.5" width="9" height="9" stroke="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 5V10H5V5H10Z" fill="white"/></svg> Intersection, returns elements that are members of both `a` and `b`. 
+<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="9" height="9" stroke="white"/><rect x="5.5" y="5.5" width="9" height="9" stroke="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 5V10H5V5H10Z" fill="black"/></svg> Intersection, returns elements that are members of both `a` and `b`. 
 	
 Example: `ö.intersect([0, 1], [1, 2]) // returns [1]`
 	
 #### ö.subtract( a, b ) → Array
-<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="9" height="9" stroke="white"/><rect x="5.5" y="5.5" width="9" height="9" stroke="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 0H0V10H5V5H10V0Z" fill="white"/></svg> Difference, returns members of `a` but not members of `b`, i.e. subtracts `b` from `a`.
+<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="9" height="9" stroke="white"/><rect x="5.5" y="5.5" width="9" height="9" stroke="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 0H0V10H5V5H10V0Z" fill="black"/></svg> Difference, returns members of `a` but not members of `b`, i.e. subtracts `b` from `a`.
 	
 Example: `ö.subtract([0, 1], [1, 2]) // returns [0]`
 	
 #### ö.exclude( a, b ) → Array
-<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 0H0V10H5V15H15V5H10V0ZM10 5H5V10H10V5Z" fill="white"/></svg> Symmetric difference, returns elements that are members of `a` or `b`, but not both.
+<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 0H0V10H5V15H15V5H10V0ZM10 5H5V10H10V5Z" fill="black"/></svg> Symmetric difference, returns elements that are members of `a` or `b`, but not both.
 	
 Example: `ö.exclude([0, 1], [1, 2]) // returns [0, 2]`
 	
 #### ö.union( a, b ) → Array
-<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="9" height="9" stroke="white"/><rect x="5.5" y="5.5" width="9" height="9" stroke="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 0H0V10H5V15H15V5H10V0Z" fill="white"/></svg> Returns (unique) members  of both `a` and `b`.
+<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="9" height="9" stroke="white"/><rect x="5.5" y="5.5" width="9" height="9" stroke="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 0H0V10H5V15H15V5H10V0Z" fill="black"/></svg> Returns (unique) members  of both `a` and `b`.
 	
 Example: `ö.union([0, 1], [1, 2]) // returns [0, 1, 2]`
 
@@ -99,6 +99,9 @@ Performs cloning of the most common object types, including `Array` and typed ar
 	
 #### ö.pipe( v, ...funcs ) → value
 Pipes function calls. For multiple arguments, use closures. Usage: `ö.pipe(1, x => x*6, x => x**2, x => x+6, ö.log) => logs 42`.
+
+#### ö.memoise( f, keymaker ) → f
+Creates and returns memoised functions. By default, the arguments to the memoised function are used as key for storing the result (If only one argument, the raw input is used as key, if more than one, the arguments are joined to a string). If the arguments are objects instead of primitive values, you should provide a `keymaker`. `keymaker` receives all inputs from the memoised function, and should return something unique to use as a `Map` key for a given set of inputs. Use for example `JSON.stringify` when you expect objects as input.
 		
 ### Mathy
 #### ö.random( min, max, float = false ) → integer | Number
@@ -204,6 +207,8 @@ Less verbose than `typeof`/`Array.isArray`/`instanceof`:
 #### ö.isBool( v ) → Boolean
 	
 #### ö.isNum( v ) → Boolean
+
+#### ö.isInt( v ) → Boolean
 	
 #### ö.isBigInt( v ) → Boolean
 	

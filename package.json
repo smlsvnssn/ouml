@@ -1,10 +1,10 @@
 {
   "name": "ouml",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "smlsvnssn",
   "main": "ö.js",
   "scripts": {
-    "test": "test"
+    "test": "void"
   },
   "repository": {
     "type": "git",
@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/smlsvnssn/ouml/issues"
   },
-  "homepage": "https://github.com/smlsvnssn/ouml#readme"
+  "homepage": "https://github.com/smlsvnssn/ouml#readme",
+  "dependencies": {
+    "@types/node": "^16.10.2"
+  }
 }

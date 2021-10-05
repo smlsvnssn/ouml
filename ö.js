@@ -55,6 +55,7 @@ export const sample = (arr, samples = 1) => {
 // thx https://hackernoon.com/3-javascript-performance-mistakes-you-should-stop-doing-ebf84b9de951
 //sum = arr => arr.reduce( (a, v) => a + Number(v) , 0); < 10xslower
 export const sum = arr => {
+	arr = Array.from(arr);
 	let a = 0;
 	for (let i = 0; i < arr.length; i++) a += Number(arr[i]);
 	return a;
@@ -72,6 +73,11 @@ export const median = arr => {
 export const max = arr => Math.max(...arr);
 
 export const min = arr => Math.min(...arr);
+
+export const groupBy = (arr, prop) => arr.reduce((m, x) =>
+	m.set(x[prop], [...m.get(x[prop]) || [], x]),
+	new Map()
+);
 
 // SET OPS
 export const intersect = (a, b) => Array.from(a).filter(v => Array.from(b).includes(v));
@@ -173,14 +179,14 @@ export const clone = (v, deep = true) => {
 };
 
 export const pipe = (v, ...funcs) => funcs.reduce((x, f) => f(x), v);
-	
+
 export const memoise = (f, keymaker) => {
 	const cache = new Map();
 	return (...args) => {
-		const key = keymaker ? keymaker(...args) 
+		const key = keymaker ? keymaker(...args)
 			: args.length > 1 ? args.join('-') : args[0];
 
-		if (cache.has(key))	return cache.get(key);
+		if (cache.has(key)) return cache.get(key);
 		const result = f(...args);
 		cache.set(key, result);
 		return result;
