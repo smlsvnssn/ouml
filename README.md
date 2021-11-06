@@ -30,7 +30,7 @@ Returns an array containing the return values of `f`, or an array containing ind
 
 
 ### Array / Iterable
-Methods for manipulating arrays or array-like objects. Inputs are coerced to `Array`, so `String`, `Set`, `Ö` and the like works as input as well. All methods are non-mutating.
+Methods for manipulating arrays or array-like objects. Inputs are coerced to `Array`, so `String`, `Set` and the like works as input as well. All methods are non-mutating.
 	
 #### ö.rangeArray( start, end, step = 1 ) → Array
 Returns an `Array` populated with given range.
@@ -200,6 +200,13 @@ Outputs arguments to console. Can be silenced globally by calling `ö.verbose(fa
 		
 #### ö.message( str ) → 'ö🍳uery says: ${str}'
 Wrapper for internal messages.
+
+### Util & environment
+#### ö.getLocal( item ) → Object
+Gets `item` from local storage, if any. Converts item to `Object` via `JSON.parse`.
+
+#### ö.setLocal = ( item, v ) => v;
+Sets `item` in local storage to `v`, and returns `v`.
 	
 ### Basic type checking
 Less verbose than `typeof`/`Array.isArray`/`instanceof`:
@@ -248,7 +255,7 @@ Creates an `Element` from an html string. Optionally creates an `SVGElement`.
 Parses a `DOMStringMap` as `JSON`. Used internally when reading from `Element.dataset`.
 
 #### ö.data( element, key, value ) → data | data.key
-Get/sets `data` on an `Element`. If no `key`, returns `data` object. Associates `Element` with `data` via `WeakMap`.
+Associates a `data` object with an `Element`, or any other object used as value for `element`, via `WeakMap`. If no `key`, returns `data` object.
 
 #### ö.deepest( element, selector = '\*' ) → Element
 Finds deepest `Element` in `element`, optionally matching `selector`.

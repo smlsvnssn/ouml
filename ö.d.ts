@@ -22,7 +22,7 @@ export function isSubset(a: Iterable<any>, b: Iterable<any>): boolean;
 
 export function createElement(html: string, isSvg?: boolean): HTMLElement | SVGElement;
 export function parseDOMStringMap(o: DOMStringMap): {};
-export function data(element: Element, key: {} | string, value: any): {} | any;
+export function data(element: [] | {}, key: {} | string, value: any): {} | any;
 export function deepest(element: Element, selector?: string): any;
 export function isEqual(a: any, b: any, deep?: boolean): Element;
 
@@ -53,11 +53,12 @@ export function toHsla(c: string, asString?: boolean): string | {
 };
 export function hsla(h: number | { h: number, s: number, l: number, a: number }, s?: number, l?: number, a?: number): string;
 
-export function wait(t: number, f: Function, resetPrevCall?: boolean): Promise<void>;
-export function nextFrame(f: Function): Promise<void>;
-export function waitFrames(n: number, f: Function, everyFrame?: boolean): Promise<void>;
-export function waitFor(selector: string, event: string, f: Function): Promise<void>;
+export function wait(t?: number, f?: Function, resetPrevCall?: boolean): Promise<void>;
+export function nextFrame(f?: Function): Promise<void>;
+export function waitFrames(n?: number, f?: Function, everyFrame?: boolean): Promise<void>;
+export function waitFor(selector: string, event: string, f?: Function): Promise<void>;
 export function load(url: string, isJSON?: boolean): Promise<{} | string>;
+
 export function isBool(v: any): boolean;
 export function isNum(v: any): boolean;
 export function isInt(v: any): boolean;
@@ -75,6 +76,9 @@ export function isSet(v: any): boolean;
 export function isRegex(v: any): boolean;
 export function isObj(v: any): boolean;
 export function isIterable(v: any): boolean;
+
+export function getLocal(item: string): {} | undefined;
+export function setLocal(item: string, v: any): any;
 
 export function throttle(f: Function, t?: number, debounce?: boolean, immediately?: boolean): (...args: any[]) => void;
 export function debounce(f: Function, t?: number, immediately?: boolean): (...args: any[]) => void;

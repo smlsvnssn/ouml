@@ -2,7 +2,7 @@
 	// Change this to match your project
 	"include": [
 		"/**/*"
-	] /*,
+	],
 	"compilerOptions": {
 		// Tells TypeScript to read JS files, as
 		// normally they are ignored as source files
@@ -15,6 +15,6 @@
 		// Types should go into this directory.
 		// Removing this would place the .d.ts files
 		// next to the .js files
-		"outDir": "dist"
-	}*/
+		"outDir": "test"
+	}
 }
