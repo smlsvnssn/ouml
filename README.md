@@ -3,7 +3,7 @@
 
 Usage: 
 ```
-npm install ouml
+npm install ouml 
 
 import { random } from "ouml";
 const oneOrZero = random();
@@ -109,8 +109,6 @@ Shorthand for random integers between `min` and `max`-1. If `max` is omitted or 
 	
 #### ö.randomNormal( mean = 0, sigma = 1 ) → Number
 Returns random number from reasonably approximated normal distribution, centered around `mean`, with <a href=https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule target=_blank>more or less 68.2% of the sample set</a> within ± `sigma`. Values max out at a bit above ± 3 `sigma`, with extreme outliers up to about  ± 4 `sigma`. There are <a href=https://observablehq.com/@d3/d3-random#normal target=_blank>more mathematically accurate methods</a> to do this, but this method is fast, and good enough for most people. Use it for fun and visuals, not for statistical analysis 🤓.
-	
-Example: <code class="runnable">for (let i of ö.range(200)) ö('\<star>⭐️\</star>').appendTo(ö('content')).move(ö.randomNormal(0, window.innerWidth / 2), ö.randomNormal(0, window.innerHeight / 2), 3000).scale(ö.randomNormal(5, 3), 3000).hide(3000);</code>
 	
 #### ö.round( n, precision = 0 ) → Number
 Returns `n` rounded to `precision` decimals.
