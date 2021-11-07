@@ -203,8 +203,14 @@ Wrapper for internal messages.
 #### ö.getLocal( item ) → Object
 Gets `item` from local storage, if any. Converts item to `Object` via `JSON.parse`.
 
-#### ö.setLocal = ( item, v ) => v;
+#### ö.setLocal = ( item, v ) → v
 Sets `item` in local storage to `v`, and returns `v`.
+
+#### ö.getCss = ( prop, selector = ':root') → css property value
+Gets `prop` on selected element, or from `document.documentElement` if `selector` is unset. and returns `v`. Mainly used for getting global `--props`, using css as master for global variables.
+
+#### ö.setCss = ( prop, v, selector = ':root') → v
+Sets `prop` to `v`, optionally on selected element, and returns `v`.
 	
 ### Basic type checking
 Less verbose than `typeof`/`Array.isArray`/`instanceof`:

@@ -2,7 +2,6 @@
 TODO:
 Environment methods, ie isMobile, isTouchscreen, isHiResScreen, isDesktop, isServer etc
 Extend lerp to accept any-dimensional numberss, and optional easing functions (https://github.com/AndrewRayCode/easing-utils)
-LocalStorage: getLocal/setLocal
 db? Server part for secrets and relay?
 */
 // generators
@@ -432,12 +431,19 @@ export const onAnimationFrame = f => {
 
 // util & environment
 
+// export const q = document.querySelector.bind(document);
+// export const qa = document.querySelectorAll.bind(document);
+
 export const getLocal = item => {
 	const i = localStorage.getItem(item);
 	return i && JSON.parse(i);
 };
 
 export const setLocal = (item, v) => (localStorage.setItem(item, JSON.stringify(v)), v);
+
+export const getCss = (prop, selector = ':root') => document.querySelector(selector).style.getPropertyValue(prop);
+
+export const setCss = (prop, v, selector = ':root') => (document.querySelector(selector).style.setProperty(prop, v), v);
 
 // verbose errors
 let isVerbose = true, isThrowing = false;

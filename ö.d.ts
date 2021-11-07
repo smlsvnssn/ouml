@@ -79,6 +79,8 @@ export function isIterable(v: any): boolean;
 
 export function getLocal(item: string): {} | undefined;
 export function setLocal(item: string, v: any): any;
+export function getCss(prop: string, selector?: string): string | undefined;
+export function setCss(prop: string, v: string, selector?: string): string;
 
 export function throttle(f: Function, t?: number, debounce?: boolean, immediately?: boolean): (...args: any[]) => void;
 export function debounce(f: Function, t?: number, immediately?: boolean): (...args: any[]) => void;
