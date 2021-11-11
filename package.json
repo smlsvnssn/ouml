@@ -2,7 +2,7 @@
   "name": "ouml",
   "version": "0.0.5",
   "description": "smlsvnssn",
-  "main": "ö.js",
+  "main": "ö.mjs",
   "types": "ö.d.ts",
   "scripts": {
     "test": "void"
