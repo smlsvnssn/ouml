@@ -29,6 +29,7 @@ export function isEqual(a: any, b: any, deep?: boolean): Element;
 export function clone(v: any, deep?: boolean): any;
 export function pipe(v: any, ...funcs: Function[]): any;
 export function memoise(f: Function, keymaker: Function): (...args: any[]) => any;
+export function createEnum(v: string[]): {};
 
 export function random(min: number, max: number, float?: boolean): number;
 export function randomNormal(mean?: number, sigma?: number): number;
