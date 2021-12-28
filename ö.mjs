@@ -232,6 +232,19 @@ export const round = (n, precision = 0) => Math.round(n * 10 ** precision + Numb
 
 export const nthRoot = (x, n) => x ** (1 / Math.abs(n))
 
+export const factorial = n => n <= 1 ? 1 : n * factorial(n - 1)
+export const nChooseK = (n, k) => {
+	if (k < 0 || k > n) return 0
+	if (k === 0 || k === n) return 1
+	if (k === 1 || k === n - 1) return n
+
+	let res = n
+	for (let i = 2; i <= k; i++) {
+		res *= (n - i + 1) / i
+	}
+
+	return Math.round(res)
+}
 export const lerp = (a, b, t) => (1 - t) * a + t * b
 
 export const clamp = (n, min, max) => Math.min(Math.max(n, min), max)
@@ -305,7 +318,7 @@ export const toHsla = (c, asString = false) => {
 		// convert
 
 		// add default alpha if needed
-		if (rgba.length === 3) rgba.push(1)
+		if (rgba.length === 3) { rgba.push(1) }
 		// Adapted from https://css-tricks.com/converting-color-spaces-in-javascript/
 		[r, g, b, a] = rgba.map((v, i) => (i < 3) ? v / 255 : v)
 		let

@@ -35,6 +35,8 @@ export function random(min: number, max: number, float?: boolean): number;
 export function randomNormal(mean?: number, sigma?: number): number;
 export function round(n: number, precision?: number): number;
 export function nthRoot(x: number, n: number): number;
+export function factorial(n: number): number;
+export function nChooseK(n: number, k: number): number;
 export function lerp(a: number, b: number, t: number): number;
 export function clamp(n: number, min: number, max: number): number;
 export function between(n: number, min: number, max: number): boolean;
