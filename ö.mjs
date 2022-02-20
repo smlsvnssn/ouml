@@ -15,11 +15,11 @@ export const grid = function* (width, height) {
 }
 
 export const range = function* (start, end, step = 1) {
-	[start, end, step] = (isnt(end)) ? [0, +start, +step] : [+start, +end, +step]
-	const count = (start < end)
-		? () => (start += step) < end
-		: () => (start -= step) > end
-	do { yield start } while (count() !== false)
+	;[start, end, step] = isnt(end) ? [0, +start, +step] : [+start, +end, +step]
+	const count = start < end ? () => (start += step) < end : () => (start -= step) > end
+	do {
+		yield start
+	} while (count() !== false)
 }
 
 // iterators
@@ -31,7 +31,8 @@ export const times = (times, f = i => i, ...rest) => {
 
 // arr
 export const rangeArray = (start, end, step = 1) => {
-	let arr = [], i = 0
+	let arr = [],
+		i = 0
 	for (const n of range(start, end, step)) arr[i++] = n
 	return arr
 }
@@ -43,8 +44,8 @@ export const shuffle = arr => {
 	const a = Array.from(arr)
 	// classic loop for performance reasons
 	for (let i = a.length - 1; i > 0; i--) {
-		const j = random(i + 1);
-		[a[i], a[j]] = [a[j], a[i]]
+		const j = random(i + 1)
+		;[a[i], a[j]] = [a[j], a[i]]
 	}
 	return a
 }
@@ -73,17 +74,15 @@ export const median = arr => {
 	// no mutation
 	const a = Array.from(arr).sort((a, b) => Number(a) - Number(b)),
 		m = Math.floor(arr.length / 2)
-	return (m % 2) ? (Number(a[m - 1]) + Number(a[m])) / 2 : Number(a[m])
+	return m % 2 ? (Number(a[m - 1]) + Number(a[m])) / 2 : Number(a[m])
 }
 
 export const max = arr => Math.max(...arr)
 
 export const min = arr => Math.min(...arr)
 
-export const groupBy = (arr, prop) => arr.reduce((m, x) =>
-	m.set(x[prop], [...m.get(x[prop]) || [], x]),
-	new Map()
-)
+export const groupBy = (arr, prop) =>
+	arr.reduce((m, x) => m.set(x[prop], [...(m.get(x[prop]) || []), x]), new Map())
 
 // SET OPS
 export const intersect = (a, b) => Array.from(a).filter(v => Array.from(b).includes(v))
@@ -91,15 +90,14 @@ export const intersect = (a, b) => Array.from(a).filter(v => Array.from(b).inclu
 export const subtract = (a, b) => Array.from(a).filter(v => !Array.from(b).includes(v))
 
 export const exclude = (a, b) => {
-	[a, b] = [Array.from(a), Array.from(b)]
-	return a.filter(v => !b.includes(v))
-		.concat(b.filter(v => !a.includes(v)))
+	;[a, b] = [Array.from(a), Array.from(b)]
+	return a.filter(v => !b.includes(v)).concat(b.filter(v => !a.includes(v)))
 }
 
 export const union = (a, b) => [...new Set([...Array.from(a), ...Array.from(b)])]
 
 export const isSubset = (a, b) => {
-	[a, b] = [Array.from(a), Array.from(b)]
+	;[a, b] = [Array.from(a), Array.from(b)]
 	return a.length <= b.length && a.every(v => b.includes(v))
 }
 
@@ -107,7 +105,7 @@ export const isSubset = (a, b) => {
 export const createElement = (html, isSvg = false) => {
 	const template = document.createElement('template')
 	if (isSvg) {
-		template.innerHTML = `<svg>${ html.trim() }</svg>`
+		template.innerHTML = `<svg>${html.trim()}</svg>`
 		return template.content.firstChild.firstChild
 	}
 	template.innerHTML = html.trim()
@@ -117,9 +115,11 @@ export const createElement = (html, isSvg = false) => {
 export const parseDOMStringMap = o => {
 	// convert from DOMStringMap to object
 	o = { ...o }
+	// parse what's parseable
 	for (const key in o)
-		// parse what's parseable
-		try { o[key] = JSON.parse(o[key]) } catch (e) { };
+		try {
+			o[key] = JSON.parse(o[key])
+		} catch (e) {}
 	return o
 }
 
@@ -135,17 +135,15 @@ export const data = (element, key, value) => {
 
 // Finds deepestElement in element matching selector. Potential performance hog for deep DOM structures.
 export const deepest = (element, selector = '*') =>
-	Array.from(element.querySelectorAll(selector))
-		.reduce(
-			(deepest, el) => {
-				let depth = 0
-				for (e = el; e !== element; depth++, e = e.parentNode);
-				return depth > deepest.depth ? { depth: depth, deepestElement: el } : deepest
-			},
-			// accumulator
-			{ depth: 0, deepestElement: element }
-		)
-		.deepestElement
+	Array.from(element.querySelectorAll(selector)).reduce(
+		(deepest, el) => {
+			let depth = 0
+			for (e = el; e !== element; depth++, e = e.parentNode);
+			return depth > deepest.depth ? { depth: depth, deepestElement: el } : deepest
+		},
+		// accumulator
+		{ depth: 0, deepestElement: element }
+	).deepestElement
 
 // logical
 
@@ -153,44 +151,50 @@ export const deepest = (element, selector = '*') =>
 // Checks own enumerable properties only.
 // Does not work for ArrayBuffers because Symbols. Solvable with Object.getOwnPropertySymbols(obj)? Good enough?
 export const isEqual = (a, b, deep = true) =>
-	a === b ? true :																				// are strictly equal?
-		a instanceof Date && b instanceof Date ? a.getTime() === b.getTime() :						// are same date?
-			a instanceof Function && b instanceof Function ? '' + a === '' + b :					// are lexically same functions? (Closures not compared)
-				!a || !b || (typeof a !== 'object' && typeof b !== 'object') ? a === b :			// are nullish?
-					Object.getPrototypeOf(a) !== Object.getPrototypeOf(b) ? false :					// have same prototype?
-						Object.keys(a).length !== Object.keys(b).length ? false :					// have same length ? (Iterables)
-							Object.keys(a).every(k => deep ? isEqual(a[k], b[k]) : a[k] === b[k])	// have same properties and values? (Recursively if deep)
+	a === b
+		? true // are strictly equal?
+		: a instanceof Date && b instanceof Date
+		? a.getTime() === b.getTime() // are same date?
+		: a instanceof Function && b instanceof Function
+		? '' + a === '' + b // are lexically same functions? (Closures not compared)
+		: !a || !b || (typeof a !== 'object' && typeof b !== 'object')
+		? a === b // are nullish?
+		: Object.getPrototypeOf(a) !== Object.getPrototypeOf(b)
+		? false // have same prototype?
+		: Object.keys(a).length !== Object.keys(b).length
+		? false // have same length ? (Iterables)
+		: Object.keys(a).every(k => (deep ? isEqual(a[k], b[k]) : a[k] === b[k])) // have same properties and values? (Recursively if deep)
 
 // clone
-export const clone = (v, deep = true) => {
-	const isDeep = v => deep ? clone(v) : v
+export const clone = (v, deep = true, immutable = false) => {
+	const isDeep = v => (deep ? clone(v, deep, immutable) : v),
+		isImmutable = v => (immutable ? Object.freeze(v) : v)
 	// no cloning of functions, too gory
 	if (typeof v !== 'object' || isNull(v)) return v
 	// catch arraylike
-	if ('map' in v && isFunc(v.map)) return v.map(i => isDeep(i))
-	if (isMap(v)) return new Map(isDeep(Array.from(v)))
-	if (isSet(v)) return new Set(isDeep(Array.from(v)))
+	if ('map' in v && isFunc(v.map)) return isImmutable(v.map(i => isDeep(i)))
+	if (isMap(v)) return isImmutable(new Map(isDeep(Array.from(v))))
+	if (isSet(v)) return isImmutable(new Set(isDeep(Array.from(v))))
 	if (isDate(v)) {
 		const d = new Date()
 		d.setTime(v.getTime())
-		return d
+		return isImmutable(d)
 	}
 	// todo: Handling of instantiation and prototype (Possible)?
 	//const o = Object.create(Object.getPrototypeOf(v));
 	const o = {}
-	for (const key in v)
-		if (v.hasOwnProperty(key))
-			o[key] = isDeep(v[key])
-	return o
+	for (const key in v) if (v.hasOwnProperty(key)) o[key] = isDeep(v[key])
+	return isImmutable(o)
 }
+
+export const immutable = (v, deep = true, immutable = true) => clone(v, deep, immutable)
 
 export const pipe = (v, ...funcs) => funcs.reduce((x, f) => f(x), v)
 
 export const memoise = (f, keymaker) => {
 	const cache = new Map()
 	return (...args) => {
-		const key = keymaker ? keymaker(...args)
-			: args.length > 1 ? args.join('-') : args[0]
+		const key = keymaker ? keymaker(...args) : args.length > 1 ? args.join('-') : args[0]
 
 		if (cache.has(key)) return cache.get(key)
 		const result = f(...args)
@@ -200,39 +204,44 @@ export const memoise = (f, keymaker) => {
 }
 
 // thx https://masteringjs.io/tutorials/fundamentals/enum
-export const createEnum = (v) => {
+export const createEnum = v => {
 	const enu = {}
 	for (const val of v) enu[val] = val
 	return Object.freeze(enu)
 }
 
-// Untested 
+// Untested
 // pipeAsync = async (v, ...funcs) => await funcs.reduce( async (x, f) => await f(x), v);
 
 // mathy
 export const random = (min, max, float = false) => {
 	// max can be omitted
-	float = isBool(max) ? max : float;
-	[min, max] = isnt(max) || isBool(max)
-		// with no parameters, defaults to 0 or 1
-		? isnt(min) ? [0, 2] : [0, +min]
-		: [+min, +max]
+	float = isBool(max) ? max : float
+	;[min, max] =
+		isnt(max) || isBool(max)
+			? // with no parameters, defaults to 0 or 1
+			  isnt(min)
+				? [0, 2]
+				: [0, +min]
+			: [+min, +max]
 	return float ? Math.random() * (max - min) + min : Math.floor(Math.random() * (max - min)) + min
 }
 
 export const randomNormal = (mean = 0, sigma = 1) => {
 	const samples = 6
-	let sum = 0, i = 0
+	let sum = 0,
+		i = 0
 	for (i; i < samples; i++) sum += Math.random()
 	return (sigma * 8.35 * (sum - samples / 2)) / samples + mean
-	// ^ hand made spread constant :-) 
+	// ^ hand made spread constant :-)
 }
 
-export const round = (n, precision = 0) => Math.round(n * 10 ** precision + Number.EPSILON) / 10 ** precision
+export const round = (n, precision = 0) =>
+	Math.round(n * 10 ** precision + Number.EPSILON) / 10 ** precision
 
 export const nthRoot = (x, n) => x ** (1 / Math.abs(n))
 
-export const factorial = n => n <= 1 ? 1 : n * factorial(n - 1)
+export const factorial = n => (n <= 1 ? 1 : n * factorial(n - 1))
 export const nChooseK = (n, k) => {
 	if (k < 0 || k > n) return 0
 	if (k === 0 || k === n) return 1
@@ -242,7 +251,6 @@ export const nChooseK = (n, k) => {
 	for (let i = 2; i <= k; i++) {
 		res *= (n - i + 1) / i
 	}
-
 	return Math.round(res)
 }
 export const lerp = (a, b, t) => (1 - t) * a + t * b
@@ -252,31 +260,56 @@ export const clamp = (n, min, max) => Math.min(Math.max(n, min), max)
 export const between = (n, min, max) => n >= min && n < max
 
 export const normalize = (n, min, max, clamp = true) => {
-	n = (n - min) / ((max - min) + Number.EPSILON) // Prevent / by 0
+	n = (n - min) / (max - min + Number.EPSILON) // Prevent / by 0
 	return clamp ? clamp(n, 0, 1) : n
 }
+
+export const toPolar = (x, y) => ({ r: Math.hypot(x, y), theta: Math.atan2(y, x) })
+
+export const toCartesian = (r, theta) => ({ x: r * Math.cos(theta), y: r * Math.sin(theta) })
+
+// https://www.youtube.com/watch?v=sULa9Lc4pck&t=3s
+// export const triangleOfPower = (base, exponent, power) => {
+// 	if (base && exponent) return base ** exponent // pow
+// 	if (exponent && power) return power ** (1 / Math.abs(exponent)) // root
+// 	if (base && power) return Math.log(power) / Math.log(base) // log
+// }
 
 // string
 export const prettyNumber = (n, locale = 'sv-SE', precision = 2) => {
 	// lacale can be omitted
-	[locale, precision] = isNum(locale) ? ['sv-SE', locale] : [locale, precision]
+	;[locale, precision] = isNum(locale) ? ['sv-SE', locale] : [locale, precision]
 	return Number.isNaN(n) ? '-' : round(n, precision).toLocaleString(locale)
 }
 
-export const wrapFirstWords = (s, numWords = 3, startWrap = '<span>', endWrap = '</span>', startAtChar = 0) =>
-	s.slice(0, startAtChar)
-	+ s.slice(startAtChar)
+export const wrapFirstWords = (
+	s,
+	numWords = 3,
+	startWrap = '<span>',
+	endWrap = '</span>',
+	startAtChar = 0
+) =>
+	s.slice(0, startAtChar) +
+	s
+		.slice(startAtChar)
 		.replace(
-			new RegExp('([\\s]*[a-zA-ZåäöÅÄÖøØ0-9\'’"\-]+){0,' + (numWords) + '}\\S?'),
+			new RegExp('([\\s]*[a-zA-ZåäöÅÄÖøØ0-9\'’"-]+){0,' + numWords + '}\\S?'),
 			startWrap + '$&' + endWrap
 		)
 
-export const toCamelCase = s => s.match(/^\-\-/) ? s // is css var, so leave it alone
-	: s.replace(/([-_\s])([a-zA-Z0-9])/g, (m, _, c, o) => o ? c.toUpperCase() : c)
+export const toCamelCase = s =>
+	s.match(/^\-\-/)
+		? s // is css var, so leave it alone
+		: s.replace(/([-_\s])([a-zA-Z0-9])/g, (m, _, c, o) => (o ? c.toUpperCase() : c))
 
 // thx https://gist.github.com/nblackburn/875e6ff75bc8ce171c758bf75f304707
-export const toKebabCase = s => s.match(/^\-\-/) ? s // is css var, so leave it alone
-	: s.replace(/\s/g, '-').replace(/([a-z0-9])([A-Z0-9])/g, '$1-$2').toLowerCase()
+export const toKebabCase = s =>
+	s.match(/^\-\-/)
+		? s // is css var, so leave it alone
+		: s
+				.replace(/\s/g, '-')
+				.replace(/([a-z0-9])([A-Z0-9])/g, '$1-$2')
+				.toLowerCase()
 
 export const randomChars = () => (Math.random() * 2 ** 64).toString(36).substring(0, 10)
 
@@ -291,47 +324,55 @@ export const toHsla = (c, asString = false) => {
 		// is hex
 		rgba = Array.from(c)
 			.slice(1) // remove #
-			.flatMap((v, i, a) =>
-				a.length <= 4 // if shorthand
-					? [Number('0x' + v + v)]
-					: i % 2 // if longform
+			.flatMap(
+				(v, i, a) =>
+					a.length <= 4 // if shorthand
+						? [Number('0x' + v + v)]
+						: i % 2 // if longform
 						? [] // omitted by flatmap
 						: [Number('0x' + v + a[i + 1])] // current + next
 			)
 		// fix alpha
 		if (rgba.length === 4) rgba[3] / 255
-
 	} else if (/^rgb\(|^rgba\(/.test(c)) {
 		// is rgb/rgba
 		rgba = c.match(/([0-9\.])+/g).map(v => Number(v)) // Pluck the numbers
-		if (/%/.test(c)) // fix percent
-			rgba = rgba.map((v, i) => (i < 3) ? Math.round(v / 100 * 255) : v)
-
+		if (/%/.test(c))
+			// fix percent
+			rgba = rgba.map((v, i) => (i < 3 ? Math.round((v / 100) * 255) : v))
 	} else if (/^hsl\(|^hsla\(/.test(c)) {
 		// is hsl/hsla
-		[h, s, l, a] = c.match(/([0-9\.])+/g).map(v => Number(v)) // Pluck the numbers
+		;[h, s, l, a] = c.match(/([0-9\.])+/g).map(v => Number(v)) // Pluck the numbers
 		a ??= 1
-
-	} else { return (warn('Sorry, can\'t parse ' + c), null) }
+	} else {
+		return warn("Sorry, can't parse " + c), null
+	}
 
 	if (rgba) {
 		// convert
 
 		// add default alpha if needed
-		if (rgba.length === 3) { rgba.push(1) }
+		if (rgba.length === 3) {
+			rgba.push(1)
+		}
 		// Adapted from https://css-tricks.com/converting-color-spaces-in-javascript/
-		[r, g, b, a] = rgba.map((v, i) => (i < 3) ? v / 255 : v)
-		let
-			cmin = Math.min(r, g, b),
+		;[r, g, b, a] = rgba.map((v, i) => (i < 3 ? v / 255 : v))
+		let cmin = Math.min(r, g, b),
 			cmax = Math.max(r, g, b),
 			delta = cmax - cmin
 
-		h = (round(
-			(delta === 0 ? 0 :
-				cmax === r ? ((g - b) / delta) % 6 :
-					cmax === g ? (b - r) / delta + 2 :
-					/*cmax  === b*/	(r - g) / delta + 4)
-			* 60) + 360) % 360 // prevent negatives
+		h =
+			(round(
+				(delta === 0
+					? 0
+					: cmax === r
+					? ((g - b) / delta) % 6
+					: cmax === g
+					? (b - r) / delta + 2
+					: /*cmax  === b*/ (r - g) / delta + 4) * 60
+			) +
+				360) %
+			360 // prevent negatives
 		l = (cmax + cmin) / 2
 		s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1))
 
@@ -346,7 +387,7 @@ export const toHsla = (c, asString = false) => {
 
 export const hsla = (h, s = 70, l = 50, a = 1) => {
 	if (isObj(h)) ({ h, s, l, a } = h)
-	return `hsla(${ (h % 360) }, ${ s }%, ${ l }%, ${ a })`
+	return `hsla(${h % 360}, ${s}%, ${l}%, ${a})`
 }
 
 // async
@@ -365,14 +406,16 @@ export const wait = async (t = 1, f, resetPrevCall = false) => {
 			rejectPrev = reject
 		})
 		if (isFunc(f)) await f()
-	} catch (e) { }
+	} catch (e) {}
 }
 
 export const nextFrame = async f => {
-	return new Promise(resolve => requestAnimationFrame(async () => {
-		if (isFunc(f)) await f()
-		resolve()
-	}))
+	return new Promise(resolve =>
+		requestAnimationFrame(async () => {
+			if (isFunc(f)) await f()
+			resolve()
+		})
+	)
 }
 
 export const waitFrames = async (n = 1, f, everyFrame = false) => {
@@ -382,10 +425,14 @@ export const waitFrames = async (n = 1, f, everyFrame = false) => {
 
 export const waitFor = async (selector, event, f) => {
 	return new Promise(resolve => {
-		document.querySelector(selector).addEventListener(event, async e => {
-			if (isFunc(f)) await f(e)
-			resolve()
-		}, { once: true })
+		document.querySelector(selector).addEventListener(
+			event,
+			async e => {
+				if (isFunc(f)) await f(e)
+				resolve()
+			},
+			{ once: true }
+		)
 	})
 }
 
@@ -393,8 +440,10 @@ export const waitFor = async (selector, event, f) => {
 export const load = async (url, isJSON = true) => {
 	try {
 		const response = await fetch(url)
-		return await isJSON ? response.json() : response.text()
-	} catch (e) { error(e) }
+		return (await isJSON) ? response.json() : response.text()
+	} catch (e) {
+		error(e)
+	}
 }
 
 // basic type checking
@@ -417,31 +466,40 @@ export const isMap = isof(Map)
 export const isSet = isof(Set)
 export const isRegex = isof(RegExp)
 
-export const isObj = v => typeof v === 'object' && v !== null
-	&& !isArr(v) && !isDate(v) && !isMap(v) && !isSet(v) && !isRegex(v)
+export const isObj = v =>
+	typeof v === 'object' &&
+	v !== null &&
+	!isArr(v) &&
+	!isDate(v) &&
+	!isMap(v) &&
+	!isSet(v) &&
+	!isRegex(v)
 
-export const isIterable = v => v != null && typeof (v)[Symbol.iterator] === 'function'
-
+export const isIterable = v => v != null && typeof v[Symbol.iterator] === 'function'
 
 // throttle, debounce, onAnimationFrame
 
 export const throttle = (f, t = 50, debounce = false, immediately = false) => {
-	let timeout, lastRan, running = false
+	let timeout,
+		lastRan,
+		running = false
 	return function () {
-		const context = this, args = arguments
+		const context = this,
+			args = arguments
 		if (!lastRan || (debounce && !running)) {
 			// first run or debounce rerun
 			if (!debounce || immediately) f.apply(context, args)
 			lastRan = Date.now()
 		} else {
 			clearTimeout(timeout)
-			timeout = setTimeout(() => {
-				if (Date.now() - lastRan >= t) {
-					f.apply(context, args)
-					lastRan = Date.now()
-					running = false
-				}
-			},
+			timeout = setTimeout(
+				() => {
+					if (Date.now() - lastRan >= t) {
+						f.apply(context, args)
+						lastRan = Date.now()
+						running = false
+					}
+				},
 				debounce ? t : t - (Date.now() - lastRan)
 			)
 		}
@@ -454,7 +512,8 @@ export const debounce = (f, t = 50, immediately = false) => throttle(f, t, true,
 export const onAnimationFrame = f => {
 	let timeout
 	return function () {
-		const context = this, args = arguments
+		const context = this,
+			args = arguments
 		cancelAnimationFrame(timeout)
 		timeout = requestAnimationFrame(() => f.apply(context, args))
 	}
@@ -472,14 +531,19 @@ export const getLocal = item => {
 
 export const setLocal = (item, v) => (localStorage.setItem(item, JSON.stringify(v)), v)
 
-export const getCss = (prop, selector = ':root') => document.querySelector(selector).style.getPropertyValue(prop)
+export const getCss = (prop, selector = ':root') =>
+	document.querySelector(selector).style.getPropertyValue(prop)
 
-export const setCss = (prop, v, selector = ':root') => (document.querySelector(selector).style.setProperty(prop, v), v)
+export const setCss = (prop, v, selector = ':root') => (
+	document.querySelector(selector).style.setProperty(prop, v), v
+)
 
 // verbose errors
-let isVerbose = true, isThrowing = false
+let isVerbose = true,
+	isThrowing = false
 
-export const verbose = (v, t = false) => isnt(v) ? isVerbose : (isThrowing = !!t, isVerbose = !!v)
+export const verbose = (v, t = false) =>
+	isnt(v) ? isVerbose : ((isThrowing = !!t), (isVerbose = !!v))
 
 export const error = (e, ...r) => {
 	if (isVerbose) {
@@ -489,13 +553,16 @@ export const error = (e, ...r) => {
 	return r ? [e, ...r] : e
 }
 
-export const warn = (msg, ...r) => isVerbose && !console.warn(message(msg), ...r) && r ? [msg, ...r] : msg
+export const warn = (msg, ...r) =>
+	isVerbose && !console.warn(message(msg), ...r) && r ? [msg, ...r] : msg
 
-export const log = (...msg) => isVerbose && !console.log(...msg) && msg.length === 1 ? msg[0] : msg
+export const log = (...msg) =>
+	isVerbose && !console.log(...msg) && msg.length === 1 ? msg[0] : msg
 
-export const message = s => `ö🍳uery says: ${ s }\n`
+export const message = s => `ö🍳uery says: ${s}\n`
 
-// stuff		
+// stuff
 export const toString = () => `Hello ö🍳uery!`
 
-export const rorövovarorsospoproråkoketot = s => (s || '').replace(/[bcdfghjklmnpqrstvwxyz]/gi, m => m + 'o' + m.toLowerCase())
+export const rorövovarorsospoproråkoketot = s =>
+	(s || '').replace(/[bcdfghjklmnpqrstvwxyz]/gi, m => m + 'o' + m.toLowerCase())

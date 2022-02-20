@@ -1,26 +1,27 @@
 {
-  "name": "ouml",
-  "version": "0.0.9",
-  "description": "smlsvnssn",
-  "main": "ö.mjs",
-  "types": "ö.d.ts",
-  "scripts": {
-    "test": "void"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/smlsvnssn/ouml.git"
-  },
-  "keywords": [
-    "ö"
-  ],
-  "author": "smlsvnssn",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/smlsvnssn/ouml/issues"
-  },
-  "homepage": "https://github.com/smlsvnssn/ouml#readme",
-  "dependencies": {
-    "@types/node": "^16.10.2"
-  }
+	"name": "ouml",
+	"version": "0.0.10",
+	"description": "smlsvnssn",
+	"main": "ö.mjs",
+	"types": "ö.d.ts",
+	"type": "module",
+	"scripts": {
+		"test": "void"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/smlsvnssn/ouml.git"
+	},
+	"keywords": [
+		"ö"
+	],
+	"author": "smlsvnssn",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/smlsvnssn/ouml/issues"
+	},
+	"homepage": "https://github.com/smlsvnssn/ouml#readme",
+	"dependencies": {
+		"@types/node": "^16.10.2"
+	}
 }
