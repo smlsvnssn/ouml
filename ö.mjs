@@ -82,7 +82,10 @@ export const max = arr => Math.max(...arr)
 export const min = arr => Math.min(...arr)
 
 export const groupBy = (arr, prop) =>
-	arr.reduce((m, x) => m.set(x[prop], [...(m.get(x[prop]) || []), x]), new Map())
+	arr.reduce(
+		(acc, item) => acc.set(item[prop], [...(acc.get(item[prop]) || []), item]),
+		new Map()
+	)
 
 // SET OPS
 export const intersect = (a, b) => Array.from(a).filter(v => Array.from(b).includes(v))
@@ -167,34 +170,38 @@ export const isEqual = (a, b, deep = true) =>
 
 // clone
 export const clone = (v, deep = true, immutable = false) => {
-	const isDeep = v => (deep ? clone(v, deep, immutable) : v),
-		isImmutable = v => (immutable ? Object.freeze(v) : v)
+	const doClone = v => (deep ? clone(v, deep, immutable) : v),
+		doFreeze = v => (immutable ? Object.freeze(v) : v)
 	// no cloning of functions, too gory
 	if (typeof v !== 'object' || isNull(v)) return v
 	// catch arraylike
-	if ('map' in v && isFunc(v.map)) return isImmutable(v.map(i => isDeep(i)))
-	if (isMap(v)) return isImmutable(new Map(isDeep(Array.from(v))))
-	if (isSet(v)) return isImmutable(new Set(isDeep(Array.from(v))))
+	if ('map' in v && isFunc(v.map)) return doFreeze(v.map(i => doClone(i)))
+	if (isMap(v)) return doFreeze(new Map(doClone(Array.from(v))))
+	if (isSet(v)) return doFreeze(new Set(doClone(Array.from(v))))
 	if (isDate(v)) {
 		const d = new Date()
 		d.setTime(v.getTime())
-		return isImmutable(d)
+		return doFreeze(d)
 	}
 	// todo: Handling of instantiation and prototype (Possible)?
 	//const o = Object.create(Object.getPrototypeOf(v));
 	const o = {}
-	for (const key in v) if (v.hasOwnProperty(key)) o[key] = isDeep(v[key])
-	return isImmutable(o)
+	for (const key in v) if (v.hasOwnProperty(key)) o[key] = doClone(v[key])
+	return doFreeze(o)
 }
 
-export const immutable = (v, deep = true, immutable = true) => clone(v, deep, immutable)
+export const immutable = (v, deep = true) => clone(v, deep, true)
 
 export const pipe = (v, ...funcs) => funcs.reduce((x, f) => f(x), v)
 
 export const memoise = (f, keymaker) => {
 	const cache = new Map()
 	return (...args) => {
-		const key = keymaker ? keymaker(...args) : args.length > 1 ? args.join('-') : args[0]
+		const key = isFunc(keymaker)
+			? keymaker(...args)
+			: args.length > 1
+			? args.join('-')
+			: args[0]
 
 		if (cache.has(key)) return cache.get(key)
 		const result = f(...args)
@@ -253,7 +260,15 @@ export const nChooseK = (n, k) => {
 	}
 	return Math.round(res)
 }
-export const lerp = (a, b, t) => (1 - t) * a + t * b
+export const lerp = (a, b, t) => {
+	t = clamp(t, 0, 1)
+	return (1 - t) * a + t * b
+}
+
+// https://en.wikipedia.org/wiki/Smoothstep
+export const smoothstep = (a, b, t) => lerp(a, b, 3 * t ** 2 - 2 * t ** 3)
+export const easeIn = (a, b, t) => lerp(a, b, t ** 2)
+export const easeOut = (a, b, t) => lerp(a, b, t * (2 - t))
 
 export const clamp = (n, min, max) => Math.min(Math.max(n, min), max)
 
@@ -387,7 +402,7 @@ export const toHsla = (c, asString = false) => {
 
 export const hsla = (h, s = 70, l = 50, a = 1) => {
 	if (isObj(h)) ({ h, s, l, a } = h)
-	return `hsla(${h % 360}, ${s}%, ${l}%, ${a})`
+	return `hsla(${h % 360 || 0}, ${s || 70}%, ${l || 50}%, ${a || 1})`
 }
 
 // async

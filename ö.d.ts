@@ -39,6 +39,9 @@ export function nthRoot(x: number, n: number): number
 export function factorial(n: number): number
 export function nChooseK(n: number, k: number): number
 export function lerp(a: number, b: number, t: number): number
+export function smoothstep(a: number, b: number, t: number): number
+export function easeIn(a: number, b: number, t: number): number
+export function easeOut(a: number, b: number, t: number): number
 export function clamp(n: number, min: number, max: number): number
 export function between(n: number, min: number, max: number): boolean
 export function normalize(n: number, min: number, max: number, clamp?: boolean): number

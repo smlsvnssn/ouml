@@ -166,6 +166,18 @@ Normalizes `n` to a value between 0 and 1, within range given by `min` and `max`
 
 Interpolates linearly between `a` and `b`. `t` is a percentage value between 0 and 1.
 
+#### ö.smoothstep( a, b, t ) → Number
+
+Interpolates smoothly between `a` and `b`. `t` is a percentage value between 0 and 1.
+
+#### ö.easeIn( a, b, t ) → Number
+
+Eases in from `a` to `b`. `t` is a percentage value between 0 and 1.
+
+#### ö.easeOut( a, b, t ) → Number
+
+Eases out from `a` to `b`. `t` is a percentage value between 0 and 1.
+
 #### ö.nthRoot( x, n ) → Number
 
 Returns nth root of positive number, for example `ö.nthRoot( 256, 8 ) == 2`
@@ -203,7 +215,7 @@ Returns regular sentence or camelCase string converted to kebab-case. Leaves `--
 #### ö.toHsla( colour, asString = false) → { h, s, l, a } | String
 
 Returns `colour` converted to an object with `hsla` values. Optionally returns a colour string in `hsla` format. Takes hex values, as well as all valid forms of rgb/rgba strings.
-Hsla is really easy to work with compared to rgb. For example, a `darken` method could look like this, given a `hsla` object as input: `const darken = (c, amount) => (c.l-=amount, c)`
+Hsla is really easy to work with compared to rgb. For example, a `darken` method could look like this, given a `hsla` object as input: `const darken = (c, amount) => ({...c, l: c.l-amount})`
 
 #### ö.hsla( h, s = 70, l = 50, a = 1 ) → String
 
