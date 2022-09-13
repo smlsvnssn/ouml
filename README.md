@@ -6,7 +6,8 @@ Usage:
 
 ```
 npm install ouml
-
+```
+```
 import { random } from "ouml";
 const oneOrZero = random();
 ```
