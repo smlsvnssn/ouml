@@ -1,8 +1,8 @@
-export function grid(width: number, height: number): IterableIterator<{}>
-export function range(start: number, end: number, step?: number): IterableIterator<number>
+export function grid(width: number, height?: number): IterableIterator<{}>
+export function range(start: number, end?: number, step?: number): IterableIterator<number>
 export function times(times: number, f?: (i: number) => any, ...rest: any[]): any[]
 
-export function rangeArray(start: number, end: number, step?: number): number[]
+export function rangeArray(start: number, end?: number, step?: number): number[]
 export function unique(arr: Iterable<any>): any[]
 export function shuffle(arr: Iterable<any>): any[]
 export function sample(arr: Iterable<any>, samples?: number): any | any[]
@@ -32,7 +32,7 @@ export function pipe(v: any, ...funcs: Function[]): any
 export function memoise(f: Function, keymaker?: Function): (...args: any[]) => any
 export function createEnum(v: string[]): {}
 
-export function random(min: number, max: number, float?: boolean): number
+export function random(min?: number, max?: number, float?: boolean): number
 export function randomNormal(mean?: number, sigma?: number): number
 export function round(n: number, precision?: number): number
 export function nthRoot(x: number, n: number): number
