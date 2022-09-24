@@ -44,7 +44,7 @@ export function easeIn(a: number, b: number, t: number): number
 export function easeOut(a: number, b: number, t: number): number
 export function clamp(n: number, min: number, max: number): number
 export function between(n: number, min: number, max: number): boolean
-export function normalize(n: number, min: number, max: number, clamp?: boolean): number
+export function normalize(n: number, min: number, max: number, doClamp?: boolean): number
 export function toPolar(x: number, y: number): { r: number; theta: number }
 export function toCartesian(r: number, theta: number): { x: number; y: number }
 

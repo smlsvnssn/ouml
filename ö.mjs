@@ -274,9 +274,9 @@ export const clamp = (n, min, max) => Math.min(Math.max(n, min), max)
 
 export const between = (n, min, max) => n >= min && n < max
 
-export const normalize = (n, min, max, clamp = true) => {
+export const normalize = (n, min, max, doClamp = true) => {
 	n = (n - min) / (max - min + Number.EPSILON) // Prevent / by 0
-	return clamp ? clamp(n, 0, 1) : n
+	return doClamp ? clamp(n, 0, 1) : n
 }
 
 export const toPolar = (x, y) => ({ r: Math.hypot(x, y), theta: Math.atan2(y, x) })
