@@ -12,7 +12,7 @@ export function median(arr: Iterable<any>): number
 export function max(arr: Iterable<any>): number
 export function min(arr: Iterable<any>): number
 
-export function groupBy(arr: Iterable<any>, prop: string): [any[]]
+export function groupBy(arr: Iterable<any>, prop: string | Function): [any[]]
 
 export function intersect(a: Iterable<any>, b: Iterable<any>): any[]
 export function subtract(a: Iterable<any>, b: Iterable<any>): any[]

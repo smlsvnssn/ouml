@@ -7,6 +7,7 @@ Usage:
 ```
 npm install ouml
 ```
+
 ```
 import { random } from "ouml";
 const oneOrZero = random();
@@ -79,7 +80,8 @@ Returns smallest value in `arr`.
 
 #### ö.groupBy( arr, prop ) → Map
 
-Takes an `Array` of `Objects` with a common property. Returns a `Map` with keys corresponding to `prop` values, holding grouped values.
+If `prop` is a string, takes an `Array` of `Objects` with a common property. If `prop` is a function, takes a function returning keys for grouping based on array contents. The function receives `value, index, array` as arguments.
+Returns a `Map` with keys corresponding to `prop` values, holding grouped values as arrays.
 
 ### Set operations
 

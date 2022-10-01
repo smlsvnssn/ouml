@@ -81,11 +81,14 @@ export const max = arr => Math.max(...arr)
 
 export const min = arr => Math.min(...arr)
 
-export const groupBy = (arr, prop) =>
-	arr.reduce(
-		(acc, item) => acc.set(item[prop], [...(acc.get(item[prop]) || []), item]),
-		new Map()
-	)
+export const groupBy = (arr, prop) => {
+	const acc = new Map()
+	for (const [i, v] of arr.entries()) {
+		if (isFunc(prop)) acc.set(prop(v, i, arr), [...(acc.get(prop(v, i, arr)) || []), v])
+		else acc.set(v[prop], [...(acc.get(v[prop]) || []), v])
+	}
+	return acc
+}
 
 // SET OPS
 export const intersect = (a, b) => Array.from(a).filter(v => Array.from(b).includes(v))
