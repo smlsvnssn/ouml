@@ -140,16 +140,17 @@ export const data = (element, key, value) => {
 }
 
 // Finds deepestElement in element matching selector. Potential performance hog for deep DOM structures.
-export const deepest = (element, selector = '*') =>
-	Array.from(element.querySelectorAll(selector)).reduce(
-		(deepest, el) => {
-			let depth = 0
-			for (e = el; e !== element; depth++, e = e.parentNode);
-			return depth > deepest.depth ? { depth: depth, deepestElement: el } : deepest
-		},
-		// accumulator
-		{ depth: 0, deepestElement: element }
-	).deepestElement
+export const deepest = (element, selector = '*') => {
+	let deepestEl = { depth: 0, deepestElement: element }
+	for (const el of element.querySelectorAll(selector)) {
+		let depth = 0
+		for (e = el; e !== element; depth++) {
+			e = e.parentNode
+		}
+		deepestEl = depth > deepestEl.depth ? { depth: depth, deepestElement: el } : deepestEl
+	}
+	return deepestEl.deepestElement
+}
 
 // logical
 
