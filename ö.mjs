@@ -84,8 +84,10 @@ export const min = arr => Math.min(...arr)
 export const groupBy = (arr, prop) => {
 	const acc = new Map()
 	for (const [i, v] of arr.entries()) {
-		if (isFunc(prop)) acc.set(prop(v, i, arr), [...(acc.get(prop(v, i, arr)) || []), v])
-		else acc.set(v[prop], [...(acc.get(v[prop]) || []), v])
+		if (isFunc(prop)) {
+			const p = prop(v, i, arr)
+			acc.set(p, [...(acc.get(p) || []), v])
+		} else acc.set(v[prop], [...(acc.get(v[prop]) || []), v])
 	}
 	return acc
 }
@@ -145,7 +147,7 @@ export const deepest = (element, selector = '*') => {
 	for (const el of element.querySelectorAll(selector)) {
 		let depth = 0
 		for (e = el; e !== element; depth++) {
-			e = e.parentNode
+			e = e.parentNode // from bottom up
 		}
 		deepestEl = depth > deepestEl.depth ? { depth: depth, deepestElement: el } : deepestEl
 	}
@@ -282,6 +284,8 @@ export const normalize = (n, min, max, doClamp = true) => {
 	n = (n - min) / (max - min + Number.EPSILON) // Prevent / by 0
 	return doClamp ? clamp(n, 0, 1) : n
 }
+// for the britons
+export const normalise = normalize
 
 export const toPolar = (x, y) => ({ r: Math.hypot(x, y), theta: Math.atan2(y, x) })
 
@@ -477,7 +481,9 @@ export const isStr = istype('string')
 export const isSym = istype('symbol')
 export const isFunc = istype('function')
 export const isnt = v => v === undefined
+export const isUndefined = isnt
 export const is = v => v !== undefined
+export const isDefined = is
 export const isNull = v => v === null
 export const isArr = v => Array.isArray(v)
 export const isDate = isof(Date)

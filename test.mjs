@@ -89,7 +89,7 @@ const testData = [
 //ö.log(ö.groupBy(testData, 'gender'))
 
 ö.log(ö.groupBy(testData, (v, i, a) => (v.gender == 'Male' ? 'Man' : 'Andra')))
-
+ö.log(ö.normalise(100, 0, 1000))
 // ö.log(ö.toHsla('hsl(360, 10%, 90%)'))
 // ö.log(ö.createEnum(['a', 'b', 'c']))
 // ö.log(({ a: { b: { c: {} } } }.a.b.c.test = '?'))
