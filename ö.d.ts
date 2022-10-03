@@ -58,7 +58,7 @@ export function wrapFirstWords(
 ): string
 export function toCamelCase(s: string): string
 export function toKebabCase(s: string): string
-export function randomChars(): string
+export function randomChars(numChars?: number): string
 
 export function toHsla(
 	c: string,

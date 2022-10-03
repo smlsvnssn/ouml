@@ -146,9 +146,7 @@ export const deepest = (element, selector = '*') => {
 	let deepestEl = { depth: 0, deepestElement: element }
 	for (const el of element.querySelectorAll(selector)) {
 		let depth = 0
-		for (e = el; e !== element; depth++) {
-			e = e.parentNode // from bottom up
-		}
+		for (e = el; e !== element; depth++) e = e.parentNode // from bottom up
 		deepestEl = depth > deepestEl.depth ? { depth: depth, deepestElement: el } : deepestEl
 	}
 	return deepestEl.deepestElement
@@ -333,7 +331,10 @@ export const toKebabCase = s =>
 				.replace(/([a-z0-9])([A-Z0-9])/g, '$1-$2')
 				.toLowerCase()
 
-export const randomChars = () => (Math.random() * 2 ** 64).toString(36).substring(0, 10)
+export const randomChars = (numChars = 10) =>
+	(BigInt(Math.random() * 2 ** 512) * BigInt(Math.random() * 2 ** 512))
+		.toString(36)
+		.substring(0, numChars)
 
 // Colours
 export const toHsla = (c, asString = false) => {

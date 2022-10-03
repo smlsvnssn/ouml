@@ -219,6 +219,10 @@ Returns regular sentence, kebab-case or snake_case string converted to camelCase
 
 Returns regular sentence or camelCase string converted to kebab-case. Leaves `--customProperties` alone.
 
+#### ö.randomChars( numChars = 10 ) → String
+
+Returns `numChars` random characters. Max for `numChars` is 100. Useful for producing unique values (Or, to be precise, with a 1/426 825 223 812 027 400 796 974 891 518 773 732 340 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 chance of being a dupe 🤯).
+
 ### Colours
 
 <a href=https://css-tricks.com/yay-for-hsla/ target=_blank>Hsla</a> lets you use colour in an understandable way. `hsla` is great! Use `hsla`!
