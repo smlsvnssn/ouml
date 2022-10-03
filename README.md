@@ -190,6 +190,14 @@ Returns the factorial of `n`.
 
 Returns the number of ways to choose `k` elements from a set of `n` elements, i.e. the binomial coefficient.
 
+#### ö.toPolar(x, y) → { r, theta }
+
+Converts cartesian coordinates to polar.
+
+#### ö.toCartesian(r, theta) → { x, y }
+
+Converts polar coordinates to cartesian.
+
 ### String
 
 #### ö.prettyNumber( n, locale = 'sv-SE', precision = 2 ) → String

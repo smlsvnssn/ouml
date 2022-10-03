@@ -216,7 +216,6 @@ export const createEnum = v => {
 	for (const val of v) enu[val] = val
 	return Object.freeze(enu)
 }
-
 // Untested
 // pipeAsync = async (v, ...funcs) => await funcs.reduce( async (x, f) => await f(x), v);
 
@@ -580,4 +579,4 @@ export const message = s => `ö🍳uery says: ${s}\n`
 export const toString = () => `Hello ö🍳uery!`
 
 export const rorövovarorsospoproråkoketot = s =>
-	(s || '').replace(/[bcdfghjklmnpqrstvwxyz]/gi, m => m + 'o' + m.toLowerCase())
+	(s || '').replace(/[bcdfghjklmnpqrstvwxyz]/gi, m => `${m}o${m.toLowerCase()}`)
