@@ -6,7 +6,9 @@ Usage:
 
 ```
 npm install ouml
+```
 
+```
 import { random } from "ouml";
 const oneOrZero = random();
 ```
@@ -78,7 +80,8 @@ Returns smallest value in `arr`.
 
 #### ö.groupBy( arr, prop ) → Map
 
-Takes an `Array` of `Objects` with a common property. Returns a `Map` with keys corresponding to `prop` values, holding grouped values.
+If `prop` is a string, takes an `Array` of `Objects` with a common property. If `prop` is a function, takes a function returning keys for grouping based on array contents. The function receives `value, index, array` as arguments.
+Returns a `Map` with keys corresponding to `prop` values, holding grouped values as arrays.
 
 ### Set operations
 
@@ -125,7 +128,7 @@ Returns a freezed clone of `v`. Set `deep` to `false` to make only top level imm
 
 #### ö.pipe( v, ...funcs ) → value
 
-Pipes function calls. For multiple arguments, use closures. Usage: `ö.pipe(1, x => x*6, x => x**2, x => x+6, ö.log) => logs 42`.
+Pipes function calls. For multiple arguments, use closures. Usage: `ö.pipe(1, x => x*6, x => x**2, x => x+6, ö.log) -> logs 42`.
 
 #### ö.memoise( f, keymaker ) → f
 
@@ -202,7 +205,7 @@ Converts polar coordinates to cartesian.
 
 #### ö.prettyNumber( n, locale = 'sv-SE', precision = 2 ) → String
 
-Returns `n` rounded to `precision` decimals and formatted by `n.toLocaleString()`. Defaults to swedish formatting, because why not! `locale` is optional, if second argument is `Number`, `precision` is set instead. <code class="runnable">ö('code').html(() => ö.prettyNumber(ö.random(2\*\*16, true)));</code>
+Returns `n` rounded to `precision` decimals and formatted by `n.toLocaleString()`. Defaults to swedish formatting, because why not! `locale` is optional, if second argument is `Number`, `precision` is set instead.
 
 #### ö.wrapFirstWords( s, numWords = 3, startWrap = '\<span\>', endWrap = '\</span\>', startAtChar = 0 ) → String
 
@@ -371,4 +374,4 @@ Finds deepest `Element` in `element`, optionally matching `selector`.
 
 #### ö.rorövovarorsospoproråkoketot( str ) → String
 
-Converts string to Rövarspråket, like so: <code class="runnable">ö('code').text((\_, v) => ö.rorövovarorsospoproråkoketot(v) );</code>
+Converts string to Rövarspråket.
