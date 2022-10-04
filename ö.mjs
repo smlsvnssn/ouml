@@ -297,9 +297,14 @@ export const toCartesian = (r, theta) => ({ x: r * Math.cos(theta), y: r * Math.
 
 // string
 export const prettyNumber = (n, locale = 'sv-SE', precision = 2) => {
-	// lacale can be omitted
+	// locale can be omitted
 	;[locale, precision] = isNum(locale) ? ['sv-SE', locale] : [locale, precision]
-	return Number.isNaN(n) ? '-' : round(n, precision).toLocaleString(locale)
+	n = round(n, precision)
+	return Number.isNaN(n)
+		? '-'
+		: isInt(n)
+		? n.toLocaleString(locale)
+		: n.toLocaleString(locale, { minimumFractionDigits: precision })
 }
 
 export const wrapFirstWords = (

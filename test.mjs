@@ -93,7 +93,9 @@ const testData = [
 // ö.log(ö.createEnum(['a', 'b', 'c']))
 // ö.log(({ a: { b: { c: {} } } }.a.b.c.test = '?'))
 
-ö.log(ö.times(10, () => ö.randomChars(100)))
+//ö.log(ö.times(10, () => ö.randomChars(100)))
+
+ö.log(ö.prettyNumber(123456, 2))
 
 ö.log(`
 ---
