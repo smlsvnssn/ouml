@@ -83,6 +83,13 @@ Returns smallest value in `arr`.
 If `prop` is a string, takes an `Array` of `Objects` with a common property. If `prop` is a function, takes a function returning keys for grouping based on array contents. The function receives `value, index, array` as arguments.
 Returns a `Map` with keys corresponding to `prop` values, holding grouped values as arrays.
 
+#### ö.findDeep( arr, val, subArrayProp, prop) → Array item
+
+Finds first occurence of `val` in arrays of nested objects.
+If `val` is a function, returns first item where `val` returns `true`. The function receives `value, index, array` as arguments. If `val` is a function, `prop` can be omitted.
+If `val` is not a function, `val` is compared to the value of property `prop`.
+`subArrayProp` is a reference to the property containing nested arrays.
+
 ### Set operations
 
 Methods for comparing arrays or array-like objects. Inputs are coerced to `Array`. All methods return a new `Array`, or `Boolean`.

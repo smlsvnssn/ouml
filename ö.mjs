@@ -4,6 +4,7 @@ Environment methods, ie isMobile, isTouchscreen, isHiResScreen, isDesktop, isSer
 Extend lerp to accept any-dimensional numberss, and optional easing functions (https://github.com/AndrewRayCode/easing-utils)
 db? Server part for secrets and relay?
 
+
 */
 // generators
 export const grid = function* (width, height) {
@@ -90,6 +91,21 @@ export const groupBy = (arr, prop) => {
 		} else acc.set(v[prop], [...(acc.get(v[prop]) || []), v])
 	}
 	return acc
+}
+
+// find deep in array of nested objects
+export const findDeep = (arr, val, subArrayProp, prop) => {
+	for (const [i, v] of arr.entries()) {
+		if (isFunc(val)) {
+			if (val(v, i, arr)) return v
+		}	
+		else if (v[prop] === val) return v
+		if (v[subArrayProp]) {
+			const result = findDeep(v[subArrayProp], val, subArrayProp, prop)
+			if (result) return result
+		}
+	}
+	return undefined
 }
 
 // SET OPS
