@@ -49,7 +49,7 @@ export function normalize(n: number, min: number, max: number, doClamp?: boolean
 export function toPolar(x: number, y: number): { r: number; theta: number }
 export function toCartesian(r: number, theta: number): { x: number; y: number }
 
-export function prettyNumber(n: number, locale?: string, precision?: number): string
+export function prettyNumber(n: number, locale?: string | number, precision?: number): string
 export function wrapFirstWords(
 	s: string,
 	numWords?: number,

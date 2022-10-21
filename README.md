@@ -83,7 +83,7 @@ Returns smallest value in `arr`.
 If `prop` is a string, takes an `Array` of `Objects` with a common property. If `prop` is a function, takes a function returning keys for grouping based on array contents. The function receives `value, index, array` as arguments.
 Returns a `Map` with keys corresponding to `prop` values, holding grouped values as arrays.
 
-#### ö.findDeep( arr, val, subArrayProp, prop) → Array item
+#### ö.findDeep( arr, val, subArrayProp, prop ) → Array item
 
 Finds first occurence of `val` in arrays of nested objects.
 If `val` is a function, returns first item where `val` returns `true`. The function receives `value, index, array` as arguments. If `val` is a function, `prop` can be omitted.
