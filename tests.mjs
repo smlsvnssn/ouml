@@ -97,6 +97,10 @@ const testData = [
 
 ö.log(ö.prettyNumber(123456, 2))
 
+const testFilterDeep = [{ a: 1, obj: [{ a: 2, obj: [{ a: 3, obj: [{ a: 4, obj: [] }] }] }] }]
+
+ö.log(ö.filterDeep(testFilterDeep, 2, 'obj', 'a'))
+
 ö.log(`
 ---
 `)

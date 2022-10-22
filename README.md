@@ -88,7 +88,12 @@ Returns a `Map` with keys corresponding to `prop` values, holding grouped values
 Finds first occurence of `val` in arrays of nested objects.
 If `val` is a function, returns first item where `val` returns `true`. The function receives `value, index, array` as arguments. If `val` is a function, `prop` can be omitted.
 If `val` is not a function, `val` is compared to the value of property `prop`.
+
 `subArrayProp` is a reference to the property containing nested arrays.
+
+#### ö.filterDeep( arr, val, subArrayProp, prop ) → Array item
+
+Same as `ö.findDeep`, except it returns all matches.
 
 ### Set operations
 

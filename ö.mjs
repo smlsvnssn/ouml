@@ -98,14 +98,28 @@ export const findDeep = (arr, val, subArrayProp, prop) => {
 	for (const [i, v] of arr.entries()) {
 		if (isFunc(val)) {
 			if (val(v, i, arr)) return v
-		}	
-		else if (v[prop] === val) return v
+		} else if (v[prop] === val) return v
 		if (v[subArrayProp]) {
 			const result = findDeep(v[subArrayProp], val, subArrayProp, prop)
 			if (result) return result
 		}
 	}
 	return undefined
+}
+
+// filter deep in array of nested objects
+export const filterDeep = (arr, val, subArrayProp, prop) => {
+	const out = []
+	for (const [i, v] of arr.entries()) {
+		if (isFunc(val)) {
+			if (val(v, i, arr)) out.push(v)
+		} else if (v[prop] === val) out.push(v)
+		if (v[subArrayProp]) {
+			const result = filterDeep(v[subArrayProp], val, subArrayProp, prop)
+			if (result) out.push(result)
+		}
+	}
+	return out.flat()
 }
 
 // SET OPS
@@ -328,14 +342,14 @@ export const wrapFirstWords = (
 	numWords = 3,
 	startWrap = '<span>',
 	endWrap = '</span>',
-	startAtChar = 0
+	startAtChar = 0,
 ) =>
 	s.slice(0, startAtChar) +
 	s
 		.slice(startAtChar)
 		.replace(
 			new RegExp('([\\s]*[a-zA-ZåäöÅÄÖøØ0-9\'’"-]+){0,' + numWords + '}\\S?'),
-			startWrap + '$&' + endWrap
+			startWrap + '$&' + endWrap,
 		)
 
 export const toCamelCase = s =>
@@ -374,7 +388,7 @@ export const toHsla = (c, asString = false) => {
 						? [Number('0x' + v + v)]
 						: i % 2 // if longform
 						? [] // omitted by flatmap
-						: [Number('0x' + v + a[i + 1])] // current + next
+						: [Number('0x' + v + a[i + 1])], // current + next
 			)
 		// fix alpha
 		if (rgba.length === 4) rgba[3] / 255
@@ -413,7 +427,7 @@ export const toHsla = (c, asString = false) => {
 					? ((g - b) / delta) % 6
 					: cmax === g
 					? (b - r) / delta + 2
-					: /*cmax  === b*/ (r - g) / delta + 4) * 60
+					: /*cmax  === b*/ (r - g) / delta + 4) * 60,
 			) +
 				360) %
 			360 // prevent negatives
@@ -458,7 +472,7 @@ export const nextFrame = async f => {
 		requestAnimationFrame(async () => {
 			if (isFunc(f)) await f()
 			resolve()
-		})
+		}),
 	)
 }
 
@@ -475,7 +489,7 @@ export const waitFor = async (selector, event, f) => {
 				if (isFunc(f)) await f(e)
 				resolve()
 			},
-			{ once: true }
+			{ once: true },
 		)
 	})
 }
@@ -546,7 +560,7 @@ export const throttle = (f, t = 50, debounce = false, immediately = false) => {
 						running = false
 					}
 				},
-				debounce ? t : t - (Date.now() - lastRan)
+				debounce ? t : t - (Date.now() - lastRan),
 			)
 		}
 		running = true
