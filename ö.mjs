@@ -165,7 +165,7 @@ export const parseDOMStringMap = o => {
 const d = new WeakMap()
 
 export const data = (element, key, value) => {
-	const thisData = d.has(element) ? d.get(element) : parseDOMStringMap(element.dataset)
+	const thisData = d.has(element) ? d.get(element) : parseDOMStringMap(element?.dataset)
 	if (is(value) || isObj(key))
 		d.set(element, Object.assign(thisData, isObj(key) ? key : { [key]: value }))
 	return isStr(key) ? thisData[key] : thisData

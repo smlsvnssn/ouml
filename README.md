@@ -19,6 +19,7 @@ or
 import * as ö from "ouml";
 const oneOrZero = ö.random();
 ```
+Most methods are runnable within node/deno. Some methods require browser API:s, those are marked with [browser].
 
 ### Generators / Iterators
 
@@ -89,7 +90,7 @@ Finds first occurence of `val` in arrays of nested objects.
 If `val` is a function, returns first item where `val` returns `true`. The function receives `value, index, array` as arguments. If `val` is a function, `prop` can be omitted.
 If `val` is not a function, `val` is compared to the value of property `prop`.
 
-`subArrayProp` is a reference to the property containing nested arrays.
+`subArrayProp` is a `string` matching the property containing nested arrays.
 
 #### ö.filterDeep( arr, val, subArrayProp, prop ) → Array item
 
@@ -150,6 +151,12 @@ Creates and returns memoised functions. By default, the arguments to the memoise
 
 Creates and returns an enumerable, i.e. an object where the keys and values are the same. Lets you create kinda sorta vanilla typechecking light. Takes an array of strings as input.
 Example: `const sizes = ö.createEnum(['small', 'medium', 'large']); giveMeIcecream(sizes.large);`
+
+#### ö.data( object, key, value ) → data | data.key
+
+Adds a `data` property to `object` via a `WeakMap`. With only `key` set, acts as a getter for `key`. With `key` and `value` set, acts as a setter. Useful for associating data with DOM elements.
+
+If no `key`, returns `data` object.
 
 ### Mathy
 
@@ -258,19 +265,19 @@ Waits `t` milliseconds. If `resetPrevCall == true`, previous pending call is rej
 
 #### ö.nextFrame( f ) → Promise
 
-Waits one frame.
+[browser] Waits one frame.
 
 #### ö.waitFrames ( n = 1, f, everyFrame = false ) → Promise
 
-Waits `n` frames. If `everyFrame == true`, callback is executed every frame.
+[browser] Waits `n` frames. If `everyFrame == true`, callback is executed every frame.
 
 #### ö.waitFor( selector, event, f ) → Promise
 
-Waits for specified event. Takes only one element, and one event type.
+[browser] Waits for specified event. Takes only one element, and one event type.
 
 #### ö.load( url, isJSON = true ) → Promise
 
-Loads (and parses) JSON. Optionally loads HTML. Super simple fetch wrapper.
+[browser (Alternatively: Use node-fetch)] Loads (and parses) JSON. Optionally loads HTML. Super simple fetch wrapper.
 
 ### Throttling
 
@@ -284,7 +291,7 @@ Debounces execution of `f` until no calls are made within `t` milliseconds. If c
 
 #### ö.onAnimationFrame( f ) → Function
 
-Defers execution of `f` to next animation frame. If called multiple times per frame, the last call gets executed.
+[browser] Defers execution of `f` to next animation frame. If called multiple times per frame, the last call gets executed.
 
 ### Error handling and logging
 
@@ -308,23 +315,6 @@ Outputs arguments to console. Can be silenced globally by calling `ö.verbose(fa
 
 Wrapper for internal messages.
 
-### Util & environment
-
-#### ö.getLocal( item ) → Object
-
-Gets `item` from local storage, if any. Converts item to `Object` via `JSON.parse`.
-
-#### ö.setLocal = ( item, v ) → v
-
-Sets `item` in local storage to `v`, and returns `v`.
-
-#### ö.getCss = ( prop, selector = ':root') → css property value
-
-Gets `prop` on selected element, or from `document.documentElement` if `selector` is unset. and returns `v`. Mainly used for getting global `--props`, using css as master for global variables.
-
-#### ö.setCss = ( prop, v, selector = ':root') → v
-
-Sets `prop` to `v`, optionally on selected element, and returns `v`.
 
 ### Basic type checking
 
@@ -368,23 +358,35 @@ Less verbose than `typeof`/`Array.isArray`/`instanceof`:
 
 Checks for `[Symbol.iterator]` in `v`.
 
-### DOM
+### DOM and browser
+
+#### ö.getLocal( item ) → Object
+
+[browser] Gets `item` from local storage, if any. Converts item to `Object` via `JSON.parse`.
+
+#### ö.setLocal = ( item, v ) → v
+
+[browser] Sets `item` in local storage to `v`, and returns `v`.
+
+#### ö.getCss = ( prop, selector = ':root') → css property value
+
+[browser] Gets `prop` on selected element, or from `document.documentElement` if `selector` is unset. and returns `v`. Mainly used for getting global `--props`, using css as master for global variables.
+
+#### ö.setCss = ( prop, v, selector = ':root') → v
+
+[browser] Sets `prop` to `v`, optionally on selected element, and returns `v`.
 
 #### ö.createElement( html, isSvg = false ) → Element
 
-Creates an `Element` from an html string. Optionally creates an `SVGElement`.
+[browser] Creates an `Element` from an html string. Optionally creates an `SVGElement`.
 
 #### ö.parseDOMStringMap( o ) → Object
 
 Parses a `DOMStringMap` as `JSON`. Used internally when reading from `Element.dataset`.
 
-#### ö.data( element, key, value ) → data | data.key
-
-Associates a `data` object with an `Element`, or any other object used as value for `element`, via `WeakMap`. If no `key`, returns `data` object.
-
 #### ö.deepest( element, selector = '\*' ) → Element
 
-Finds deepest `Element` in `element`, optionally matching `selector`.
+[browser] Finds deepest `Element` in `element`, optionally matching `selector`.
 
 ### Random stuff
 
