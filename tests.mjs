@@ -97,9 +97,24 @@ const testData = [
 
 ö.log(ö.prettyNumber(123456, 2))
 
-const testFilterDeep = [{ a: 1, obj: [{ a: 2, obj: [{ a: 3, obj: [{ a: 4, obj: [] }] }] }] }]
+const testFilterDeep = [
+	{ a: 1, obj: [{ a: 2, obj: [{ a: 3, obj: [{ a: 4, obj: [] }] }] }] },
+]
 
 ö.log(ö.filterDeep(testFilterDeep, 2, 'obj', 'a'))
+
+ö.log(
+	await ö.pipeAsync(
+		1,
+		async x => {
+			await ö.wait(1000)
+			x * 6,
+		},
+		async x => x ** 2,
+		async x => x + 6,
+		ö.log,
+	),
+)
 
 ö.log(`
 ---

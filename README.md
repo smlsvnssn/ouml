@@ -5,7 +5,7 @@
 Usage:
 
 ```
-npm install ouml
+(p)npm install ouml
 ```
 
 ```
@@ -13,12 +13,13 @@ import { random } from "ouml";
 const oneOrZero = random();
 ```
 
-or
+or, with treeshaking:
 
 ```
 import * as ö from "ouml";
 const oneOrZero = ö.random();
 ```
+
 Most methods are runnable within node/deno. Some methods require browser API:s, those are marked with [browser].
 
 ### Generators / Iterators
@@ -142,6 +143,10 @@ Returns a freezed clone of `v`. Set `deep` to `false` to make only top level imm
 #### ö.pipe( v, ...funcs ) → value
 
 Pipes function calls. For multiple arguments, use closures. Usage: `ö.pipe(1, x => x*6, x => x**2, x => x+6, ö.log) -> logs 42`.
+
+#### ö.pipeAsync( v, ...funcs ) → Promise
+
+Same as `ö.pipe`, but awaits functions and returns a `Promise`.
 
 #### ö.memoise( f, keymaker ) → f
 
@@ -314,7 +319,6 @@ Outputs arguments to console. Can be silenced globally by calling `ö.verbose(fa
 #### ö.message( str ) → 'ö🍳uery says: ${str}'
 
 Wrapper for internal messages.
-
 
 ### Basic type checking
 

@@ -6,15 +6,15 @@ export function rangeArray(start: number, end?: number, step?: number): number[]
 export function unique(arr: Iterable<any>): any[]
 export function shuffle(arr: Iterable<any>): any[]
 export function sample(arr: Iterable<any>, samples?: number): any | any[]
-export function sum(arr: Iterable<any>): number
-export function mean(arr: Iterable<any>): number
-export function median(arr: Iterable<any>): number
-export function max(arr: Iterable<any>): number
-export function min(arr: Iterable<any>): number
+export function sum(arr: Iterable<number>): number
+export function mean(arr: Iterable<number>): number
+export function median(arr: Iterable<number>): number
+export function max(arr: Iterable<number>): number
+export function min(arr: Iterable<number>): number
 
 export function groupBy(arr: Iterable<any>, prop: string | Function): [any[]]
 export function findDeep(arr: any[], val: Function | any, subArrayProp: string, prop?: string): any
-export function filterDeep(arr: any[], val: Function | any, subArrayProp: string, prop?: string): any
+export function filterDeep(arr: any[], val: Function | any, subArrayProp: string, prop?: string): any[]
 
 export function intersect(a: Iterable<any>, b: Iterable<any>): any[]
 export function subtract(a: Iterable<any>, b: Iterable<any>): any[]

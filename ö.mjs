@@ -3,6 +3,7 @@ TODO:
 Environment methods, ie isMobile, isTouchscreen, isHiResScreen, isDesktop, isServer etc
 Extend lerp to accept any-dimensional numberss, and optional easing functions (https://github.com/AndrewRayCode/easing-utils)
 db? Server part for secrets and relay?
+.queue from öQuery, async chaining? Or is that an async pipe?
 
 
 */
@@ -17,7 +18,8 @@ export const grid = function* (width, height) {
 
 export const range = function* (start, end, step = 1) {
 	;[start, end, step] = isnt(end) ? [0, +start, +step] : [+start, +end, +step]
-	const count = start < end ? () => (start += step) < end : () => (start -= step) > end
+	const count =
+		start < end ? () => (start += step) < end : () => (start -= step) > end
 	do {
 		yield start
 	} while (count() !== false)
@@ -55,7 +57,9 @@ export const sample = (arr, samples = 1) => {
 	// no mutation, array coercion
 	const a = Array.from(arr),
 		s = []
-	for (const i of range(samples > a.length ? a.length : samples > 0 ? samples : 1))
+	for (const i of range(
+		samples > a.length ? a.length : samples > 0 ? samples : 1,
+	))
 		s.push(a.splice(random(a.length), 1)[0])
 	return samples === 1 ? s[0] : s
 }
@@ -123,16 +127,20 @@ export const filterDeep = (arr, val, subArrayProp, prop) => {
 }
 
 // SET OPS
-export const intersect = (a, b) => Array.from(a).filter(v => Array.from(b).includes(v))
+export const intersect = (a, b) =>
+	Array.from(a).filter(v => Array.from(b).includes(v))
 
-export const subtract = (a, b) => Array.from(a).filter(v => !Array.from(b).includes(v))
+export const subtract = (a, b) =>
+	Array.from(a).filter(v => !Array.from(b).includes(v))
 
 export const exclude = (a, b) => {
 	;[a, b] = [Array.from(a), Array.from(b)]
 	return a.filter(v => !b.includes(v)).concat(b.filter(v => !a.includes(v)))
 }
 
-export const union = (a, b) => [...new Set([...Array.from(a), ...Array.from(b)])]
+export const union = (a, b) => [
+	...new Set([...Array.from(a), ...Array.from(b)]),
+]
 
 export const isSubset = (a, b) => {
 	;[a, b] = [Array.from(a), Array.from(b)]
@@ -165,9 +173,14 @@ export const parseDOMStringMap = o => {
 const d = new WeakMap()
 
 export const data = (element, key, value) => {
-	const thisData = d.has(element) ? d.get(element) : parseDOMStringMap(element?.dataset)
+	const thisData = d.has(element)
+		? d.get(element)
+		: parseDOMStringMap(element?.dataset)
 	if (is(value) || isObj(key))
-		d.set(element, Object.assign(thisData, isObj(key) ? key : { [key]: value }))
+		d.set(
+			element,
+			Object.assign(thisData, isObj(key) ? key : { [key]: value }),
+		)
 	return isStr(key) ? thisData[key] : thisData
 }
 
@@ -177,7 +190,10 @@ export const deepest = (element, selector = '*') => {
 	for (const el of element.querySelectorAll(selector)) {
 		let depth = 0
 		for (e = el; e !== element; depth++) e = e.parentNode // from bottom up
-		deepestEl = depth > deepestEl.depth ? { depth: depth, deepestElement: el } : deepestEl
+		deepestEl =
+			depth > deepestEl.depth
+				? { depth: depth, deepestElement: el }
+				: deepestEl
 	}
 	return deepestEl.deepestElement
 }
@@ -200,7 +216,9 @@ export const isEqual = (a, b, deep = true) =>
 		? false // have same prototype?
 		: Object.keys(a).length !== Object.keys(b).length
 		? false // have same length ? (Iterables)
-		: Object.keys(a).every(k => (deep ? isEqual(a[k], b[k]) : a[k] === b[k])) // have same properties and values? (Recursively if deep)
+		: Object.keys(a).every(k =>
+				deep ? isEqual(a[k], b[k]) : a[k] === b[k],
+		  ) // have same properties and values? (Recursively if deep)
 
 // clone
 export const clone = (v, deep = true, immutable = false) => {
@@ -228,6 +246,9 @@ export const immutable = (v, deep = true) => clone(v, deep, true)
 
 export const pipe = (v, ...funcs) => funcs.reduce((x, f) => f(x), v)
 
+export const pipeAsync = async (v, ...funcs) =>
+	await funcs.reduce(async (x, f) => f(await x), v)
+
 export const memoise = (f, keymaker) => {
 	const cache = new Map()
 	return (...args) => {
@@ -250,8 +271,6 @@ export const createEnum = v => {
 	for (const val of v) enu[val] = val
 	return Object.freeze(enu)
 }
-// Untested
-// pipeAsync = async (v, ...funcs) => await funcs.reduce( async (x, f) => await f(x), v);
 
 // mathy
 export const random = (min, max, float = false) => {
@@ -264,7 +283,9 @@ export const random = (min, max, float = false) => {
 				? [0, 2]
 				: [0, +min]
 			: [+min, +max]
-	return float ? Math.random() * (max - min) + min : Math.floor(Math.random() * (max - min)) + min
+	return float
+		? Math.random() * (max - min) + min
+		: Math.floor(Math.random() * (max - min)) + min
 }
 
 export const randomNormal = (mean = 0, sigma = 1) => {
@@ -314,9 +335,15 @@ export const normalize = (n, min, max, doClamp = true) => {
 // for the britons
 export const normalise = normalize
 
-export const toPolar = (x, y) => ({ r: Math.hypot(x, y), theta: Math.atan2(y, x) })
+export const toPolar = (x, y) => ({
+	r: Math.hypot(x, y),
+	theta: Math.atan2(y, x),
+})
 
-export const toCartesian = (r, theta) => ({ x: r * Math.cos(theta), y: r * Math.sin(theta) })
+export const toCartesian = (r, theta) => ({
+	x: r * Math.cos(theta),
+	y: r * Math.sin(theta),
+})
 
 // https://www.youtube.com/watch?v=sULa9Lc4pck&t=3s
 // export const triangleOfPower = (base, exponent, power) => {
@@ -328,7 +355,9 @@ export const toCartesian = (r, theta) => ({ x: r * Math.cos(theta), y: r * Math.
 // string
 export const prettyNumber = (n, locale = 'sv-SE', precision = 2) => {
 	// locale can be omitted
-	;[locale, precision] = isNum(locale) ? ['sv-SE', locale] : [locale, precision]
+	;[locale, precision] = isNum(locale)
+		? ['sv-SE', locale]
+		: [locale, precision]
 	n = round(n, precision)
 	return Number.isNaN(n)
 		? '-'
@@ -348,14 +377,18 @@ export const wrapFirstWords = (
 	s
 		.slice(startAtChar)
 		.replace(
-			new RegExp('([\\s]*[a-zA-ZåäöÅÄÖøØ0-9\'’"-]+){0,' + numWords + '}\\S?'),
+			new RegExp(
+				'([\\s]*[a-zA-ZåäöÅÄÖøØ0-9\'’"-]+){0,' + numWords + '}\\S?',
+			),
 			startWrap + '$&' + endWrap,
 		)
 
 export const toCamelCase = s =>
 	s.match(/^\-\-/)
 		? s // is css var, so leave it alone
-		: s.replace(/([-_\s])([a-zA-Z0-9])/g, (m, _, c, o) => (o ? c.toUpperCase() : c))
+		: s.replace(/([-_\s])([a-zA-Z0-9])/g, (m, _, c, o) =>
+				o ? c.toUpperCase() : c,
+		  )
 
 // thx https://gist.github.com/nblackburn/875e6ff75bc8ce171c758bf75f304707
 export const toKebabCase = s =>
@@ -535,7 +568,8 @@ export const isObj = v =>
 	!isSet(v) &&
 	!isRegex(v)
 
-export const isIterable = v => v != null && typeof v[Symbol.iterator] === 'function'
+export const isIterable = v =>
+	v != null && typeof v[Symbol.iterator] === 'function'
 
 // throttle, debounce, onAnimationFrame
 
@@ -567,7 +601,8 @@ export const throttle = (f, t = 50, debounce = false, immediately = false) => {
 	}
 }
 
-export const debounce = (f, t = 50, immediately = false) => throttle(f, t, true, immediately)
+export const debounce = (f, t = 50, immediately = false) =>
+	throttle(f, t, true, immediately)
 
 export const onAnimationFrame = f => {
 	let timeout
@@ -589,7 +624,9 @@ export const getLocal = item => {
 	return i && JSON.parse(i)
 }
 
-export const setLocal = (item, v) => (localStorage.setItem(item, JSON.stringify(v)), v)
+export const setLocal = (item, v) => (
+	localStorage.setItem(item, JSON.stringify(v)), v
+)
 
 export const getCss = (prop, selector = ':root') =>
 	document.querySelector(selector).style.getPropertyValue(prop)
@@ -625,4 +662,7 @@ export const message = s => `ö🍳uery says: ${s}\n`
 export const toString = () => `Hello ö🍳uery!`
 
 export const rorövovarorsospoproråkoketot = s =>
-	(s || '').replace(/[bcdfghjklmnpqrstvwxyz]/gi, m => `${m}o${m.toLowerCase()}`)
+	(s || '').replace(
+		/[bcdfghjklmnpqrstvwxyz]/gi,
+		m => `${m}o${m.toLowerCase()}`,
+	)
