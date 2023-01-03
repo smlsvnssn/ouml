@@ -6,10 +6,13 @@
 	"types": "ö.d.ts",
 	"type": "module",
 	"scripts": {
+		"dev": "vite",
 		"test": "vitest",
 		"coverage": "vitest run --coverage"
 	},
 	"devDependencies": {
+		"@vitest/coverage-c8": "^0.25.4",
+		"jsdom": "^20.0.3",
 		"vite": "^3.2.3",
 		"vitest": "^0.25.3"
 	},

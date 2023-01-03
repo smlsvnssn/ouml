@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import * as ö from 'ö.mjs'
+import * as ö from './ö.mjs'
+import testData from './testdata.js'
 
 describe('ö.grid( width, height )', () => {
 	it('should yield objects with {x, y} values', () => {
@@ -38,18 +39,19 @@ describe('ö.grid( width, height )', () => {
 	})
 })
 
-describe('pipe async', () => {
+describe('ö.pipeAsync', () => {
 	it('should return 42 with async calls', async () => {
 		const result = await ö.pipeAsync(
 			1,
 			async x => await (x * 6),
 			async x => {
-				await ö.wait(1000)
+				await ö.wait(100)
 				return x ** 2
 			},
 			async x => await (x + 6),
 			ö.log,
 		)
+
 		expect(result).toBe(42)
 	})
 
@@ -61,6 +63,43 @@ describe('pipe async', () => {
 			x => x + 6,
 			ö.log,
 		)
+
+		expect(result).toBe(42)
+	})
+
+	it('should play nice with closures', async () => {
+		const y = 1
+		const result = await ö.pipeAsync(
+			1,
+			x => x * 6,
+			async x => {
+				const z = await ö.wait(100, () => y + 1)
+				return x ** z
+			},
+			x => x + 6,
+			ö.log,
+		)
+
 		expect(result).toBe(42)
 	})
 })
+
+describe('async functions return values', () => {
+	it('should return values of f()', async () => {
+		let result = 42
+		result = await ö.nextFrame(() => result)
+		result = await ö.waitFrames(10, () => result)
+		result = await ö.wait(10, () => result)
+
+		expect(result).toBe(42)
+	})
+
+	it.todo('mock browser event for ö.waitFor', () => {
+		// Tried, didn't work. Why?
+		const result = value
+		expect(result).toBe(value)
+	})
+})
+
+const getKön = personnummer =>
+	+('' + personnummer).at(-2) % 2 ? 'male' : 'female'

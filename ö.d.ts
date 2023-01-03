@@ -1,6 +1,14 @@
 export function grid(width: number, height?: number): IterableIterator<{}>
-export function range(start: number, end?: number, step?: number): IterableIterator<number>
-export function times(times: number, f?: (i: number) => any, ...rest: any[]): any[]
+export function range(
+	start: number,
+	end?: number,
+	step?: number,
+): IterableIterator<number>
+export function times(
+	times: number,
+	f?: (i: number) => any,
+	...rest: any[]
+): any[]
 
 export function rangeArray(start: number, end?: number, step?: number): number[]
 export function unique(arr: Iterable<any>): any[]
@@ -13,8 +21,18 @@ export function max(arr: Iterable<number>): number
 export function min(arr: Iterable<number>): number
 
 export function groupBy(arr: Iterable<any>, prop: string | Function): [any[]]
-export function findDeep(arr: any[], val: Function | any, subArrayProp: string, prop?: string): any
-export function filterDeep(arr: any[], val: Function | any, subArrayProp: string, prop?: string): any[]
+export function findDeep(
+	arr: any[],
+	val: Function | any,
+	subArrayProp: string,
+	prop?: string,
+): any
+export function filterDeep(
+	arr: any[],
+	val: Function | any,
+	subArrayProp: string,
+	prop?: string,
+): any[]
 
 export function intersect(a: Iterable<any>, b: Iterable<any>): any[]
 export function subtract(a: Iterable<any>, b: Iterable<any>): any[]
@@ -22,7 +40,10 @@ export function exclude(a: Iterable<any>, b: Iterable<any>): any[]
 export function union(a: Iterable<any>, b: Iterable<any>): any[]
 export function isSubset(a: Iterable<any>, b: Iterable<any>): boolean
 
-export function createElement(html: string, isSvg?: boolean): HTMLElement | SVGElement
+export function createElement(
+	html: string,
+	isSvg?: boolean,
+): HTMLElement | SVGElement
 export function parseDOMStringMap(o: DOMStringMap): {}
 export function data(element: [] | {}, key: {} | string, value: any): {} | any
 export function deepest(element: Element, selector?: string): any
@@ -31,7 +52,10 @@ export function isEqual(a: any, b: any, deep?: boolean): Element
 export function clone(v: any, deep?: boolean, immutable?: boolean): any
 export function immutable(v: any, deep?: boolean): any
 export function pipe(v: any, ...funcs: Function[]): any
-export function memoise(f: Function, keymaker?: Function): (...args: any[]) => any
+export function memoise(
+	f: Function,
+	keymaker?: Function,
+): (...args: any[]) => any
 export function createEnum(v: string[]): {}
 
 export function random(min?: number, max?: number, float?: boolean): number
@@ -46,17 +70,26 @@ export function easeIn(a: number, b: number, t: number): number
 export function easeOut(a: number, b: number, t: number): number
 export function clamp(n: number, min: number, max: number): number
 export function between(n: number, min: number, max: number): boolean
-export function normalize(n: number, min: number, max: number, doClamp?: boolean): number
+export function normalize(
+	n: number,
+	min: number,
+	max: number,
+	doClamp?: boolean,
+): number
 export function toPolar(x: number, y: number): { r: number; theta: number }
 export function toCartesian(r: number, theta: number): { x: number; y: number }
 
-export function prettyNumber(n: number, locale?: string | number, precision?: number): string
+export function prettyNumber(
+	n: number,
+	locale?: string | number,
+	precision?: number,
+): string
 export function wrapFirstWords(
 	s: string,
 	numWords?: number,
 	startWrap?: string,
 	endWrap?: string,
-	startAtChar?: number
+	startAtChar?: number,
 ): string
 export function toCamelCase(s: string): string
 export function toKebabCase(s: string): string
@@ -64,7 +97,7 @@ export function randomChars(numChars?: number): string
 
 export function toHsla(
 	c: string,
-	asString?: boolean
+	asString?: boolean,
 ):
 	| string
 	| {
@@ -77,13 +110,25 @@ export function hsla(
 	h: number | { h: number; s: number; l: number; a: number },
 	s?: number,
 	l?: number,
-	a?: number
+	a?: number,
 ): string
 
-export function wait(t?: number, f?: Function, resetPrevCall?: boolean): Promise<void>
+export function wait(
+	t?: number,
+	f?: Function,
+	resetPrevCall?: boolean,
+): Promise<void>
 export function nextFrame(f?: Function): Promise<void>
-export function waitFrames(n?: number, f?: Function, everyFrame?: boolean): Promise<void>
-export function waitFor(selector: string, event: string, f?: Function): Promise<void>
+export function waitFrames(
+	n?: number,
+	f?: Function,
+	everyFrame?: boolean,
+): Promise<void>
+export function waitFor(
+	selector: string,
+	event: string,
+	f?: Function,
+): Promise<void>
 export function load(url: string, isJSON?: boolean): Promise<{} | string>
 
 export function isBool(v: any): boolean
@@ -113,9 +158,13 @@ export function throttle(
 	f: Function,
 	t?: number,
 	debounce?: boolean,
-	immediately?: boolean
+	immediately?: boolean,
 ): (...args: any[]) => void
-export function debounce(f: Function, t?: number, immediately?: boolean): (...args: any[]) => void
+export function debounce(
+	f: Function,
+	t?: number,
+	immediately?: boolean,
+): (...args: any[]) => void
 export function onAnimationFrame(f: Function): (...args: any[]) => void
 
 export function verbose(v: boolean | undefined, t?: boolean): boolean

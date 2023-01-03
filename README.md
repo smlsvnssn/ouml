@@ -262,7 +262,7 @@ Returns colour string in `hsla` format, for css input. Takes separate values, or
 
 ### Async
 
-Awaitable wrappers for `setTimeout`, `requestAnimationFrame` and events. Takes an optional awaited `f` with no arguments.
+Awaitable wrappers for `setTimeout`, `requestAnimationFrame` and events. Takes an optional awaited `f` with no arguments. If `f` is provided, returns result from `f`, otherwise returns `undefined`. (Except for `ö.waitFrames`, which calls `f` every frame if `everyFrame` is `true`, but only returns the result of the final call.)
 
 #### ö.wait( t = 0, f, resetPrevCall = false ) → Promise
 
@@ -283,6 +283,10 @@ Waits `t` milliseconds. If `resetPrevCall == true`, previous pending call is rej
 #### ö.load( url, isJSON = true ) → Promise
 
 [browser (Alternatively: Use node-fetch)] Loads (and parses) JSON. Optionally loads HTML. Super simple fetch wrapper.
+
+#### ö.pipeAsync( v, ...funcs ) → Promise
+
+See `ö.pipe`.
 
 ### Throttling
 

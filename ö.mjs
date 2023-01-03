@@ -4,7 +4,9 @@ Environment methods, ie isMobile, isTouchscreen, isHiResScreen, isDesktop, isSer
 Extend lerp to accept any-dimensional numberss, and optional easing functions (https://github.com/AndrewRayCode/easing-utils)
 db? Server part for secrets and relay?
 .queue from öQuery, async chaining? Or is that an async pipe?
-
+include .observable in ö?
+rewrite övents as svelte actions?
+partition as separate modules?
 
 */
 // generators
@@ -264,6 +266,8 @@ export const memoise = (f, keymaker) => {
 		return result
 	}
 }
+// for the yankees
+export const normalize = normalise
 
 // thx https://masteringjs.io/tutorials/fundamentals/enum
 export const createEnum = v => {
@@ -496,22 +500,22 @@ export const wait = async (t = 1, f, resetPrevCall = false) => {
 			timeout = setTimeout(resolve, t)
 			rejectPrev = reject
 		})
-		if (isFunc(f)) await f()
+		if (isFunc(f)) return await f()
 	} catch (e) {}
 }
 
 export const nextFrame = async f => {
 	return new Promise(resolve =>
 		requestAnimationFrame(async () => {
-			if (isFunc(f)) await f()
-			resolve()
+			if (isFunc(f)) resolve(await f())
+			else resolve()
 		}),
 	)
 }
 
 export const waitFrames = async (n = 1, f, everyFrame = false) => {
 	while (n-- > 0) await nextFrame(everyFrame ? f : null)
-	if (isFunc(f) && !everyFrame) await f()
+	if (isFunc(f)) return await f()
 }
 
 export const waitFor = async (selector, event, f) => {
@@ -519,8 +523,8 @@ export const waitFor = async (selector, event, f) => {
 		document.querySelector(selector).addEventListener(
 			event,
 			async e => {
-				if (isFunc(f)) await f(e)
-				resolve()
+				if (isFunc(f)) resolve(await f(e))
+				else resolve()
 			},
 			{ once: true },
 		)
