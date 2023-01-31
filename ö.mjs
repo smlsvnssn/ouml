@@ -8,6 +8,9 @@ include .observable in ö?
 rewrite övents as svelte actions?
 partition as separate modules?
 
+Beziers?
+Cubic, Quadratic
+
 */
 // generators
 export const grid = function* (width, height) {
@@ -267,7 +270,7 @@ export const memoise = (f, keymaker) => {
 	}
 }
 // for the yankees
-export const normalize = normalise
+export const memoize = memoise
 
 // thx https://masteringjs.io/tutorials/fundamentals/enum
 export const createEnum = v => {
@@ -313,9 +316,8 @@ export const nChooseK = (n, k) => {
 	if (k === 1 || k === n - 1) return n
 
 	let res = n
-	for (let i = 2; i <= k; i++) {
-		res *= (n - i + 1) / i
-	}
+	for (let i = 2; i <= k; i++) res *= (n - i + 1) / i
+
 	return Math.round(res)
 }
 export const lerp = (a, b, t) => {
@@ -447,10 +449,10 @@ export const toHsla = (c, asString = false) => {
 		// convert
 
 		// add default alpha if needed
-		if (rgba.length === 3) {
+		if (rgba.length === 3)
 			rgba.push(1)
-		}
-		// Adapted from https://css-tricks.com/converting-color-spaces-in-javascript/
+
+			// Adapted from https://css-tricks.com/converting-color-spaces-in-javascript/
 		;[r, g, b, a] = rgba.map((v, i) => (i < 3 ? v / 255 : v))
 		let cmin = Math.min(r, g, b),
 			cmax = Math.max(r, g, b),
@@ -482,7 +484,7 @@ export const toHsla = (c, asString = false) => {
 
 export const hsla = (h, s = 70, l = 50, a = 1) => {
 	if (isObj(h)) ({ h, s, l, a } = h)
-	return `hsla(${h % 360 || 0}, ${s || 70}%, ${l || 50}%, ${a || 1})`
+	return `hsla(${h % 360}, ${s}%, ${l}%, ${a})`
 }
 
 // async

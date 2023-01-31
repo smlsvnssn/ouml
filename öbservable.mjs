@@ -1,42 +1,45 @@
 import { isnt, isFunc, clone, isEqual } from './ö.mjs'
 
-const isobservable = Symbol('observable'),
-	extendable = Symbol('extendable'),
-	primitive = Symbol('primitive'), // a little like a vue ref
-	currentObservers = [],
-	addAsCurrent = observer => {
-		if (currentObserver) currentObservers.push(currentObserver)
-		currentObserver = observer
-	},
-	removeAsCurrent = () => (currentObserver = currentObservers.pop()),
-	makeObservable = (v, isExtendable, isPrimitive) => {
-		const observers = new Set(),
-			p = new Proxy(v, {
-				get: (obj, key) => {
-					// add current observer when getter is called
-					if (currentObserver) observers.add(currentObserver)
-					return Reflect.get(obj, key)
-				},
-				set: (obj, key, value) => {
-					if (obj[key] !== value) {
-						// if new prop, and extendable, make observable
-						if (isnt(obj[key]) && isExtendable)
-							value = observable(value, true, isExtendable, false)
-						Reflect.set(obj, key, value)
-						// check and notify observers
-						observers.forEach(o => {
-							if (o.stopped) observers.delete(o)
-							else if (!o.paused) o.update(key)
-						})
-					}
-					return true // to avoid a type error
-				},
-			})
-		if (isPrimitive) p[primitive] = true
-		if (isExtendable) p[extendable] = true
-		p[isobservable] = true
-		return p
-	}
+const isobservable = Symbol('observable')
+const extendable = Symbol('extendable')
+const primitive = Symbol('primitive') // a little like a vue ref
+const currentObservers = []
+
+const addAsCurrent = observer => {
+	if (currentObserver) currentObservers.push(currentObserver)
+	currentObserver = observer
+}
+
+const removeAsCurrent = () => (currentObserver = currentObservers.pop())
+
+const makeObservable = (v, isExtendable, isPrimitive) => {
+	const observers = new Set(),
+		p = new Proxy(v, {
+			get: (obj, key) => {
+				// add current observer when getter is called
+				if (currentObserver) observers.add(currentObserver)
+				return Reflect.get(obj, key)
+			},
+			set: (obj, key, value) => {
+				if (obj[key] !== value) {
+					// if new prop, and extendable, make observable
+					if (isnt(obj[key]) && isExtendable)
+						value = observable(value, true, isExtendable, false)
+					Reflect.set(obj, key, value)
+					// check and notify observers
+					observers.forEach(o => {
+						if (o.stopped) observers.delete(o)
+						else if (!o.paused) o.update(key)
+					})
+				}
+				return true // to avoid a type error
+			},
+		})
+	if (isPrimitive) p[primitive] = true
+	if (isExtendable) p[extendable] = true
+	p[isobservable] = true
+	return p
+}
 
 let currentObserver = null
 
