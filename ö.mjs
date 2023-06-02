@@ -3,7 +3,9 @@ TODO:
 Environment methods, ie isMobile, isTouchscreen, isHiResScreen, isDesktop, isServer etc
 Extend lerp to accept any-dimensional numberss, and optional easing functions (https://github.com/AndrewRayCode/easing-utils)
 db? Server part for secrets and relay?
-.queue from öQuery, async chaining? Or is that an async pipe?
+
+multipy and convolve for arrays
+
 include .observable in ö?
 rewrite övents as svelte actions?
 partition as separate modules?
@@ -410,6 +412,8 @@ export const randomChars = (numChars = 10) =>
 		.toString(36)
 		.substring(0, numChars)
 
+export const stripTags = s => s.replace(/(<([^>]+)>)/gi, '')
+
 // Colours
 export const toHsla = (c, asString = false) => {
 	let rgba, h, s, l, r, g, b, a
@@ -479,7 +483,7 @@ export const toHsla = (c, asString = false) => {
 		a = round(a, 2)
 	}
 
-	return asString ? hsla(h, s, l, a) : { h: h, s: s, l: l, a: a }
+	return asString ? hsla(h, s, l, a) : { h, s, l, a }
 }
 
 export const hsla = (h, s = 70, l = 50, a = 1) => {

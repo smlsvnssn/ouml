@@ -25,3 +25,10 @@ const testFilterDeep = [
 ö.log(`
 ---
 `)
+
+let a = 0.12345
+ö.log(ö.round(a, 2))
+
+let test = { h: 100, s: 10, l: 10, a: 0.5 }
+
+ö.pipe(test, ö.hsla, ö.log)

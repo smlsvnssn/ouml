@@ -94,6 +94,7 @@ export function wrapFirstWords(
 export function toCamelCase(s: string): string
 export function toKebabCase(s: string): string
 export function randomChars(numChars?: number): string
+export function stripTags(s: string): string
 
 export function toHsla(
 	c: string,
