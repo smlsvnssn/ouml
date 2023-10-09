@@ -4,7 +4,7 @@ Environment methods, ie isMobile, isTouchscreen, isHiResScreen, isDesktop, isSer
 Extend lerp to accept any-dimensional numberss, and optional easing functions (https://github.com/AndrewRayCode/easing-utils)
 db? Server part for secrets and relay?
 
-multipy and convolve for arrays
+multiply and convolve for arrays
 
 include .observable in ö?
 rewrite övents as svelte actions?
@@ -485,6 +485,21 @@ export const toHsla = (c, asString = false) => {
 
 	return asString ? hsla(h, s, l, a) : { h, s, l, a }
 }
+
+/*
+
+toOklch = s' gonna be a monster
+
+hex/rgba > lrgb/a (linear rgb, gamma correction removed) > oklab (cartesian) > oklch (polar)
+
+https://github.com/Evercoder/culori/blob/main/src/lrgb/convertRgbToLrgb.js
+https://github.com/Evercoder/culori/blob/main/src/oklab/convertLrgbToOklab.js
+https://github.com/Evercoder/culori/blob/main/src/lch/convertLabToLch.js
+https://bottosson.github.io/posts/oklab/
+
+
+Optionally: use css's color-mix with shadow element. Potentially slow, browser only?
+*/
 
 export const hsla = (h, s = 70, l = 50, a = 1) => {
 	if (isObj(h)) ({ h, s, l, a } = h)
