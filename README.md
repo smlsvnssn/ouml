@@ -154,8 +154,8 @@ Creates and returns memoised functions. By default, the arguments to the memoise
 
 #### ö.createEnum(arr) → Object;
 
-Creates and returns an enumerable, i.e. an object where the keys and values are the same. Lets you create kinda sorta vanilla typechecking light. Takes an array of strings as input.
-Example: `const sizes = ö.createEnum(['small', 'medium', 'large']); giveMeIcecream(sizes.large);`
+Creates and returns an enumerable, i.e. an object where the keys and values are the same. Lets you create kinda sorta vanilla typechecking light. Takes strings, or an array of strings, as input.
+Example: `const sizes = ö.createEnum('small', 'medium', 'large'); giveMeIcecream(sizes.large);`
 
 #### ö.data( object, key, value ) → data | data.key
 

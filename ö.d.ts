@@ -56,7 +56,7 @@ export function memoise(
 	f: Function,
 	keymaker?: Function,
 ): (...args: any[]) => any
-export function createEnum(v: string[]): {}
+export function createEnum(...v: string[] | string): {}
 
 export function random(min?: number, max?: number, float?: boolean): number
 export function randomNormal(mean?: number, sigma?: number): number

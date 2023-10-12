@@ -275,8 +275,9 @@ export const memoise = (f, keymaker) => {
 export const memoize = memoise
 
 // thx https://masteringjs.io/tutorials/fundamentals/enum
-export const createEnum = v => {
+export const createEnum = (...v) => {
 	const enu = {}
+	if (v.length === 1 && ö.isArray(v[0]) ) v = v[0] //if only one argument, use as array
 	for (const val of v) enu[val] = val
 	return Object.freeze(enu)
 }
