@@ -1,12 +1,27 @@
 {
 	"name": "ouml",
-	"version": "0.0.24",
+	"version": "0.1.0",
 	"description": "smlsvnssn",
 	"main": "ö.mjs",
+	"module": "ö.mjs",
 	"types": "ö.d.ts",
 	"type": "module",
+	"exports": {
+		".": {
+			"types": "./ö.d.ts",
+			"default": "./ö.mjs"
+		},
+		"./övents": {
+			"types": "./ö.d.ts",
+			"default": "./övents/index.mjs"
+		},
+		"./öbservable": {
+			"types": "./ö.d.ts",
+			"default": "./öbservable/index.mjs"
+		}
+	},
 	"scripts": {
-		"dev-off": "vite",
+		"dev": "vite",
 		"test": "vitest",
 		"coverage": "vitest run --coverage"
 	},

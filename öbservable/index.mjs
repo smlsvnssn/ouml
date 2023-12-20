@@ -1,4 +1,4 @@
-import { isnt, isFunc, clone, isEqual } from './ö.mjs'
+import { isnt, isFunc, clone, isEqual } from '../ö.mjs'
 
 const isobservable = Symbol('observable')
 const extendable = Symbol('extendable')
