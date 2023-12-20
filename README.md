@@ -48,6 +48,10 @@ Methods for manipulating arrays or array-like objects. Inputs are coerced to `Ar
 
 Returns an `Array` populated with given range.
 
+#### ö.map( arr, f | str ) → Array
+
+Same as a normal map, except it accepts a `string` as a shorthand for retrieving values from a property.
+
 #### ö.unique( arr ) → Array
 
 Returns an `Array` with unique entries.
@@ -152,7 +156,7 @@ Same as `ö.pipe`, but awaits functions and returns a `Promise`.
 
 Creates and returns memoised functions. By default, the arguments to the memoised function are used as key for storing the result (If only one argument, the raw input is used as key, if more than one, the arguments are joined to a string). If the arguments are objects instead of primitive values, you should provide a `keymaker`. `keymaker` receives all inputs from the memoised function, and should return something unique to use as a `Map` key for a given set of inputs. Use for example `JSON.stringify` when you expect objects as input.
 
-#### ö.createEnum(arr) → Object;
+#### ö.createEnum( arr ) → Object;
 
 Creates and returns an enumerable, i.e. an object where the keys and values are the same. Lets you create kinda sorta vanilla typechecking light. Takes strings, or an array of strings, as input.
 Example: `const sizes = ö.createEnum('small', 'medium', 'large'); giveMeIcecream(sizes.large);`
@@ -250,6 +254,10 @@ Returns `numChars` random characters. Max for `numChars` is 100. Useful for prod
 #### ö.stripTags( str ) → String
 
 Returns a string without html tags.
+
+#### ö.when( bool, t, f = false ) → value | empty string;
+
+A slightly more readable wrapper around a ternary expression. Returns `t` if `bool` is true, otherwise returns the empty string. Optionally returns `f` if specified. Useful primarily in template strings.
 
 ### Colours
 

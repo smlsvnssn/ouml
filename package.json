@@ -6,7 +6,7 @@
 	"types": "ö.d.ts",
 	"type": "module",
 	"scripts": {
-		"dev": "vite",
+		"dev-off": "vite",
 		"test": "vitest",
 		"coverage": "vitest run --coverage"
 	},
@@ -30,6 +30,7 @@
 	},
 	"homepage": "https://github.com/smlsvnssn/ouml#readme",
 	"dependencies": {
-		"@types/node": "^16.10.2"
+		"@types/node": "^16.10.2",
+		"typescript": "^5.2.2"
 	}
 }

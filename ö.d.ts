@@ -11,6 +11,7 @@ export function times(
 ): any[]
 
 export function rangeArray(start: number, end?: number, step?: number): number[]
+export function map(arr: Iterable<any>, f: string | Function): any[]
 export function unique(arr: Iterable<any>): any[]
 export function shuffle(arr: Iterable<any>): any[]
 export function sample(arr: Iterable<any>, samples?: number): any | any[]
@@ -95,6 +96,7 @@ export function toCamelCase(s: string): string
 export function toKebabCase(s: string): string
 export function randomChars(numChars?: number): string
 export function stripTags(s: string): string
+export function when(bool: Boolean, v: any, f?: any): any
 
 export function toHsla(
 	c: string,

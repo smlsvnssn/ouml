@@ -47,6 +47,8 @@ export const rangeArray = (start, end, step = 1) => {
 	return arr
 }
 
+export const map = (arr, f) => arr.map(isFunc(f) ? f : v => v[f])
+
 export const unique = arr => [...new Set(arr)]
 
 export const shuffle = arr => {
@@ -277,7 +279,7 @@ export const memoize = memoise
 // thx https://masteringjs.io/tutorials/fundamentals/enum
 export const createEnum = (...v) => {
 	const enu = {}
-	if (v.length === 1 && ö.isArray(v[0]) ) v = v[0] //if only one argument, use as array
+	if (v.length === 1 && isArr(v[0])) v = v[0] //if only one argument, use as array
 	for (const val of v) enu[val] = val
 	return Object.freeze(enu)
 }
@@ -414,6 +416,8 @@ export const randomChars = (numChars = 10) =>
 		.substring(0, numChars)
 
 export const stripTags = s => s.replace(/(<([^>]+)>)/gi, '')
+
+export const when = (bool, v, f = false) => (bool ? v : f || '')
 
 // Colours
 export const toHsla = (c, asString = false) => {

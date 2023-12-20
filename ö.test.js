@@ -101,5 +101,22 @@ describe('async functions return values', () => {
 	})
 })
 
+describe('async functions return values', () => {
+	it('should return values of f()', async () => {
+		let result = 42
+		result = await ö.nextFrame(() => result)
+		result = await ö.waitFrames(10, () => result)
+		result = await ö.wait(10, () => result)
+
+		expect(result).toBe(42)
+	})
+
+	it.todo('mock browser event for ö.waitFor', () => {
+		// Tried, didn't work. Why?
+		const result = value
+		expect(result).toBe(value)
+	})
+})
+
 const getKön = personnummer =>
 	+('' + personnummer).at(-2) % 2 ? 'male' : 'female'
