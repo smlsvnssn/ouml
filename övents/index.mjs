@@ -5,7 +5,7 @@
 Usage:
 <element use:clickoutside on:clickoutside={callback}></element>
 */
-import { data, between } from '/ö.mjs'
+import { data, between } from '../ö.mjs'
 
 //
 // resize

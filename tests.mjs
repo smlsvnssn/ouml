@@ -1,4 +1,7 @@
 import * as ö from './ö.mjs'
+import * as öbservable from './öbservable/index.mjs'
+import * as övents from './övents/index.mjs'
+
 import testData from './testdata.js'
 import { md5 } from './candidates.js'
 
@@ -43,3 +46,13 @@ let test = { h: 100, s: 10, l: 10, a: 0.5 }
 ö.log(ö.map(testData, 'id'))
 
 ö.log(ö.times(5))
+
+///
+
+const primitive = öbservable.observable(0)
+const array = öbservable.observable(['test'])
+const object = öbservable.observable({ test: 'Yes, test' })
+
+ö.log(primitive)
+ö.log(array, array.length)
+ö.log(object)

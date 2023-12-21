@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import * as ö from './ö.mjs'
+
 import testData from './testdata.js'
 
 describe('ö.grid( width, height )', () => {

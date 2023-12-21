@@ -22,6 +22,19 @@ const oneOrZero = ö.random();
 
 Most methods are runnable within node/deno. Some methods require browser API:s, those are marked with [browser].
 
+## Modules
+
+Includes modules [öbservable](#oumlbservable), a basic implementation of reactive values, and [övents](#oumlvents), a collection of useful custom browser events.
+
+Import them from
+
+```
+import { observable, isObservable, observe } from "ouml/öbservable";
+import { resize, enterview, exitview, sticktotop, sticktobottom, swipe, clickoutside } from "ouml/övents";
+```
+
+## Methods
+
 ### Generators / Iterators
 
 Helper methods for iterations, less verbose than regular loops.
@@ -413,3 +426,189 @@ Parses a `DOMStringMap` as `JSON`. Used internally when reading from `Element.da
 #### ö.rorövovarorsospoproråkoketot( str ) → String
 
 Converts string to Rövarspråket.
+
+<a name="oumlbservable"></a>
+
+## Öbservable
+
+öbservable is loosely based on how vue.js handles reactivity, but it is much simpler, and, truthfully, not as good 🤪. It is, however, shockingly small, 1Kb minified.
+
+### Usage
+
+öbservable uses `Proxy` objects to intercept changes to observable values, and in doing so detects for exemple direct array manipulation.
+Use like so (If possible, don't keep a reference to the original object, to avoid confusion):
+
+```
+const obs = observable(['a', 'b', 'c']);
+const lengthObserver = observe(
+	() => obs.length,
+	v => ö.log(`The length is ${ v }`)
+);
+const firstItemObserver = observe(
+	() => obs[0],
+	v => ö.log(`The first item is ${ v }`)
+);
+// Logs The length is 3, The first item is a
+
+await ö.wait(666);
+obs.shift();
+// Logs The length is 2, The first item is b, after 666ms
+```
+
+### Methods
+
+öbservable exports three methods:
+
+#### observable( value, deep = true, extendable = true ) → observable object
+
+Takes a `value`, and returns it wrapped in an observable `Proxy`. By default, it recursively wraps nested objects as well. Set `deep` to `false` if you only want the top level to be observable (For example for observing changes in an `Array` of complex `Object`s, where the changes in individual objects are irrelevant). By default, if you add a new property to an observable, the new property is made observable as well (if it's not a primitive value). Set `extendable` to `false` to disable this behaviour.
+If `value` is a primitive (`String`, `Number`, `Boolean` etc), the value is wrapped in an object with a single property: `value`.
+
+#### ö.observe( getter, callback, deep = false ) → observer object
+
+Takes a `getter`, responsible for reading an observable and producing a value, and a `callback` that acts on the value.
+The `getter` can be either a raw observable, or a function returning the processed value of an observable.
+The `callback` receives `value`, `prevValue`, `updatedKey` and `observer` as arguments. The values passed to `callback` are copied from the observable, so you can't mutate the observable value in the callback (that would create an infinite loop anyways, so don't try it 🤯).
+If you're observing an object, `updatedKey` can be useful in order to retrieve and act on only the property that changed. However, if you're destructuring multiple properties from a nested object, `updatedKey` refers to the key local to the updated object, so in this case make sure not to use the same property name on different levels.
+`observer` is a reference to the observer object, giving access to primarily the `stop()` method.
+If the getter is a raw primitive observable, the value is unwrapped before the callback is called, like so:
+
+```
+const o = observable(0);
+observe(o, v => ö.log(`The value is ${ v }`));
+// logs 'The value is 0'
+```
+
+If the getter is a function, you need to access the `value` prop, like so:
+
+```
+const o = observable(0);
+observe(() => `The value is ${ o.value }`, ö.log);
+// logs 'The value is 0'
+```
+
+It's a matter of taste, really.
+However, when working with larger data structures, try to be as specific as possible in the `getter`, since returned values get copied from the observable (to avoid recursion among other things). As a rule of thumb, get the values you output in the callback, nothing more. Maybe something like this:
+
+```
+const bigAssObservable = observable(bigAssObject);
+observe(() => {
+		const {
+			stuff,
+			that,
+			we,
+			childObject: { really, need }
+		} = bigAssObservable;
+		return { stuff, that, we, really, need };
+	},
+	renderSmallPartOfBigAssObject
+);
+```
+
+When working with deep data structures, like a global state object with a reducer function, you may want to enable the `deep` option. This lets you observe an entire object structure, and receive updates when properties on child objects change, like so:
+
+```
+const deep = observable({a: {b: {c: {d: "What's the purpose of it all?"}}}});
+observe(deep, ö.log, true);
+deep.a.b.c.d = "Deep stuff"; // Triggers observer when deep option is true
+```
+
+The drawback with this option, however, is that the entire data structure gets deep cloned every time the observer is triggered. This is fairly untested with regards to performance, so use with caution, and try to keep the data structure small. There are possible optimisations to be done here, maybe in the future...
+
+#### isObservable( value ) → Boolean
+
+Checks whether a value is observable or not, just in case you'd forgotten.
+
+### Observable object
+
+`observable()` returns observables, responsible for notifying observers when their value changes. When an observable is read by an observer, the observer is added to an internal `Set` of observers. These get updated when values change.
+If the observable holds a primitive value, it has a `value` property, otherwise values are accessed just like a regular object or array.
+The observable also holds `Symbol`s for `observable`, `extendable` and `primitive`, used internally, and for easier debugging.
+
+### Observer object
+
+`observe()` returns observers, holding the current value of the observed observable, and a few methods and properties for flow control. You don't need to save a reference to the object, but it might come in handy if you want to stop observing later on.
+
+```
+const x = observable(0);
+const o = observe(x, ö.log);
+x.value = 666; // logs 666
+o.stop();
+```
+
+#### o.pause()
+
+Pauses the observer.
+
+#### o.unpause()
+
+You'll never guess.
+
+#### o.stop()
+
+Stops the observer from receiving updates, and unsubscribes the observer from observables.
+
+#### o.update()
+
+Updates current value an calls callback if the value has changed. Called internally by the observable.
+
+#### o.value
+
+Holds the most currently returned value from the `getter`. Usable mostly for debugging.
+
+#### o.prevValue
+
+Holds the previous value. Usable mostly for debugging.
+
+#### o.paused
+
+Set to `true` if paused, otherwise `undefined`.
+
+#### o.stopped
+
+Set to `true` if stopped, otherwise `undefined`.
+
+<a name="oumlvents"></a>
+
+## Övents
+
+**övents** is a collection of should've-been-in-the-browser-already custom events.
+
+### Usage
+
+Övents implements she `svelte/action` interface, and are usable as svelte actions, but can be used in any browser context like so:
+
+```
+const el = document.querySelector('#someElement')
+resize(el)
+// or, if you need cleanup:
+const resizer =  resize(el)
+
+el.addEventListener('resize' someCallback)
+
+// When you're done:
+resizer.destroy()
+```
+
+### Events
+
+#### resize
+
+Emit when an `Element` gets resized, as observed by `ResizeObserver`. Relays the `ResizeObserverEntry` in the `details` object.
+
+#### enterview, exitview
+
+Emit when an `Element`'s bounding box enters or exits the viewport.
+
+#### sticktotop, sticktobottom
+
+Emit when an `Element`'s bounding box touches the top/bottom of the viewport. Useful for detecting when an `Element` with `position: sticky` sticks to the viewport. One caveat: This works only if the sticky elements have `top: 0` or `bottom: 0`.
+Event status is passed via a `sticky` prop on the `details` object.
+
+#### swipeleft, swiperight, swipeup, swipedown
+
+Emit when user swipes on a touch device.
+
+#### clickoutside
+
+Emits on click or tap outside `Element`.
