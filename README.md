@@ -24,7 +24,7 @@ Most methods are runnable within node/deno. Some methods require browser API:s, 
 
 ## Modules
 
-Includes modules [öbservable](#oumlbservable), a basic implementation of reactive values, and [övents](#oumlvents), a collection of useful custom browser events.
+Includes modules [öbservable](#%C3%B6bservable), a basic implementation of reactive values, and [övents](#%C3%B6vents), a collection of useful custom browser events.
 
 Import them from
 
