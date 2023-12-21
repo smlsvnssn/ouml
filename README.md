@@ -464,7 +464,7 @@ obs.shift();
 Takes a `value`, and returns it wrapped in an observable `Proxy`. By default, it recursively wraps nested objects as well. Set `deep` to `false` if you only want the top level to be observable (For example for observing changes in an `Array` of complex `Object`s, where the changes in individual objects are irrelevant). By default, if you add a new property to an observable, the new property is made observable as well (if it's not a primitive value). Set `extendable` to `false` to disable this behaviour.
 If `value` is a primitive (`String`, `Number`, `Boolean` etc), the value is wrapped in an object with a single property: `value`.
 
-#### ö.observe( getter, callback, deep = false ) → observer object
+#### observe( getter, callback, deep = false ) → observer object
 
 Takes a `getter`, responsible for reading an observable and producing a value, and a `callback` that acts on the value.
 The `getter` can be either a raw observable, or a function returning the processed value of an observable.
