@@ -15,9 +15,16 @@ const removeAsCurrent = () => (currentObserver = currentObservers.pop())
 const makeObservable = (v, isExtendable, isPrimitive) => {
 	const observers = new Set(),
 		p = new Proxy(v, {
-			get: (obj, key) => {
+			get: (obj, key, receiver) => {
 				// add current observer when getter is called
 				if (currentObserver) observers.add(currentObserver)
+
+				// Intercept key 'observe' and assume function call.
+				// relay to observe()
+				if (key === 'observe')
+					return (callback, deep = false) =>
+						observe(receiver, callback, deep)
+
 				return Reflect.get(obj, key)
 			},
 			set: (obj, key, value) => {

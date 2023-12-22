@@ -5,7 +5,7 @@ import * as övents from './övents/index.mjs'
 import testData from './testdata.js'
 import { md5 } from './candidates.js'
 
-ö.log(`
+/* ö.log(`
 ---
 `)
 
@@ -45,14 +45,43 @@ let test = { h: 100, s: 10, l: 10, a: 0.5 }
 
 ö.log(ö.map(testData, 'id'))
 
-ö.log(ö.times(5))
+ö.log(ö.times(5)) */
 
 ///
 
-const primitive = öbservable.observable(0)
+let primitive = öbservable.observable(0)
 const array = öbservable.observable(['test'])
 const object = öbservable.observable({ test: 'Yes, test' })
 
-ö.log(primitive)
-ö.log(array, array.length)
-ö.log(object)
+// ö.log(primitive)
+// ö.log(array)
+// ö.log(object)
+ö.log(`...
+
+
+...`)
+
+const cb = (...v) => console.log('callback: ', ...v)
+primitive.observe(cb)
+array.observe(cb)
+object.observe(cb)
+
+primitive.value = 2
+
+primitive.value = 3
+
+array.push(5)
+
+object.test2 = 'Also test'
+
+ö.log(öbservable.isObservable(array))
+
+const thisGuy = öbservable.observable({ name: 'Guy', surname: 'This' })
+
+öbservable.observe(thisGuy, (val, oldVal, changedProp) =>
+	ö.log(`${changedProp} has changed`),
+)
+
+thisGuy.observe(v => ö.log(`Name: ${v.name}  Surname: ${v.surname}`))
+
+thisGuy.surname = 'Fawkes'

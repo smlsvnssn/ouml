@@ -427,18 +427,18 @@ Parses a `DOMStringMap` as `JSON`. Used internally when reading from `Element.da
 
 Converts string to Rövarspråket.
 
-<a name="oumlbservable"></a>
-
 ## Öbservable
 
 öbservable is loosely based on how vue.js handles reactivity, but it is much simpler, and, truthfully, not as good 🤪. It is, however, shockingly small, 1Kb minified.
 
 ### Usage
 
-öbservable uses `Proxy` objects to intercept changes to observable values, and in doing so detects for exemple direct array manipulation.
-Use like so (If possible, don't keep a reference to the original object, to avoid confusion):
+öbservable uses `Proxy` to intercept changes to observable values, and in doing so detects for exemple direct array manipulation.
+Use like so:
 
 ```
+import { observable, isObservable, observe } from "ouml/öbservable";
+
 const obs = observable(['a', 'b', 'c']);
 const lengthObserver = observe(
 	() => obs.length,
@@ -455,6 +455,25 @@ obs.shift();
 // Logs The length is 2, The first item is b, after 666ms
 ```
 
+You can also use the raw observable as input to `observe`, or call `observe` directly on the observable (due to some `Proxy` trickery):
+
+```
+const thisGuy = observable({ name: 'Guy', surname: 'This' })
+
+observe(
+	thisGuy,
+	(val, oldVal, changedProp) => ö.log(`${changedProp} has changed`)
+)
+
+thisGuy.observe(
+	v => ö.log(`Name: ${v.name}  Surname: ${v.surname}`)
+)
+
+thisGuy.surname = 'Fawkes'
+```
+
+When called as a method, the getter argument to `observe` is omitted.
+
 ### Methods
 
 öbservable exports three methods:
@@ -462,7 +481,19 @@ obs.shift();
 #### observable( value, deep = true, extendable = true ) → observable object
 
 Takes a `value`, and returns it wrapped in an observable `Proxy`. By default, it recursively wraps nested objects as well. Set `deep` to `false` if you only want the top level to be observable (For example for observing changes in an `Array` of complex `Object`s, where the changes in individual objects are irrelevant). By default, if you add a new property to an observable, the new property is made observable as well (if it's not a primitive value). Set `extendable` to `false` to disable this behaviour.
-If `value` is a primitive (`String`, `Number`, `Boolean` etc), the value is wrapped in an object with a single property: `value`.
+If `value` is a primitive (`String`, `Number`, `Boolean` etc), the value is wrapped in an object with a single property: `value`. You cannot assign to a primitive observable value directly, you need to use the `value` prop instead, or else you'd overwite the proxy.
+
+```
+let x = observable('foo')
+observe(x, ö.log)
+x = 'bar' // Won't work.
+```
+
+```
+const x = observable('foo')
+observe(x, ö.log)
+x.value = 'bar' // Declare a const, and assign to value instead.
+```
 
 #### observe( getter, callback, deep = false ) → observer object
 
@@ -525,6 +556,8 @@ Checks whether a value is observable or not, just in case you'd forgotten.
 If the observable holds a primitive value, it has a `value` property, otherwise values are accessed just like a regular object or array.
 The observable also holds `Symbol`s for `observable`, `extendable` and `primitive`, used internally, and for easier debugging.
 
+You can also call `observe` directly on an observable object (`observe` is not a proper property on the object though, this is handled by the getter in the `Proxy`).
+
 ### Observer object
 
 `observe()` returns observers, holding the current value of the observed observable, and a few methods and properties for flow control. You don't need to save a reference to the object, but it might come in handy if you want to stop observing later on.
@@ -568,8 +601,6 @@ Set to `true` if paused, otherwise `undefined`.
 
 Set to `true` if stopped, otherwise `undefined`.
 
-<a name="oumlvents"></a>
-
 ## Övents
 
 **övents** is a collection of should've-been-in-the-browser-already custom events.
@@ -582,9 +613,9 @@ Set to `true` if stopped, otherwise `undefined`.
 const el = document.querySelector('#someElement')
 resize(el)
 // or, if you need cleanup:
-const resizer =  resize(el)
+const resizer = resize(el)
 
-el.addEventListener('resize' someCallback)
+el.addEventListener('resize', someCallback)
 
 // When you're done:
 resizer.destroy()
@@ -605,9 +636,9 @@ Emit when an `Element`'s bounding box enters or exits the viewport.
 Emit when an `Element`'s bounding box touches the top/bottom of the viewport. Useful for detecting when an `Element` with `position: sticky` sticks to the viewport. One caveat: This works only if the sticky elements have `top: 0` or `bottom: 0`.
 Event status is passed via a `sticky` prop on the `details` object.
 
-#### swipeleft, swiperight, swipeup, swipedown
+#### swipe
 
-Emit when user swipes on a touch device.
+Emits `swipeleft`, `swiperight`, `swipeup`, `swipedown` when user swipes on a touch device.
 
 #### clickoutside
 
