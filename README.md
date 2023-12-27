@@ -8,16 +8,16 @@ Usage:
 (p)npm install ouml
 ```
 
-```
-import { random } from "ouml";
-const oneOrZero = random();
+```js
+import { random } from 'ouml'
+const oneOrZero = random()
 ```
 
 or, with treeshaking:
 
-```
-import * as ö from "ouml";
-const oneOrZero = ö.random();
+```js
+import * as ö from 'ouml'
+const oneOrZero = ö.random()
 ```
 
 Most methods are runnable within node/deno. Some methods require browser API:s, those are marked with [browser].
@@ -28,9 +28,17 @@ Includes modules [öbservable](#%C3%B6bservable), a basic implementation of reac
 
 Import them from
 
-```
-import { observable, isObservable, observe } from "ouml/öbservable";
-import { resize, enterview, exitview, sticktotop, sticktobottom, swipe, clickoutside } from "ouml/övents";
+```js
+import { observable, isObservable, observe } from 'ouml/öbservable'
+import {
+	resize,
+	enterview,
+	exitview,
+	sticktotop,
+	sticktobottom,
+	swipe,
+	clickoutside,
+} from 'ouml/övents'
 ```
 
 ## Methods
@@ -41,15 +49,27 @@ Helper methods for iterations, less verbose than regular loops.
 
 #### ö.range( start, end, step = 1 ) yields Number
 
-Yields `Number`s within specified range. Parameters `end` and `step` are optional. If `end` is not provided, range starts with `0`, and ends with `start`. Handles negative values. Useful in `for of` loops, for example `for (let i of ö.range(100)) doStuff(i);`.
+Yields `Number`s within specified range. Parameters `end` and `step` are optional. If `end` is not provided, range starts with `0`, and ends with `start`. Handles negative values. Useful in `for of` loops, for example
+
+```js
+for (let i of ö.range(100)) doStuff(i)
+```
 
 #### ö.grid( width, height ) yields { x, y }
 
-Yields `Object` with `x, y` coordinates. If `height` is omitted, `width` is assumed. Use like so: `for (let i of ö.grid(8)) drawChessboard(i.x, i.y);`.
+Yields `Object` with `x, y` coordinates. If `height` is omitted, `width` is assumed. Use like so:
+
+```js
+for (let i of ö.grid(8)) drawChessboard(i.x, i.y)
+```
 
 #### ö.times( times, f = i => i, ...rest ) → Array
 
-Calls a function `times` times, with `index` as argument. Additional arguments are passed on to `f` like so: `ö.times(100, (i, a, b) => i+a+b, 'a', 'b');`.
+Calls a function `times` times, with `index` as argument. Additional arguments are passed on to `f` like so:
+
+```js
+ö.times(100, (i, a, b) => i + a + b, 'a', 'b')
+```
 
 Returns an array containing the return values of `f`, or an array containing index values if `f` is `undefined`.
 
@@ -122,22 +142,38 @@ If all inputs to these methods are `Set`s, the outputs adhere to strict set logi
 #### ö.intersect( a, b ) → Array
 
 <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="9" height="9" stroke="white"/><rect x="5.5" y="5.5" width="9" height="9" stroke="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 5V10H5V5H10Z" fill="black"/></svg> Intersection, returns elements that are members of both `a` and `b`.
-Example: `ö.intersect([0, 1], [1, 2]) // returns [1]`
+Example:
+
+```js
+ö.intersect([0, 1], [1, 2]) // returns [1]
+```
 
 #### ö.subtract( a, b ) → Array
 
 <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="9" height="9" stroke="white"/><rect x="5.5" y="5.5" width="9" height="9" stroke="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 0H0V10H5V5H10V0Z" fill="black"/></svg> Difference, returns members of `a` but not members of `b`, i.e. subtracts `b` from `a`.
-Example: `ö.subtract([0, 1], [1, 2]) // returns [0]`
+Example:
+
+```js
+ö.subtract([0, 1], [1, 2]) // returns [0]
+```
 
 #### ö.exclude( a, b ) → Array
 
 <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 0H0V10H5V15H15V5H10V0ZM10 5H5V10H10V5Z" fill="black"/></svg> Symmetric difference, returns elements that are members of `a` or `b`, but not both.
-Example: `ö.exclude([0, 1], [1, 2]) // returns [0, 2]`
+Example:
+
+```js
+ö.exclude([0, 1], [1, 2]) // returns [0, 2]
+```
 
 #### ö.union( a, b ) → Array
 
 <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="9" height="9" stroke="white"/><rect x="5.5" y="5.5" width="9" height="9" stroke="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 0H0V10H5V15H15V5H10V0Z" fill="black"/></svg> Returns (unique) members of both `a` and `b`.
-Example: `ö.union([0, 1], [1, 2]) // returns [0, 1, 2]`
+Example:
+
+```js
+ö.union([0, 1], [1, 2]) // returns [0, 1, 2]
+```
 
 #### ö.isSubset( a, b ) → Boolean
 
@@ -159,7 +195,17 @@ Returns a freezed clone of `v`. Set `deep` to `false` to make only top level imm
 
 #### ö.pipe( v, ...funcs ) → value
 
-Pipes function calls. For multiple arguments, use closures. Usage: `ö.pipe(1, x => x*6, x => x**2, x => x+6, ö.log) -> logs 42`.
+Pipes function calls. For multiple arguments, use closures. Usage:
+
+```js
+ö.pipe(
+	1,
+	x => x * 6,
+	x => x ** 2,
+	x => x + 6,
+	ö.log,
+) // logs 42
+```
 
 #### ö.pipeAsync( v, ...funcs ) → Promise
 
@@ -172,7 +218,12 @@ Creates and returns memoised functions. By default, the arguments to the memoise
 #### ö.createEnum( arr ) → Object;
 
 Creates and returns an enumerable, i.e. an object where the keys and values are the same. Lets you create kinda sorta vanilla typechecking light. Takes strings, or an array of strings, as input.
-Example: `const sizes = ö.createEnum('small', 'medium', 'large'); giveMeIcecream(sizes.large);`
+Example:
+
+```js
+const sizes = ö.createEnum('small', 'medium', 'large')
+giveMeIcecream(sizes.large)
+```
 
 #### ö.data( object, key, value ) → data | data.key
 
@@ -224,7 +275,11 @@ Eases out from `a` to `b`. `t` is a percentage value between 0 and 1.
 
 #### ö.nthRoot( x, n ) → Number
 
-Returns nth root of positive number, for example `ö.nthRoot( 256, 8 ) == 2`
+Returns nth root of positive number, for example
+
+```js
+ö.nthRoot(256, 8) === 2
+```
 
 #### ö.factorial( n ) → Number
 
@@ -279,7 +334,11 @@ A slightly more readable wrapper around a ternary expression. Returns `t` if `bo
 #### ö.toHsla( colour, asString = false) → { h, s, l, a } | String
 
 Returns `colour` converted to an object with `hsla` values. Optionally returns a colour string in `hsla` format. Takes hex values, as well as all valid forms of rgb/rgba strings.
-Hsla is really easy to work with compared to rgb. For example, a `darken` method could look like this, given a `hsla` object as input: `const darken = (c, amount) => ({...c, l: c.l-amount})`
+Hsla is really easy to work with compared to rgb. For example, a `darken` method could look like this, given a `hsla` object as input:
+
+```js
+const darken = (c, amount) => ({ ...c, l: c.l - amount })
+```
 
 #### ö.hsla( h, s = 70, l = 50, a = 1 ) → String
 
@@ -436,38 +495,35 @@ Converts string to Rövarspråket.
 öbservable uses `Proxy` to intercept changes to observable values, and in doing so detects for exemple direct array manipulation.
 Use like so:
 
-```
-import { observable, isObservable, observe } from "ouml/öbservable";
+```js
+import { observable, isObservable, observe } from 'ouml/öbservable'
 
-const obs = observable(['a', 'b', 'c']);
+const obs = observable(['a', 'b', 'c'])
 const lengthObserver = observe(
 	() => obs.length,
-	v => ö.log(`The length is ${ v }`)
-);
+	v => ö.log(`The length is ${v}`),
+)
 const firstItemObserver = observe(
 	() => obs[0],
-	v => ö.log(`The first item is ${ v }`)
-);
+	v => ö.log(`The first item is ${v}`),
+)
 // Logs The length is 3, The first item is a
 
-await ö.wait(666);
-obs.shift();
+await ö.wait(666)
+obs.shift()
 // Logs The length is 2, The first item is b, after 666ms
 ```
 
 You can also use the raw observable as input to `observe`, or call `observe` directly on the observable (due to some `Proxy` trickery):
 
-```
+```js
 const thisGuy = observable({ name: 'Guy', surname: 'This' })
 
-observe(
-	thisGuy,
-	(val, oldVal, changedProp) => ö.log(`${changedProp} has changed`)
+observe(thisGuy, (val, oldVal, changedProp) =>
+	ö.log(`${changedProp} has changed`),
 )
 
-thisGuy.observe(
-	v => ö.log(`Name: ${v.name}  Surname: ${v.surname}`)
-)
+thisGuy.observe(v => ö.log(`Name: ${v.name}  Surname: ${v.surname}`))
 
 thisGuy.surname = 'Fawkes'
 ```
@@ -483,13 +539,13 @@ When called as a method, the getter argument to `observe` is omitted.
 Takes a `value`, and returns it wrapped in an observable `Proxy`. By default, it recursively wraps nested objects as well. Set `deep` to `false` if you only want the top level to be observable (For example for observing changes in an `Array` of complex `Object`s, where the changes in individual objects are irrelevant). By default, if you add a new property to an observable, the new property is made observable as well (if it's not a primitive value). Set `extendable` to `false` to disable this behaviour.
 If `value` is a primitive (`String`, `Number`, `Boolean` etc), the value is wrapped in an object with a single property: `value`. You cannot assign to a primitive observable value directly, you need to use the `value` prop instead, or else you'd overwite the proxy.
 
-```
+```js
 let x = observable('foo')
 observe(x, ö.log)
 x = 'bar' // Won't work.
 ```
 
-```
+```js
 const x = observable('foo')
 observe(x, ö.log)
 x.value = 'bar' // Declare a const, and assign to value instead.
@@ -504,44 +560,44 @@ If you're observing an object, `updatedKey` can be useful in order to retrieve a
 `observer` is a reference to the observer object, giving access to primarily the `stop()` method.
 If the getter is a raw primitive observable, the value is unwrapped before the callback is called, like so:
 
-```
-const o = observable(0);
-observe(o, v => ö.log(`The value is ${ v }`));
+```js
+const o = observable(0)
+observe(o, v => ö.log(`The value is ${v}`))
 // logs 'The value is 0'
 ```
 
 If the getter is a function, you need to access the `value` prop, like so:
 
-```
-const o = observable(0);
-observe(() => `The value is ${ o.value }`, ö.log);
+```js
+const o = observable(0)
+observe(() => `The value is ${o.value}`, ö.log)
 // logs 'The value is 0'
 ```
 
 It's a matter of taste, really.
 However, when working with larger data structures, try to be as specific as possible in the `getter`, since returned values get copied from the observable (to avoid recursion among other things). As a rule of thumb, get the values you output in the callback, nothing more. Maybe something like this:
 
-```
-const bigAssObservable = observable(bigAssObject);
+```js
+const bigAssObservable = observable(bigAssObject)
 observe(() => {
-		const {
-			stuff,
-			that,
-			we,
-			childObject: { really, need }
-		} = bigAssObservable;
-		return { stuff, that, we, really, need };
-	},
-	renderSmallPartOfBigAssObject
-);
+	const {
+		stuff,
+		that,
+		we,
+		childObject: { really, need },
+	} = bigAssObservable
+	return { stuff, that, we, really, need }
+}, renderSmallPartOfBigAssObject)
 ```
 
 When working with deep data structures, like a global state object with a reducer function, you may want to enable the `deep` option. This lets you observe an entire object structure, and receive updates when properties on child objects change, like so:
 
-```
-const deep = observable({a: {b: {c: {d: "What's the purpose of it all?"}}}});
-observe(deep, ö.log, true);
-deep.a.b.c.d = "Deep stuff"; // Triggers observer when deep option is true
+```js
+const deep = observable({
+	a: { b: { c: { d: "What's the purpose of it all?" } } },
+})
+observe(deep, ö.log, true)
+deep.a.b.c.d = 'Deep stuff' // Triggers observer when deep option is true
 ```
 
 The drawback with this option, however, is that the entire data structure gets deep cloned every time the observer is triggered. This is fairly untested with regards to performance, so use with caution, and try to keep the data structure small. There are possible optimisations to be done here, maybe in the future...
@@ -562,11 +618,11 @@ You can also call `observe` directly on an observable object (`observe` is not a
 
 `observe()` returns observers, holding the current value of the observed observable, and a few methods and properties for flow control. You don't need to save a reference to the object, but it might come in handy if you want to stop observing later on.
 
-```
-const x = observable(0);
-const o = observe(x, ö.log);
-x.value = 666; // logs 666
-o.stop();
+```js
+const x = observable(0)
+const o = observe(x, ö.log)
+x.value = 666 // logs 666
+o.stop()
 ```
 
 #### o.pause()
@@ -609,8 +665,9 @@ Set to `true` if stopped, otherwise `undefined`.
 
 Övents implements she `svelte/action` interface, and are usable as svelte actions, but can be used in any browser context like so:
 
-```
+```js
 const el = document.querySelector('#someElement')
+
 resize(el)
 // or, if you need cleanup:
 const resizer = resize(el)

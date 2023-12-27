@@ -1,3 +1,76 @@
+/* 
+TODO:
+Environment methods, ie isMobile, isTouchscreen, isHiResScreen, isDesktop, isServer etc
+Extend lerp to accept any-dimensional numbers, and optional easing functions (https://github.com/AndrewRayCode/easing-utils)
+db? Server part for secrets and relay?
+
+multiply and convolve for arrays
+
+√ include .observable in ö?
+√ rewrite övents as svelte actions?
+(√ kinda) partition as separate modules?
+
+Beziers?
+Cubic, Quadratic
+
+*/
+
+import { isnt, isFunc, clone } from './ö.mjs'
+
+/*
+TypelessScript
+Proxy som kan chaina metoder på alla typer. Pipe on speed 🤪. Closure runt ett värde, returnera this. Return som special keyword. Inspect för debugging kanske? Och f() för customfunktioner? Vilken typ man har får man hålla reda på själv 😄. Eller option på att logga värde/typ för varje steg?
+Async förstås.
+
+const val = await chain('http://some.url')
+	.load()
+	.groupBy('stuff')
+	.return()
+
+const val = chain(5)
+	.f( v => Array(v).keys())
+	.map(v => v**v)
+	.sum() // accepts ö methods (or any method in scope?)
+	.toString()
+	.log()
+	.length()
+	.return()
+*/
+const chain = async val => {
+	let v = clone(val)
+	const observers = new Set(),
+		p = new Proxy(v, {
+			get: (obj, key, receiver) => {
+				// add current observer when getter is called
+				if (currentObserver) observers.add(currentObserver)
+
+				// Intercept key 'observe' and assume function call.
+				// relay to observe()
+				if (key === 'observe')
+					return (callback, deep = false) =>
+						observe(receiver, callback, deep)
+
+				return Reflect.get(obj, key)
+			},
+			set: (obj, key, value) => {
+				if (obj[key] !== value) {
+					// if new prop, and extendable, make observable
+					if (isnt(obj[key]) && isExtendable)
+						value = observable(value, true, isExtendable, false)
+					Reflect.set(obj, key, value)
+					// check and notify observers
+					observers.forEach(o => {
+						if (o.stopped) observers.delete(o)
+						else if (!o.paused) o.update(key)
+					})
+				}
+				return true // to avoid a type error
+			},
+		})
+	return p
+}
+
+// md5? Probably not. Better off somewhere else
 export const md5 = inputString => {
 	const hc = '0123456789abcdef'
 	const rh = n => {
@@ -20,7 +93,6 @@ export const md5 = inputString => {
 	const sb = x => {
 		let i
 		const nblk = ((x.length + 8) >> 6) + 1
-		//fills array
 		const blks = new Array(nblk * 16)
 		for (i = 0; i < nblk * 16; i++) blks[i] = 0
 		for (i = 0; i < x.length; i++)

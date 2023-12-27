@@ -1,19 +1,3 @@
-/* 
-TODO:
-Environment methods, ie isMobile, isTouchscreen, isHiResScreen, isDesktop, isServer etc
-Extend lerp to accept any-dimensional numberss, and optional easing functions (https://github.com/AndrewRayCode/easing-utils)
-db? Server part for secrets and relay?
-
-multiply and convolve for arrays
-
-include .observable in ö?
-rewrite övents as svelte actions?
-partition as separate modules?
-
-Beziers?
-Cubic, Quadratic
-
-*/
 // generators
 export const grid = function* (width, height) {
 	height ??= width
