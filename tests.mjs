@@ -85,7 +85,7 @@ thisGuy.observe(v => ö.log(`Name: ${v.name}  Surname: ${v.surname}`))
 
 thisGuy.surname = 'Fawkes' */
 
-import { chain, chainAsync } from './candidates.js'
+import { chain, chainAsync } from './chain/index.mjs'
 
 //ö.log('Output: ', chain([100]).pop().toString(2).value)
 
@@ -106,24 +106,26 @@ import { chain, chainAsync } from './candidates.js'
 
 ö.log(
 	'Output:',
-	await chain(5)
+	chain(11)
 		.f(v => [...Array(v).keys()])
 		.map(v => v ** v)
 		.peek()
-		.sum() // accepts ö methods (or any method in scope?)
+		.sum()
 		.toString()
 		.length()
 		.return(),
 )
 
-const data = await chainAsync('https://dummyjson.com/products')
+const nameOfPriciestProduct = await chainAsync('https://dummyjson.com/products')
 	.load(true, 'error')
 	.returnIf(v => v === 'error')
 	.products()
-	.filter(v => v.price > 1000)
-	.peek()
+	.sort((a, b) => a.price > b.price)
 	.map(v => v.title)
+	.peek()
 	.at(0)
 	.return()
 
-ö.log('Output: ', data)
+ö.log('Output: ', nameOfPriciestProduct)
+
+ö.log(chain('AnyValueOfAnyType').toKebabCase().split('-').at(1).return())

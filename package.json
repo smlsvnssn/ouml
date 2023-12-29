@@ -12,12 +12,16 @@
 			"default": "./ö.mjs"
 		},
 		"./övents": {
-			"types": "./ö.d.ts",
+			"types": "./övents/index.d.ts",
 			"default": "./övents/index.mjs"
 		},
 		"./öbservable": {
-			"types": "./ö.d.ts",
+			"types": "./öbservable/index.d.ts",
 			"default": "./öbservable/index.mjs"
+		},
+		"./chain": {
+			"types": "./chain/index.d.ts",
+			"default": "./chain/index.mjs"
 		}
 	},
 	"scripts": {

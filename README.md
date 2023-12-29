@@ -24,11 +24,12 @@ Most methods are runnable within node/deno. Some methods require browser API:s, 
 
 ## Modules
 
-Includes modules [öbservable](#%C3%B6bservable), a basic implementation of reactive values, and [övents](#%C3%B6vents), a collection of useful custom browser events.
+Includes modules [chain](#Chain) a.k.a TypelessScript, a method for chaining calls on any type, [öbservable](#%C3%B6bservable), a basic implementation of reactive values, and [övents](#%C3%B6vents), a collection of useful custom browser events.
 
 Import them from
 
 ```js
+import { chain, chainAsync } from 'ouml/chain'
 import { observable, isObservable, observe } from 'ouml/öbservable'
 import {
 	resize,
@@ -364,9 +365,9 @@ Waits `t` milliseconds. If `resetPrevCall == true`, previous pending call is rej
 
 [browser] Waits for specified event. Takes only one element, and one event type.
 
-#### ö.load( url, isJSON = true ) → Promise
+#### ö.load( url, isJSON = true, errorMessage = null ) → Promise
 
-[browser (Alternatively: Use node-fetch)] Loads (and parses) JSON. Optionally loads HTML. Super simple fetch wrapper.
+[browser (Alternatively: Use node-fetch)] Loads (and parses) JSON. Optionally loads HTML. Super simple fetch wrapper. On error, simply returns the error message, or optionally returns your custom error message.
 
 #### ö.pipeAsync( v, ...funcs ) → Promise
 
@@ -485,6 +486,101 @@ Parses a `DOMStringMap` as `JSON`. Used internally when reading from `Element.da
 #### ö.rorövovarorsospoproråkoketot( str ) → String
 
 Converts string to Rövarspråket.
+
+## Chain
+
+Chain lets you chain any method calls, on any type, kind of like a pipe on speed 🧙, or a jQuery for any object. It simply shoves the return value around, allowing you to think about more important stuff than intermediate variables.
+
+Here's an example:
+
+```js
+const guessWhat = chain(11)
+	.f(v => [...Array(v).keys()])
+	.map(v => v ** v)
+	.sum()
+	.toString()
+	.length()
+	.return()
+```
+
+It takes the number 11, makes an array of integers using the `.f()` directive, maps the values to the power of themselves, sums them with an `ö` method, converts the resulting number to a string, gets the length of the string, and returns it.
+
+Here's another:
+
+```js
+const nameOfPriciestProduct = await chainAsync('https://dummyjson.com/products')
+	.load(true, 'error')
+	.returnIf(v => v === 'error')
+	.products()
+	.sort((a, b) => a.price > b.price)
+	.map(v => v.title)
+	.at(0)
+	.return()
+```
+
+It takes a url, loads it as json with an `ö` method, handles the error case, gets the products property of the json object, sorts it, gets the titles, gets the first one, and returns it. Simple as that!
+
+### Usage
+
+`chain` chains method calls, but with some quirks and gotchas. For example, properties on objects can be retrieved by calling the property name as a function. Also, if a method in the chain creates an error, the step is simply skipped (and the error is logged), guaranteeing a return value.
+Use like so:
+
+```js
+import { chain, chainAsync } from 'ouml/chain'
+
+const processedValue = chain('AnyValueOfAnyType')
+	.anyMethodOnCurrentType()
+	.anyMethodInÖ()
+	.anyPropertyOnAnObject()
+	.f(anyFunction)
+	.peek() // Logs current value and type
+	.returnIf(anyFunctionReturningABoolean)
+	.return()
+```
+
+### Methods
+
+Chain exports two methods:
+
+#### chain( value, isAsync = false ) → Proxy
+
+Chain wraps a value, and creates a `Proxy` that handles the chaining. Optionally, set `isAsync` to `true` to handle async values, or use:
+
+#### chainAsync( value ) → Proxy
+
+Same as `chain`, but results in a `Promise`.
+
+### "Methods"
+
+The chain proxy defines a few special cases, that looks and behaves like methods:
+
+#### .f( function ) → Proxy
+
+`f` allows arbitrary functions to be passed into the call chain. The function receives the current value as argument.
+
+#### .return() → value
+
+Executes call stack, and returns computed value.
+
+#### .value → value
+
+Same as `.return()`, executes call stack, and returns computed value.
+
+#### .returnIf( function ) → value | Proxy
+
+Guard clause, lets you exit the call stack early. The function receives the current value as argument, and is expected to return a boolean. Returns on truthy values.
+
+#### .peek() → Proxy
+
+Lets you peek into the call chain, logging current value and type to the console.
+
+#### .propertyName() → Proxy
+
+Lets you access properties on objects as a method call, for example `.length()` to get the length of a string or an array.
+
+#### .anyMethodInÖ( ...args ) → Proxy
+
+Lets you pass any `ö` method into the chain. The current value is passed as the first argument, so if you would normally call `ö.sum(arr)`, in a chain you need only call `.sum()`
 
 ## Öbservable
 
