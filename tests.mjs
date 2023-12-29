@@ -3,7 +3,6 @@ import * as öbservable from './öbservable/index.mjs'
 import * as övents from './övents/index.mjs'
 
 import testData from './testdata.js'
-import { md5 } from './candidates.js'
 
 /* ö.log(`
 ---
@@ -49,7 +48,7 @@ let test = { h: 100, s: 10, l: 10, a: 0.5 }
 
 ///
 
-let primitive = öbservable.observable(0)
+/* let primitive = öbservable.observable(0)
 const array = öbservable.observable(['test'])
 const object = öbservable.observable({ test: 'Yes, test' })
 
@@ -84,4 +83,47 @@ const thisGuy = öbservable.observable({ name: 'Guy', surname: 'This' })
 
 thisGuy.observe(v => ö.log(`Name: ${v.name}  Surname: ${v.surname}`))
 
-thisGuy.surname = 'Fawkes'
+thisGuy.surname = 'Fawkes' */
+
+import { chain, chainAsync } from './candidates.js'
+
+//ö.log('Output: ', chain([100]).pop().toString(2).value)
+
+/* ö.log(
+	'Output: ',
+	await chainAsync('Hilarious')
+		.toUpperCase()
+		.testFail()
+		.split('')
+		.map(v => `### ${v} ###`)
+		.shuffle()
+		.peek()
+		.join('')
+		//.peek()
+		.f(v => v.split('').reverse())
+		.join('').value,
+) */
+
+ö.log(
+	'Output:',
+	await chain(5)
+		.f(v => [...Array(v).keys()])
+		.map(v => v ** v)
+		.peek()
+		.sum() // accepts ö methods (or any method in scope?)
+		.toString()
+		.length()
+		.return(),
+)
+
+const data = await chainAsync('https://dummyjson.com/products')
+	.load(true, 'error')
+	.returnIf(v => v === 'error')
+	.products()
+	.filter(v => v.price > 1000)
+	.peek()
+	.map(v => v.title)
+	.at(0)
+	.return()
+
+ö.log('Output: ', data)

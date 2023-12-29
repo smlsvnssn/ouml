@@ -147,7 +147,11 @@ declare module 'ouml' {
 		event: string,
 		f?: Function,
 	): Promise<void>
-	export function load(url: string, isJSON?: boolean): Promise<{} | string>
+	export function load(
+		url: string,
+		isJSON?: boolean,
+		errorMessage?: string,
+	): Promise<{} | string>
 
 	export function isBool(v: any): boolean
 	export function isNum(v: any): boolean
