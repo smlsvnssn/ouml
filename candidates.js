@@ -13,4 +13,6 @@ multiply and convolve for arrays
 Beziers?
 Cubic, Quadratic
 
+Replace ö.clone with structuredClone? https://developer.mozilla.org/en-US/docs/Web/API/structuredClone
+
 */

@@ -32,13 +32,13 @@ Import them from
 import { chain, chainAsync } from 'ouml/chain'
 import { observable, isObservable, observe } from 'ouml/öbservable'
 import {
-	resize,
-	enterview,
-	exitview,
-	sticktotop,
-	sticktobottom,
-	swipe,
-	clickoutside,
+    resize,
+    enterview,
+    exitview,
+    sticktotop,
+    sticktobottom,
+    swipe,
+    clickoutside,
 } from 'ouml/övents'
 ```
 
@@ -200,11 +200,11 @@ Pipes function calls. For multiple arguments, use closures. Usage:
 
 ```js
 ö.pipe(
-	1,
-	x => x * 6,
-	x => x ** 2,
-	x => x + 6,
-	ö.log,
+    1,
+    x => x * 6,
+    x => x ** 2,
+    x => x + 6,
+    ö.log,
 ) // logs 42
 ```
 
@@ -495,30 +495,30 @@ Here's an example:
 
 ```js
 const guessWhat = chain(11)
-	.f(v => [...Array(v).keys()])
-	.map(v => v ** v)
-	.sum()
-	.toString()
-	.length()
-	.return()
+    .f(v => [...Array(v).keys()])
+    .map(v => v ** v)
+    .sum()
+    .toString()
+    .length()
+    .return()
 ```
 
-It takes the number 11, makes an array of integers using the `.f()` directive, maps the values to the power of themselves, sums them with an `ö` method, converts the resulting number to a string, gets the length of the string, and returns it.
+It takes the number 11, makes an array of integers using the `.f()` directive, maps the values to the power of themselves, sums them using an `ö` method, converts the resulting number to a string, gets the length of the string, and returns it.
 
 Here's another:
 
 ```js
 const nameOfPriciestProduct = await chainAsync('https://dummyjson.com/products')
-	.load(true, 'error')
-	.returnIf(v => v === 'error')
-	.products()
-	.sort((a, b) => a.price > b.price)
-	.map(v => v.title)
-	.at(0)
-	.return()
+    .load(true, 'error')
+    .returnIf(v => v === 'error')
+    .products()
+    .sort((a, b) => a.price > b.price)
+    .map(v => v.title)
+    .at(0)
+    .return()
 ```
 
-It takes a url, loads it as json with an `ö` method, handles the error case, gets the products property of the json object, sorts it, gets the titles, gets the first one, and returns it. Simple as that!
+It takes a url, loads it as json using an `ö` method, handles the error case, gets the products property of the json object, sorts it, gets the titles, gets the first one, and returns it. Simple as that!
 
 ### Usage
 
@@ -529,13 +529,13 @@ Use like so:
 import { chain, chainAsync } from 'ouml/chain'
 
 const processedValue = chain('AnyValueOfAnyType')
-	.anyMethodOnCurrentType()
-	.anyMethodInÖ()
-	.anyPropertyOnAnObject()
-	.f(anyFunction)
-	.peek() // Logs current value and type
-	.returnIf(anyFunctionReturningABoolean)
-	.return()
+    .anyMethodOnCurrentType()
+    .anyMethodInÖ()
+    .anyPropertyOnAnObject()
+    .f(anyFunction)
+    .peek() // Logs current value and type
+    .returnIf(anyFunctionReturningABoolean)
+    .return()
 ```
 
 ### Methods
@@ -596,12 +596,12 @@ import { observable, isObservable, observe } from 'ouml/öbservable'
 
 const obs = observable(['a', 'b', 'c'])
 const lengthObserver = observe(
-	() => obs.length,
-	v => ö.log(`The length is ${v}`),
+    () => obs.length,
+    v => ö.log(`The length is ${v}`),
 )
 const firstItemObserver = observe(
-	() => obs[0],
-	v => ö.log(`The first item is ${v}`),
+    () => obs[0],
+    v => ö.log(`The first item is ${v}`),
 )
 // Logs The length is 3, The first item is a
 
@@ -616,7 +616,7 @@ You can also use the raw observable as input to `observe`, or call `observe` dir
 const thisGuy = observable({ name: 'Guy', surname: 'This' })
 
 observe(thisGuy, (val, oldVal, changedProp) =>
-	ö.log(`${changedProp} has changed`),
+    ö.log(`${changedProp} has changed`),
 )
 
 thisGuy.observe(v => ö.log(`Name: ${v.name}  Surname: ${v.surname}`))
@@ -676,13 +676,13 @@ However, when working with larger data structures, try to be as specific as poss
 ```js
 const bigAssObservable = observable(bigAssObject)
 observe(() => {
-	const {
-		stuff,
-		that,
-		we,
-		childObject: { really, need },
-	} = bigAssObservable
-	return { stuff, that, we, really, need }
+    const {
+        stuff,
+        that,
+        we,
+        childObject: { really, need },
+    } = bigAssObservable
+    return { stuff, that, we, really, need }
 }, renderSmallPartOfBigAssObject)
 ```
 
@@ -690,7 +690,7 @@ When working with deep data structures, like a global state object with a reduce
 
 ```js
 const deep = observable({
-	a: { b: { c: { d: "What's the purpose of it all?" } } },
+    a: { b: { c: { d: "What's the purpose of it all?" } } },
 })
 observe(deep, ö.log, true)
 deep.a.b.c.d = 'Deep stuff' // Triggers observer when deep option is true
