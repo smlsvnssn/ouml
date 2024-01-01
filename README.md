@@ -531,7 +531,7 @@ import { chain, chainAsync } from 'ouml/chain'
 const processedValue = chain('AnyValueOfAnyType')
     .anyMethodOnCurrentType()
     .anyMethodInÖ()
-    .anyPropertyOnAnObject()
+    .anyProperty()
     .f(anyFunction)
     .peek() // Logs current value and type
     .returnIf(anyFunctionReturningABoolean)
@@ -554,10 +554,6 @@ Same as `chain`, but results in a `Promise`.
 
 The chain proxy defines a few special cases, that looks and behaves like methods:
 
-#### .f( function ) → Proxy
-
-`f` allows arbitrary functions to be passed into the call chain. The function receives the current value as argument.
-
 #### .return() → value
 
 Executes call stack, and returns computed value.
@@ -574,9 +570,17 @@ Guard clause, lets you exit the call stack early. The function receives the curr
 
 Lets you peek into the call chain, logging current value and type to the console.
 
+#### .f( function ) → Proxy
+
+`f` allows arbitrary functions to be passed into the call chain. The function receives the current value as argument.
+
 #### .propertyName() → Proxy
 
 Lets you access properties on objects as a method call, for example `.length()` to get the length of a string or an array.
+
+#### .anyMethodOnCurrentType( ...args ) → Proxy
+
+Lets you call a method of the current value. Methods are called "as is", so for exemple a `.map(v => v)` on an array takes a function, `.toUpperCase()` on a string takes no argument, and `.toUpperCase()` on a number is skipped along with a warning to the console, since no such method exists on a number.
 
 #### .anyMethodInÖ( ...args ) → Proxy
 

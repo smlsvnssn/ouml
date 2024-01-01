@@ -2,18 +2,42 @@
 TypelessScript
 Proxy som kan chaina metoder på alla typer. Pipe on speed 🤪. Closure runt ett värde, returnera this. Return som special keyword. Inspect för debugging kanske? Och f() för customfunktioner? Vilken typ man har får man hålla reda på själv 😄. Eller option på att logga värde/typ för varje steg?
 Async förstås? Eller? Går det? Yepp!
+
+TODO: Option to throw on errors instead of skipping
+TODO: Way to call static methods, global methods and other methods in scope
 */
 
 import * as ö from '../ö.mjs'
 
 const lookupMethod = (key, val) => {
+    // check for methods on val
     if (ö.isFunc(val[key])) return (...args) => val[key](...args)
+
+    // check for props on val
     if (ö.is(val[key])) return () => val[key]
+
+    // check for methods on ö
     if (ö.isFunc(ö[key])) return (...args) => ö[key](val, ...args)
 
+    const keys = key.split('_')
+
+    // check for methods on globalThis, but only if not compound key
+    if (keys.length === 1 && ö.isFunc(globalThis[key]))
+        return (...args) => globalThis[key](val, ...args)
+
+    // check for methods on global objects
+    if (keys.length === 2 && ö.isFunc(globalThis[keys[0]]?.[keys[1]]))
+        return (...args) => globalThis[keys[0]][keys[1]](val, ...args)
+
     ö.warn(
-        `No method found for ${key} on type ${val.constructor.name}, skipping.`,
+        `No method or property found for ${key} on type ${
+            val.constructor.name
+        }, and no method for ${key.replaceAll(
+            '_',
+            '.',
+        )} found in ö or in global scope. Skipping.`,
     )
+
     return () => val
 }
 

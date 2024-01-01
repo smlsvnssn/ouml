@@ -104,28 +104,32 @@ import { chain, chainAsync } from './chain/index.mjs'
 		.join('').value,
 ) */
 
-ö.log(
-	'Output:',
-	chain(11)
-		.f(v => [...Array(v).keys()])
-		.map(v => v ** v)
-		.peek()
-		.sum()
-		.toString()
-		.length()
-		.return(),
+/* ö.log(
+    'Output:',
+    chain(11)
+        .f(v => [...Array(v).keys()])
+        .map(v => v ** v)
+        .peek()
+        .sum()
+        .toString()
+        .length()
+        .return(),
 )
 
 const nameOfPriciestProduct = await chainAsync('https://dummyjson.com/products')
-	.load(true, 'error')
-	.returnIf(v => v === 'error')
-	.products()
-	.sort((a, b) => a.price > b.price)
-	.map(v => v.title)
-	.peek()
-	.at(0)
-	.return()
+    .load(true, 'error')
+    .returnIf(v => v === 'error')
+    .products()
+    .sort((a, b) => a.price > b.price)
+    .map(v => v.title)
+    .peek()
+    .at(0)
+    .return()
 
 ö.log('Output: ', nameOfPriciestProduct)
 
 ö.log(chain('AnyValueOfAnyType').toKebabCase().split('-').at(1).return())
+
+ö.log(chain(5).toString().toUpperCase().return()) */
+
+ö.log(chain(Math.PI).Array_from().return())
