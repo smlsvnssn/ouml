@@ -3,13 +3,11 @@ TypelessScript
 Proxy som kan chaina metoder på alla typer. Pipe on speed 🤪. Closure runt ett värde, returnera this. Return som special keyword. Inspect för debugging kanske? Och f() för customfunktioner? Vilken typ man har får man hålla reda på själv 😄. Eller option på att logga värde/typ för varje steg?
 Async förstås? Eller? Går det? Yepp!
 
-TODO: Option to throw on errors instead of skipping
-TODO: Way to call static methods, global methods and other methods in scope
 */
 
 import * as ö from '../ö.mjs'
 
-const lookupMethod = (key, val) => {
+const lookupMethod = (key, val, isThrowing) => {
     // check for methods on val
     if (ö.isFunc(val[key])) return (...args) => val[key](...args)
 
@@ -29,14 +27,15 @@ const lookupMethod = (key, val) => {
     if (keys.length === 2 && ö.isFunc(globalThis[keys[0]]?.[keys[1]]))
         return (...args) => globalThis[keys[0]][keys[1]](val, ...args)
 
-    ö.warn(
-        `No method or property found for ${key} on type ${
-            val.constructor.name
-        }, and no method for ${key.replaceAll(
-            '_',
-            '.',
-        )} found in ö or in global scope. Skipping.`,
-    )
+    const errorMsg = `No method or property found for ${key} on type ${
+        val.constructor.name
+    }, and no method for ${key.replaceAll(
+        '_',
+        '.',
+    )} found in ö or in global scope.`
+
+    if (isThrowing) throw new Error(errorMsg)
+    ö.warn(`${errorMsg} Skipping.`)
 
     return () => val
 }
@@ -48,10 +47,13 @@ Value: ${JSON.stringify(val, null, 2)}
 Type:  ${val.constructor.name}
 `)
 
-const warn = (i, key, error) =>
-    ö.warn(`Chain failed at step ${i} for method ${key}, skipping:`, error)
+const warn = (i, key, error, isThrowing) => {
+    const errorMsg = `Chain failed at step ${i} for method ${key}.`
+    if (isThrowing) throw new Error(errorMsg + '\n' + error)
+    ö.warn(`${errorMsg} Skipping:`, error)
+}
 
-const createProxy = (o, isAsync) => {
+const createProxy = (o, isAsync, isThrowing) => {
     const q = []
 
     const caseRunQ = isAsync
@@ -59,13 +61,13 @@ const createProxy = (o, isAsync) => {
               for (const [i, [key, f]] of q.entries()) {
                   if (key === 'returnIf' && (await f())) break
                   if (key === 'peek') {
-                      peek(i, q[i - 1][0], o.val, f)
+                      peek(i, q[i - 1][0], o.val)
                       continue
                   }
                   try {
                       await f(o.val)
                   } catch (error) {
-                      warn(i, key, error)
+                      warn(i, key, error, isThrowing)
                   }
               }
               return o.val
@@ -80,7 +82,7 @@ const createProxy = (o, isAsync) => {
                   try {
                       f(o.val)
                   } catch (error) {
-                      warn(i, key, error)
+                      warn(i, key, error, isThrowing)
                   }
               }
               return o.val
@@ -113,8 +115,17 @@ const createProxy = (o, isAsync) => {
                 key,
                 isAsync
                     ? async () =>
-                          (o.val = await lookupMethod(key, o.val)(...args))
-                    : () => (o.val = lookupMethod(key, o.val)(...args)),
+                          (o.val = await lookupMethod(
+                              key,
+                              o.val,
+                              isThrowing,
+                          )(...args))
+                    : () =>
+                          (o.val = lookupMethod(
+                              key,
+                              o.val,
+                              isThrowing,
+                          )(...args)),
             ])
             return p
         }
@@ -132,6 +143,8 @@ const createProxy = (o, isAsync) => {
     return p
 }
 
-export const chain = (val, isAsync = false) =>
-    createProxy({ val: ö.clone(val) }, isAsync)
-export const chainAsync = val => createProxy({ val: ö.clone(val) }, true)
+export const chain = (val, isThrowing = false, isAsync = false) =>
+    createProxy({ val: ö.clone(val) }, isAsync, isThrowing)
+
+export const chainAsync = (val, isThrowing = false) =>
+    createProxy({ val: ö.clone(val) }, true, isThrowing)

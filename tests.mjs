@@ -132,4 +132,11 @@ const nameOfPriciestProduct = await chainAsync('https://dummyjson.com/products')
 
 ö.log(chain(5).toString().toUpperCase().return()) */
 
-ö.log(chain(Math.PI).Array_from().return())
+ö.log(
+    chain(Math.PI, null, true)
+        .fkkfk_fkfk()
+        .f(() => {
+            throw new Error('lalala')
+        })
+        .return(),
+)

@@ -522,7 +522,7 @@ It takes a url, loads it as json using an `ö` method, handles the error case, g
 
 ### Usage
 
-`chain` chains method calls, but with some quirks and gotchas. For example, properties on objects can be retrieved by calling the property name as a function. Also, if a method in the chain creates an error, the step is simply skipped (and the error is logged), guaranteeing a return value.
+`chain` chains method calls, but with some quirks and gotchas. For example, properties on objects can be retrieved by calling the property name as a function. Methods on objects in the global scope can be accessed by an underscore, for example `Object_groupBy()`. Also, if a method in the chain creates an error, the step is skipped by default (and the error is logged), guaranteeing a return value. You can override this by setting `isThrowing` to true.
 Use like so:
 
 ```js
@@ -530,8 +530,10 @@ import { chain, chainAsync } from 'ouml/chain'
 
 const processedValue = chain('AnyValueOfAnyType')
     .anyMethodOnCurrentType()
+    .anyPropertyOnCurrentValue()
     .anyMethodInÖ()
-    .anyProperty()
+    .anyMethodInGlobalScope()
+    .anyObjectInGlobalScope_anyMethod()
     .f(anyFunction)
     .peek() // Logs current value and type
     .returnIf(anyFunctionReturningABoolean)
@@ -542,11 +544,11 @@ const processedValue = chain('AnyValueOfAnyType')
 
 Chain exports two methods:
 
-#### chain( value, isAsync = false ) → Proxy
+#### chain( value, isThrowing = false, isAsync = false ) → Proxy
 
-Chain wraps a value, and creates a `Proxy` that handles the chaining. Optionally, set `isAsync` to `true` to handle async values, or use:
+Chain wraps a value, and creates a `Proxy` that handles the chaining. Errors are skipped by default, set `isThrowing` to true to throw erors instead. Optionally, set `isAsync` to `true` to handle async values, or use:
 
-#### chainAsync( value ) → Proxy
+#### chainAsync( value, isThrowing = false ) → Proxy
 
 Same as `chain`, but results in a `Promise`.
 
@@ -564,7 +566,7 @@ Same as `.return()`, executes call stack, and returns computed value.
 
 #### .returnIf( function ) → value | Proxy
 
-Guard clause, lets you exit the call stack early. The function receives the current value as argument, and is expected to return a boolean. Returns on truthy values.
+Guard clause, lets you exit the call chain early. The function receives the current value as argument, and is expected to return a boolean. Returns on truthy values.
 
 #### .peek() → Proxy
 
@@ -572,19 +574,29 @@ Lets you peek into the call chain, logging current value and type to the console
 
 #### .f( function ) → Proxy
 
-`f` allows arbitrary functions to be passed into the call chain. The function receives the current value as argument.
-
-#### .propertyName() → Proxy
-
-Lets you access properties on objects as a method call, for example `.length()` to get the length of a string or an array.
+`f` allows arbitrary functions to be passed into the call chain. The function receives the current value as argument. `f` is particularly useful for methods defined in a function or module scope, since these scopes are unreachable otherwise.
 
 #### .anyMethodOnCurrentType( ...args ) → Proxy
 
 Lets you call a method of the current value. Methods are called "as is", so for exemple a `.map(v => v)` on an array takes a function, `.toUpperCase()` on a string takes no argument, and `.toUpperCase()` on a number is skipped along with a warning to the console, since no such method exists on a number.
 
+#### .anyPropertyOnCurrentValue() → Proxy
+
+Lets you access properties on the current value as a method call, for example `.length()` to get the length of a string or an array.
+
 #### .anyMethodInÖ( ...args ) → Proxy
 
 Lets you pass any `ö` method into the chain. The current value is passed as the first argument, so if you would normally call `ö.sum(arr)`, in a chain you need only call `.sum()`
+
+#### .anyMethodInGlobalScope( ...args ) → Proxy
+
+Lets you pass any global method into the chain. The current value is passed as the first argument, so if you would normally call `fetch('http://some.url')`, in a chain you need only call `.fetch()`
+
+#### .anyObjectInGlobalScope_anyMethod( ...args ) → Proxy
+
+Lets you pass any method on a global object into the chain. The current value is passed as the first argument, so if you would normally call `JSON.parse(someString)` or `Array.from(someIterable)`, in a chain you need only call `.JSON_parse()` or `.Array_from()`.
+
+If you have defined any methods in the global scope that have underscores in their names, use `.f(v => my_global_method(v))` instead, since underscores get parsed out by the proxy.
 
 ## Öbservable
 
