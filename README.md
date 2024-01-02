@@ -24,7 +24,7 @@ Most methods are runnable within node/deno. Some methods require browser API:s, 
 
 ## Modules
 
-Includes modules [chain](#Chain) a.k.a TypelessScript, a method for chaining calls on any type, [öbservable](#%C3%B6bservable), a basic implementation of reactive values, and [övents](#%C3%B6vents), a collection of useful custom browser events.
+Includes modules [chain](#Chain), a method for chaining calls on any type, [öbservable](#%C3%B6bservable), a basic implementation of reactive values, and [övents](#%C3%B6vents), a collection of useful custom browser events.
 
 Import them from
 
@@ -489,7 +489,7 @@ Converts string to Rövarspråket.
 
 ## Chain
 
-Chain lets you chain any method calls, on any type, kind of like a pipe on speed 🧙, or a jQuery for any object. It simply shoves the return value around, allowing you to think about more important stuff than intermediate variables.
+Chain a.k.a TypelessScript lets you chain any method calls, on any type, kind of like a pipe on speed 🧙, or a jQuery for any object. It simply shoves the return value around, allowing you to think about more important stuff than intermediate variables.
 
 Here's an example:
 
@@ -540,6 +540,8 @@ const processedValue = chain('AnyValueOfAnyType')
     .return()
 ```
 
+A quick note on performance: `chain` does string matching, proxying and other fun stuff that adds some overhead. It is untested performance-wise, and might not be the best option in a game loop 😇. It's mainly a proof of concept, but since it produces some really nice, terse and readable code, it might come in handy in some situations!
+
 ### Methods
 
 Chain exports two methods:
@@ -586,11 +588,11 @@ Lets you access properties on the current value as a method call, for example `.
 
 #### .anyMethodInÖ( ...args ) → Proxy
 
-Lets you pass any `ö` method into the chain. The current value is passed as the first argument, so if you would normally call `ö.sum(arr)`, in a chain you need only call `.sum()`
+Lets you pass any `ö` method into the chain. The current value is passed as the first argument, so if you would normally call `ö.sum(arr)`, in a chain you need only call `.sum()`.
 
 #### .anyMethodInGlobalScope( ...args ) → Proxy
 
-Lets you pass any global method into the chain. The current value is passed as the first argument, so if you would normally call `fetch('http://some.url')`, in a chain you need only call `.fetch()`
+Lets you pass any global method into the chain. The current value is passed as the first argument, so if you would normally call `fetch('http://some.url')`, in a chain you need only call `.fetch()`.
 
 #### .anyObjectInGlobalScope_anyMethod( ...args ) → Proxy
 
