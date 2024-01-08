@@ -528,7 +528,7 @@ const nameOfPriciestProduct = await chainAsync('https://dummyjson.com/products')
     .return()
 ```
 
-It takes a url, loads it as json using an `ö` method, handles the error case, gets the products property of the json object, sorts it, gets the titles, gets the first one, and returns it. Simple as that!
+It takes a url, loads it as json using an `ö` method, handles the error case, gets the products property of the json object, sorts it, gets the first one, gets the title,and returns it. Simple as that!
 
 ### Usage
 
