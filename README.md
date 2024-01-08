@@ -212,7 +212,7 @@ Pipes function calls. For multiple arguments, use closures. Usage:
 
 Same as `ö.pipe`, but awaits functions and returns a `Promise`.
 
-#### ö.memoise( f, keymaker ) → f
+#### ö.memoise/ö.memoize( f, keymaker ) → f
 
 Creates and returns memoised functions. By default, the arguments to the memoised function are used as key for storing the result (If only one argument, the raw input is used as key, if more than one, the arguments are joined to a string). If the arguments are objects instead of primitive values, you should provide a `keymaker`. `keymaker` receives all inputs from the memoised function, and should return something unique to use as a `Map` key for a given set of inputs. Use for example `JSON.stringify` when you expect objects as input.
 
@@ -254,9 +254,9 @@ Clamps `n` between `min` and `max`.
 
 Checks if `n` is between `min` and `max`.
 
-#### ö.normalize( n, min, max, clamp = true ) → Number
+#### ö.normalise/ö.normalize( n, min, max, clamp = true ) → Number
 
-Normalizes `n` to a value between 0 and 1, within range given by `min` and `max`. If `clamp == true` and value of `n` is out of range, the value is clamped.
+Normalises `n` to a value between 0 and 1, within range given by `min` and `max`. If `clamp == true` and value of `n` is out of range, the value is clamped.
 
 #### ö.lerp( a, b, t ) → Number
 
@@ -311,6 +311,10 @@ Returns `s` with first `numWords` words wrapped in `startWrap` and `endWrap`. Ma
 #### ö.toCamelCase( str ) → String
 
 Returns regular sentence, kebab-case or snake_case string converted to camelCase. Leaves `--custom-properties` alone.
+
+#### ö.capitalise/ö.capitalize( str ) → String
+
+Capitalises first letter. No fuss!
 
 #### ö.toKebabCase( str ) → String
 

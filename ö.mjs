@@ -394,6 +394,10 @@ export const toKebabCase = s =>
               .replace(/([a-z0-9])([A-Z0-9])/g, '$1-$2')
               .toLowerCase()
 
+export const capitalise = s => s[0].toUpperCase() + s.slice(1)
+
+export const capitalize = capitalise
+
 export const randomChars = (numChars = 10) =>
     (BigInt(Math.random() * 2 ** 512) * BigInt(Math.random() * 2 ** 512))
         .toString(36)
