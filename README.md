@@ -517,6 +517,7 @@ Here's another:
 import { chainAsync } from 'ouml/chain'
 
 const errorMessage = 'error'
+
 const nameOfPriciestProduct = await chainAsync('https://dummyjson.com/products')
     .load(true, errorMessage)
     .returnIf(v => v === errorMessage)
