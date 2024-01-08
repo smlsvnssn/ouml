@@ -494,6 +494,8 @@ Chain a.k.a TypelessScript lets you chain any method calls, on any type, kind of
 Here's an example:
 
 ```js
+import { chain } from 'ouml/chain'
+
 const guessWhat = chain(11)
     .f(v => [...Array(v).keys()])
     .map(v => v ** v)
@@ -508,13 +510,16 @@ It takes the number 11, makes an array of integers using the `.f()` directive, m
 Here's another:
 
 ```js
+import { chainAsync } from 'ouml/chain'
+
+const errorMessage = 'error'
 const nameOfPriciestProduct = await chainAsync('https://dummyjson.com/products')
-    .load(true, 'error')
-    .returnIf(v => v === 'error')
+    .load(true, errorMessage)
+    .returnIf(v => v === errorMessage)
     .products()
     .sort((a, b) => a.price > b.price)
-    .map(v => v.title)
     .at(0)
+    .title()
     .return()
 ```
 
@@ -548,7 +553,7 @@ Chain exports two methods:
 
 #### chain( value, isThrowing = false, isAsync = false ) → Proxy
 
-Chain wraps a value, and creates a `Proxy` that handles the chaining. Errors are skipped by default, set `isThrowing` to true to throw erors instead. Optionally, set `isAsync` to `true` to handle async values, or use:
+Chain wraps a value, and creates a `Proxy` that handles the chaining. `chain` evaluates lazily, so nothing is calculated until `.return()` or `.value` is called. Errors are skipped by default, set `isThrowing` to true to throw erors instead. Optionally, set `isAsync` to `true` to handle async values, or use:
 
 #### chainAsync( value, isThrowing = false ) → Proxy
 

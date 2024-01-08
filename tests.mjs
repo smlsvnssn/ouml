@@ -115,28 +115,29 @@ import { chain, chainAsync } from './chain/index.mjs'
         .length()
         .return(),
 )
+*/
 
+const errorMessage = 'error'
 const nameOfPriciestProduct = await chainAsync('https://dummyjson.com/products')
-    .load(true, 'error')
-    .returnIf(v => v === 'error')
+    .load(true, errorMessage)
+    .returnIf(v => v === errorMessage)
     .products()
     .sort((a, b) => a.price > b.price)
-    .map(v => v.title)
-    .peek()
     .at(0)
+    .title()
     .return()
 
 ö.log('Output: ', nameOfPriciestProduct)
 
 ö.log(chain('AnyValueOfAnyType').toKebabCase().split('-').at(1).return())
 
-ö.log(chain(5).toString().toUpperCase().return()) */
+ö.log(chain(5).toString().toUpperCase().return())
 
-ö.log(
+/* ö.log(
     chain(Math.PI, null, true)
         .fkkfk_fkfk()
         .f(() => {
             throw new Error('lalala')
         })
         .return(),
-)
+) */

@@ -24,15 +24,12 @@ const lookupMethod = (key, val, isThrowing) => {
         return (...args) => globalThis[key](val, ...args)
 
     // check for methods on global objects
-    if (keys.length === 2 && ö.isFunc(globalThis[keys[0]]?.[keys[1]]))
-        return (...args) => globalThis[keys[0]][keys[1]](val, ...args)
+    if (keys.length === 2 && ö.isFunc(globalThis[keys.at(0)]?.[keys.at(1)]))
+        return (...args) => globalThis[keys.at(0)][keys.at(1)](val, ...args)
 
     const errorMsg = `No method or property found for ${key} on type ${
         val.constructor.name
-    }, and no method for ${key.replaceAll(
-        '_',
-        '.',
-    )} found in ö or in global scope.`
+    }, and no method for ${keys.join('.')} found in ö or in global scope.`
 
     if (isThrowing) throw new Error(errorMsg)
     ö.warn(`${errorMsg} Skipping.`)
