@@ -369,9 +369,9 @@ Waits `t` milliseconds. If `resetPrevCall == true`, previous pending call is rej
 
 [browser] Waits for specified event. Takes only one element, and one event type.
 
-#### ö.load( url, isJSON = true, errorMessage = null ) → Promise
+#### ö.load( url, isJSON = true, errorMessage = null, settings = {} ) → Promise
 
-[browser (Alternatively: Use node-fetch)] Loads (and parses) JSON. Optionally loads HTML. Super simple fetch wrapper. On error, simply returns the error message, or optionally returns your custom error message.
+[browser (Alternatively: Use node-fetch)] Loads (and parses) JSON. Optionally loads HTML. Super simple fetch wrapper. On error, simply returns the error message, or optionally returns your custom error message. If you need to pass headers or other settings to the fetch call, use the `settings` object.
 
 #### ö.pipeAsync( v, ...funcs ) → Promise
 

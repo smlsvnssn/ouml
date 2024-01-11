@@ -141,3 +141,13 @@ const nameOfPriciestProduct = await chainAsync('https://dummyjson.com/products')
         })
         .return(),
 ) */
+
+const obj = { return: '123' }
+
+ö.log(
+    chain(obj)
+        .f(v => v.return)
+        .return(),
+)
+
+ö.log(ö.nChooseK(16, 2))

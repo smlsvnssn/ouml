@@ -546,9 +546,14 @@ export const waitFor = async (selector, event, f) => {
 }
 
 // JSON or text
-export const load = async (url, isJSON = true, errorMessage = null) => {
+export const load = async (
+    url,
+    isJSON = true,
+    errorMessage = null,
+    settings = {},
+) => {
     try {
-        const response = await fetch(url)
+        const response = await fetch(url, settings)
         return (await isJSON) ? response.json() : response.text()
     } catch (e) {
         error(e)

@@ -163,6 +163,7 @@ declare module 'ouml' {
         url: string,
         isJSON?: boolean,
         errorMessage?: string,
+        settings?: {}
     ): Promise<{} | string>
 
     export function isBool(v: any): boolean
