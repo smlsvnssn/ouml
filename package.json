@@ -24,6 +24,11 @@
             "default": "./chain/index.mjs"
         }
     },
+    "prettier": {
+        "experimentalTernaries": true,
+        "tabWidth": 4,
+        "semi": false
+    },
     "scripts": {
         "dev": "vite",
         "test": "vitest",
@@ -50,6 +55,7 @@
     "homepage": "https://github.com/smlsvnssn/ouml#readme",
     "dependencies": {
         "@types/node": "^16.10.2",
+        "prettier": "latest",
         "typescript": "^5.2.2"
     }
 }
