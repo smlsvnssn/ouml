@@ -215,25 +215,18 @@ export const isEqual = (a, b, deep = true) =>
     : Object.keys(a).every((k) => (deep ? isEqual(a[k], b[k]) : a[k] === b[k]))
 
 // clone
+
 export const clone = (v, deep = true, immutable = false) => {
-    const doClone = (v) => (deep ? clone(v, deep, immutable) : v),
-        doFreeze = (v) => (immutable ? Object.freeze(v) : v)
-    // no cloning of functions, too gory
+    const doFreeze = (v) => (immutable ? Object.freeze(v) : v)
+
+    if (deep) doFreeze(globalThis.structuredClone(v))
     if (typeof v !== "object" || isNull(v)) return v
     // catch arraylike
-    if ("map" in v && isFunc(v.map)) return doFreeze(v.map((i) => doClone(i)))
-    if (isMap(v)) return doFreeze(new Map(doClone(Array.from(v))))
-    if (isSet(v)) return doFreeze(new Set(doClone(Array.from(v))))
-    if (isDate(v)) {
-        const d = new Date()
-        d.setTime(v.getTime())
-        return doFreeze(d)
-    }
-    // todo: Handling of instantiation and prototype (Possible)?
-    //const o = Object.create(Object.getPrototypeOf(v));
-    const o = {}
-    for (const key in v) if (v.hasOwnProperty(key)) o[key] = doClone(v[key])
-    return doFreeze(o)
+    if ("map" in v && isFunc(v.map)) return doFreeze(v.map((i) => i))
+    if (isMap(v)) return doFreeze(new Map(Array.from(v)))
+    if (isSet(v)) return doFreeze(new Set(Array.from(v)))
+    if (isDate(v)) return doFreeze(new Date().setTime(v.getTime()))
+    return doFreeze({ ...v })
 }
 
 export const immutable = (v, deep = true) => clone(v, deep, true)
@@ -289,7 +282,7 @@ export const randomNormal = (mean = 0, sigma = 1) => {
         i = 0
     for (i; i < samples; i++) sum += Math.random()
     return (sigma * 8.35 * (sum - samples / 2)) / samples + mean
-    // ^ hand made spread constant :-)
+    //              ^ hand made spread constant :-)
 }
 
 export const round = (n, precision = 0) =>
@@ -445,9 +438,10 @@ export const toHsla = (c, asString = false) => {
         // convert
 
         // add default alpha if needed
-        if (rgba.length === 3) rgba.push(1)
+        if (rgba.length === 3)
+            rgba.push(1)
 
-        // Adapted from https://css-tricks.com/converting-color-spaces-in-javascript/
+            // Adapted from https://css-tricks.com/converting-color-spaces-in-javascript/
         ;[r, g, b, a] = rgba.map((v, i) => (i < 3 ? v / 255 : v))
         let cmin = Math.min(r, g, b),
             cmax = Math.max(r, g, b),

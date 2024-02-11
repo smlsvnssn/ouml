@@ -1,8 +1,8 @@
-import * as ö from "./ö.mjs";
-import * as öbservable from "./öbservable/index.mjs";
-import * as övents from "./övents/index.mjs";
+import * as ö from "./ö.mjs"
+import * as öbservable from "./öbservable/index.mjs"
+import * as övents from "./övents/index.mjs"
 
-import testData from "./testdata.js";
+import testData from "./testdata.js"
 
 /* ö.log(`
 ---
@@ -85,7 +85,7 @@ thisGuy.observe(v => ö.log(`Name: ${v.name}  Surname: ${v.surname}`))
 
 thisGuy.surname = 'Fawkes' */
 
-import { chain, chainAsync, isEqual } from "./chain/index.mjs";
+import { chain, chainAsync } from "./chain/index.mjs"
 
 //ö.log('Output: ', chain([100]).pop().toString(2).value)
 
@@ -117,7 +117,7 @@ import { chain, chainAsync, isEqual } from "./chain/index.mjs";
 )
 */
 
-const errorMessage = "error";
+const errorMessage = "error"
 const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
     .load(true, errorMessage)
     .returnIf((v) => v === errorMessage)
@@ -125,13 +125,13 @@ const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
     .sort((a, b) => a.price > b.price)
     .at(0)
     .title()
-    .return();
+    .return()
 
-ö.log("Output: ", nameOfPriciestProduct);
+ö.log("Output: ", nameOfPriciestProduct)
 
-ö.log(chain("AnyValueOfAnyType").toKebabCase().split("-").at(1).return());
+ö.log(chain("AnyValueOfAnyType").toKebabCase().split("-").at(1).return())
 
-ö.log(chain(5).toString().toUpperCase().return());
+ö.log(chain(5).toString().toUpperCase().return())
 
 /* ö.log(
     chain(Math.PI, null, true)
@@ -142,29 +142,34 @@ const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
         .return(),
 ) */
 
-const obj = { return: "123" };
+const obj = { return: "123" }
 
 ö.log(
     chain(obj)
         .f((v) => v.return)
         .return(),
-);
+)
 
-ö.log(ö.nChooseK(16, 2));
+ö.log(ö.nChooseK(16, 2))
 
 const parsePersonnummer = (s) => {
-    const thisYear = +String(new Date().getFullYear()).substring(2);
-    s = s.replaceAll("-", "");
+    const thisYear = +String(new Date().getFullYear()).substring(2)
+    s = s.replaceAll("-", "")
     if (s.length === 10) {
-        if (+s.substring(0, 2) > thisYear) return `19${s}`;
-        return `20${s}`;
+        if (+s.substring(0, 2) > thisYear) return `19${s}`
+        return `20${s}`
     }
-    if (s.length === 12) return s;
-    return "FELFELFEL";
-};
+    if (s.length === 12) return s
+    return "FELFELFEL"
+}
 
-ö.log(parsePersonnummer("7705143316"));
+ö.log(parsePersonnummer("7705143316"))
 
-ö.log(parsePersonnummer("201105143316"));
+ö.log(parsePersonnummer("201105143316"))
 
-ö.log("Output: ", isEqual(0, 1));
+ö.log("Output: ", ö.isEqual(0, 1))
+
+const va = { a: 1 },
+    la = va
+la.a = 2
+ö.log(va, la)
