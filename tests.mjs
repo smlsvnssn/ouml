@@ -173,3 +173,13 @@ const va = { a: 1 },
     la = va
 la.a = 2
 ö.log(va, la)
+
+ö.log(typeof new Array())
+class Öbablubb {
+    test = "bubb"
+    constructor(t) {
+        this.test = t
+    }
+}
+ö.log(ö.clone(new Öbablubb("buff")))
+ö.log(Object.getPrototypeOf(ö.clone({ a: 1 })))

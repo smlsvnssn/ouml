@@ -9,14 +9,14 @@ Usage:
 ```
 
 ```js
-import { random } from 'ouml'
+import { random } from "ouml"
 const oneOrZero = random()
 ```
 
 or, with treeshaking:
 
 ```js
-import * as ö from 'ouml'
+import * as ö from "ouml"
 const oneOrZero = ö.random()
 ```
 
@@ -29,8 +29,8 @@ Includes modules [chain](#Chain), a method for chaining calls on any type, [öbs
 Import them from
 
 ```js
-import { chain, chainAsync } from 'ouml/chain'
-import { observable, isObservable, observe } from 'ouml/öbservable'
+import { chain, chainAsync } from "ouml/chain"
+import { observable, isObservable, observe } from "ouml/öbservable"
 import {
     resize,
     enterview,
@@ -39,7 +39,7 @@ import {
     sticktobottom,
     swipe,
     clickoutside,
-} from 'ouml/övents'
+} from "ouml/övents"
 ```
 
 ## Methods
@@ -69,7 +69,7 @@ for (let i of ö.grid(8)) drawChessboard(i.x, i.y)
 Calls a function `times` times, with `index` as argument. Additional arguments are passed on to `f` like so:
 
 ```js
-ö.times(100, (i, a, b) => i + a + b, 'a', 'b')
+ö.times(100, (i, a, b) => i + a + b, "a", "b")
 ```
 
 Returns an array containing the return values of `f`, or an array containing index values if `f` is `undefined`.
@@ -188,7 +188,7 @@ Checks equality by value rather than reference. Checks own enumerable properties
 
 #### ö.clone( v, deep = true, immutable = false ) → cloned value
 
-Performs cloning of the most common object types, including `Array` and typed arrays, `Map`, `Set`, `Date` and generic objects. Defaults to deep cloning, set `deep` to `false` to perform shallow cloning. Clones own enumerable properties only, and does not set `prototype`, so objects depending on inheritance or class instances are not cloned properly. Does not clone functions. Use with some caution 🤫.
+Performs cloning of most common types, including `Array` and typed arrays, `Map`, `Set`, `Date` and objects. Defaults to deep cloning, set `deep` to `false` to perform shallow cloning. Tries to preserve `prototype` when cloning objects, but may fail in untested edge cases. Does not clone functions. Use with some caution 🤫.
 
 #### ö.immutable(v, deep = true) immutable value
 
@@ -201,9 +201,9 @@ Pipes function calls. For multiple arguments, use closures. Usage:
 ```js
 ö.pipe(
     1,
-    x => x * 6,
-    x => x ** 2,
-    x => x + 6,
+    (x) => x * 6,
+    (x) => x ** 2,
+    (x) => x + 6,
     ö.log,
 ) // logs 42
 ```
@@ -222,7 +222,7 @@ Creates and returns an enumerable, i.e. an object where the keys and values are 
 Example:
 
 ```js
-const sizes = ö.createEnum('small', 'medium', 'large')
+const sizes = ö.createEnum("small", "medium", "large")
 giveMeIcecream(sizes.large)
 ```
 
@@ -498,11 +498,11 @@ Chain a.k.a TypelessScript lets you chain any method calls, on any type, kind of
 Here's an example:
 
 ```js
-import { chain } from 'ouml/chain'
+import { chain } from "ouml/chain"
 
 const guessWhat = chain(11)
-    .f(v => [...Array(v).keys()])
-    .map(v => v ** v)
+    .f((v) => [...Array(v).keys()])
+    .map((v) => v ** v)
     .sum()
     .toString()
     .length()
@@ -514,13 +514,13 @@ It takes the number 11, makes an array of integers using the `.f()` directive, m
 Here's another:
 
 ```js
-import { chainAsync } from 'ouml/chain'
+import { chainAsync } from "ouml/chain"
 
-const errorMessage = 'error'
+const errorMessage = "error"
 
-const nameOfPriciestProduct = await chainAsync('https://dummyjson.com/products')
+const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
     .load(true, errorMessage)
-    .returnIf(v => v === errorMessage)
+    .returnIf((v) => v === errorMessage)
     .products()
     .sort((a, b) => a.price > b.price)
     .at(0)
@@ -536,9 +536,9 @@ It takes a url, loads it as json using an `ö` method, handles the error case, g
 Use like so:
 
 ```js
-import { chain, chainAsync } from 'ouml/chain'
+import { chain, chainAsync } from "ouml/chain"
 
-const processedValue = chain('AnyValueOfAnyType')
+const processedValue = chain("AnyValueOfAnyType")
     .anyMethodOnCurrentType()
     .anyPropertyOnCurrentValue()
     .anyMethodInÖ()
@@ -620,16 +620,16 @@ If you have defined any methods in the global scope that have underscores in the
 Use like so:
 
 ```js
-import { observable, isObservable, observe } from 'ouml/öbservable'
+import { observable, isObservable, observe } from "ouml/öbservable"
 
-const obs = observable(['a', 'b', 'c'])
+const obs = observable(["a", "b", "c"])
 const lengthObserver = observe(
     () => obs.length,
-    v => ö.log(`The length is ${v}`),
+    (v) => ö.log(`The length is ${v}`),
 )
 const firstItemObserver = observe(
     () => obs[0],
-    v => ö.log(`The first item is ${v}`),
+    (v) => ö.log(`The first item is ${v}`),
 )
 // Logs The length is 3, The first item is a
 
@@ -641,15 +641,15 @@ obs.shift()
 You can also use the raw observable as input to `observe`, or call `observe` directly on the observable (due to some `Proxy` trickery):
 
 ```js
-const thisGuy = observable({ name: 'Guy', surname: 'This' })
+const thisGuy = observable({ name: "Guy", surname: "This" })
 
 observe(thisGuy, (val, oldVal, changedProp) =>
     ö.log(`${changedProp} has changed`),
 )
 
-thisGuy.observe(v => ö.log(`Name: ${v.name}  Surname: ${v.surname}`))
+thisGuy.observe((v) => ö.log(`Name: ${v.name}  Surname: ${v.surname}`))
 
-thisGuy.surname = 'Fawkes'
+thisGuy.surname = "Fawkes"
 ```
 
 When called as a method, the getter argument to `observe` is omitted.
@@ -664,15 +664,15 @@ Takes a `value`, and returns it wrapped in an observable `Proxy`. By default, it
 If `value` is a primitive (`String`, `Number`, `Boolean` etc), the value is wrapped in an object with a single property: `value`. You cannot assign to a primitive observable value directly, you need to use the `value` prop instead, or else you'd overwite the proxy.
 
 ```js
-let x = observable('foo')
+let x = observable("foo")
 observe(x, ö.log)
-x = 'bar' // Won't work.
+x = "bar" // Won't work.
 ```
 
 ```js
-const x = observable('foo')
+const x = observable("foo")
 observe(x, ö.log)
-x.value = 'bar' // Declare a const, and assign to value instead.
+x.value = "bar" // Declare a const, and assign to value instead.
 ```
 
 #### observe( getter, callback, deep = false ) → observer object
@@ -686,7 +686,7 @@ If the getter is a raw primitive observable, the value is unwrapped before the c
 
 ```js
 const o = observable(0)
-observe(o, v => ö.log(`The value is ${v}`))
+observe(o, (v) => ö.log(`The value is ${v}`))
 // logs 'The value is 0'
 ```
 
@@ -721,7 +721,7 @@ const deep = observable({
     a: { b: { c: { d: "What's the purpose of it all?" } } },
 })
 observe(deep, ö.log, true)
-deep.a.b.c.d = 'Deep stuff' // Triggers observer when deep option is true
+deep.a.b.c.d = "Deep stuff" // Triggers observer when deep option is true
 ```
 
 The drawback with this option, however, is that the entire data structure gets deep cloned every time the observer is triggered. This is fairly untested with regards to performance, so use with caution, and try to keep the data structure small. There are possible optimisations to be done here, maybe in the future...
@@ -790,13 +790,13 @@ Set to `true` if stopped, otherwise `undefined`.
 Övents implements she `svelte/action` interface, and are usable as svelte actions, but can be used in any browser context like so:
 
 ```js
-const el = document.querySelector('#someElement')
+const el = document.querySelector("#someElement")
 
 resize(el)
 // or, if you need cleanup:
 const resizer = resize(el)
 
-el.addEventListener('resize', someCallback)
+el.addEventListener("resize", someCallback)
 
 // When you're done:
 resizer.destroy()

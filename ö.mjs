@@ -59,7 +59,6 @@ export const sample = (arr, samples = 1) => {
     return samples === 1 ? s[0] : s
 }
 
-// thx https://hackernoon.com/3-javascript-performance-mistakes-you-should-stop-doing-ebf84b9de951
 //sum = arr => arr.reduce( (a, v) => a + Number(v) , 0); < 10xslower
 export const sum = (arr) => {
     arr = Array.from(arr)
@@ -130,9 +129,10 @@ export const subtract = (a, b) =>
 
 export const exclude = (a, b) => {
     ;[a, b] = [Array.from(a), Array.from(b)]
-    return a
-        .filter((v) => !b.includes(v))
-        .concat(b.filter((v) => !a.includes(v)))
+    return [
+        ...a.filter((v) => !b.includes(v)),
+        ...b.filter((v) => !a.includes(v)),
+    ]
 }
 
 export const union = (a, b) => [
@@ -155,9 +155,9 @@ export const createElement = (html, isSvg = false) => {
     return template.content.firstChild
 }
 
-export const parseDOMStringMap = (o) => {
+export const parseDOMStringMap = (obj) => {
     // convert from DOMStringMap to object
-    o = { ...o }
+    const o = { ...obj }
     // parse what's parseable
     for (const key in o)
         try {
@@ -215,18 +215,22 @@ export const isEqual = (a, b, deep = true) =>
     : Object.keys(a).every((k) => (deep ? isEqual(a[k], b[k]) : a[k] === b[k]))
 
 // clone
-
 export const clone = (v, deep = true, immutable = false) => {
-    const doFreeze = (v) => (immutable ? Object.freeze(v) : v)
-
-    if (deep) doFreeze(globalThis.structuredClone(v))
+    const doClone = (v) => (deep ? clone(v, deep, immutable) : v),
+        doFreeze = (v) => (immutable ? Object.freeze(v) : v)
+    // no cloning of functions, too gory. They are passed by reference instead
     if (typeof v !== "object" || isNull(v)) return v
     // catch arraylike
-    if ("map" in v && isFunc(v.map)) return doFreeze(v.map((i) => i))
-    if (isMap(v)) return doFreeze(new Map(Array.from(v)))
-    if (isSet(v)) return doFreeze(new Set(Array.from(v)))
+    if ("map" in v && isFunc(v.map)) return doFreeze(v.map((i) => doClone(i)))
+    if (isMap(v)) return doFreeze(new Map(doClone(Array.from(v))))
+    if (isSet(v)) return doFreeze(new Set(doClone(Array.from(v))))
     if (isDate(v)) return doFreeze(new Date().setTime(v.getTime()))
-    return doFreeze({ ...v })
+
+    const o = {}
+    for (const key in v) if (v.hasOwnProperty(key)) o[key] = doClone(v[key])
+    return doFreeze(
+        Object.assign(Object.create(Object.getPrototypeOf(v) ?? {}), o),
+    )
 }
 
 export const immutable = (v, deep = true) => clone(v, deep, true)
