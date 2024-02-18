@@ -80,7 +80,15 @@ export const max = (arr) => Math.max(...arr)
 
 export const min = (arr) => Math.min(...arr)
 
-export const groupBy = (arr, prop) => {
+export const groupBy = (arr, prop, asObject = false) =>
+    globalThis[asObject ? "Object" : "Map"].groupBy(
+        arr,
+        isFunc(prop) ? prop : (v) => v[prop],
+    )
+
+/* 
+// Old version from before native .groupBy
+{
     const acc = new Map()
     for (const [i, v] of arr.entries()) {
         if (isFunc(prop)) {
@@ -90,6 +98,7 @@ export const groupBy = (arr, prop) => {
     }
     return acc
 }
+*/
 
 // find deep in array of nested objects
 export const findDeep = (arr, val, subArrayProp, prop) => {
@@ -213,11 +222,12 @@ export const isEqual = (a, b, deep = true) =>
     : Object.keys(a).length !== Object.keys(b).length ? false
         // have same properties and values? (Recursively if deep)
     : Object.keys(a).every((k) => (deep ? isEqual(a[k], b[k]) : a[k] === b[k]))
-
+export const equals = isEqual
 // clone
 export const clone = (v, deep = true, immutable = false) => {
-    const doClone = (v) => (deep ? clone(v, deep, immutable) : v),
-        doFreeze = (v) => (immutable ? Object.freeze(v) : v)
+    const doClone = (v) => (deep ? clone(v, deep, immutable) : v)
+    const doFreeze = (v) => (immutable ? Object.freeze(v) : v)
+
     // no cloning of functions, too gory. They are passed by reference instead
     if (typeof v !== "object" || isNull(v)) return v
     // catch arraylike
@@ -227,7 +237,7 @@ export const clone = (v, deep = true, immutable = false) => {
     if (isDate(v)) return doFreeze(new Date().setTime(v.getTime()))
 
     const o = {}
-    for (const key in v) if (v.hasOwnProperty(key)) o[key] = doClone(v[key])
+    for (const key of Object.keys(v)) o[key] = doClone(v[key])
     return doFreeze(
         Object.assign(Object.create(Object.getPrototypeOf(v) ?? {}), o),
     )

@@ -12,7 +12,7 @@ const lookupMethod = (key, val, isThrowing) => {
     if (ö.isFunc(val[key])) return (...args) => val[key](...args)
 
     // check for props on val
-    if (ö.is(val[key])) return () => val[key]
+    if (Object.hasOwn(val, key)) return () => val[key]
 
     // check for methods on ö
     if (ö.isFunc(ö[key])) return (...args) => ö[key](val, ...args)
@@ -59,7 +59,7 @@ const createProxy = (o, isAsync, isThrowing) => {
                 for (const [i, [key, f]] of q.entries()) {
                     if (key === "returnIf" && (await f())) break
                     if (key === "peek") {
-                        peek(i, q[i - 1][0], o.val)
+                        if (i > 0) peek(i, q[i - 1][0], o.val)
                         continue
                     }
                     try {
@@ -74,7 +74,7 @@ const createProxy = (o, isAsync, isThrowing) => {
                 for (const [i, [key, f]] of q.entries()) {
                     if (key === "returnIf" && f()) break
                     if (key === "peek") {
-                        peek(i - 1, q[i - 1][0], o.val)
+                        if (i > 0) peek(i, q[i - 1][0], o.val)
                         continue
                     }
                     try {
@@ -111,7 +111,7 @@ const createProxy = (o, isAsync, isThrowing) => {
         q.push([
             key,
             isAsync ?
-                async () => (o.val = await lookupMethod(key, o.val, isThrowing,)(...args))
+            async () => (o.val = await lookupMethod(key, o.val, isThrowing,)(...args))
             :   () => (o.val = lookupMethod(key, o.val, isThrowing)(...args)),
         ])
         return p
@@ -119,14 +119,13 @@ const createProxy = (o, isAsync, isThrowing) => {
 
     const p = new Proxy(o, {
         // prettier-ignore
-        get: (_, key) => {
-            if (key === "value")    return caseRunQ()
-            if (key === "return")   return caseRunQ
-            if (key === "returnIf") return caseReturnIf(key)
-            if (key === "peek")     return casePeek(key)
-            if (key === "f")        return caseFunction(key)
-            return caseDefault(key)
-        },
+        get: (_, key) =>
+            key === "value" ?       caseRunQ()
+            : key === "return" ?    caseRunQ
+            : key === "returnIf" ?  caseReturnIf(key)
+            : key === "peek" ?      casePeek(key)
+            : key === "f" ?         caseFunction(key)
+            :                       caseDefault(key),
     })
     return p
 }

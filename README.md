@@ -118,10 +118,11 @@ Returns largest value in `arr`.
 
 Returns smallest value in `arr`.
 
-#### ö.groupBy( arr, prop ) → Map
+#### ö.groupBy( arr, prop, asObject = false) → Map
 
 If `prop` is a string, takes an `Array` of `Objects` with a common property. If `prop` is a function, takes a function returning keys for grouping based on array contents. The function receives `value, index, array` as arguments.
-Returns a `Map` with keys corresponding to `prop` values, holding grouped values as arrays.
+
+Returns a `Map` with keys corresponding to `prop` values, holding grouped values as arrays. Optionally returns an `object` if `asObject` is set to true.
 
 #### ö.findDeep( arr, val, subArrayProp, prop ) → Array item
 
@@ -182,13 +183,15 @@ Returns `true` if `a` is a subset of `b`.
 
 ### Logical / generic
 
-#### ö.isEqual( a, b, deep = true ) → Boolean
+#### ö.isEqual/ö.equals( a, b, deep = true ) → Boolean
 
 Checks equality by value rather than reference. Checks own enumerable properties only. Works for all basic types and most built in classes, but may produce unexpected results in edge cases. Equality is tricky, and depends on what you personally beleive to be equal 😇. Does deep comparison by default, and may be slow for large data structures. If `deep == false`, does flat comparison instead.
 
 #### ö.clone( v, deep = true, immutable = false ) → cloned value
 
-Performs cloning of most common types, including `Array` and typed arrays, `Map`, `Set`, `Date` and objects. Defaults to deep cloning, set `deep` to `false` to perform shallow cloning. Tries to preserve `prototype` when cloning objects, but may fail in untested edge cases. Does not clone functions. Use with some caution 🤫.
+Performs cloning of most common types, including `Array` and typed arrays, `Map`, `Set`, `Date` and objects. Defaults to deep cloning, set `deep` to `false` for shallow cloning. Tries to preserve `prototype` when cloning objects, but may fail in untested edge cases. Does not clone functions, and doesn't handle circular references. Use with some caution 🤫.
+
+`structuredClone` is probably faster in most cases, and handles circular references, but errors on functions, and doesn't preserve prototype. Choose wisely!
 
 #### ö.immutable(v, deep = true) immutable value
 
@@ -528,7 +531,7 @@ const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
     .return()
 ```
 
-It takes a url, loads it as json using an `ö` method, handles the error case, gets the products property of the json object, sorts it, gets the first one, gets the title,and returns it. Simple as that!
+It takes a url, loads it as json using an `ö` method, handles the error case, gets the products property of the json object, sorts it, gets the first one, gets the title, and returns it. Simple as that!
 
 ### Usage
 
@@ -682,6 +685,7 @@ The `getter` can be either a raw observable, or a function returning the process
 The `callback` receives `value`, `prevValue`, `updatedKey` and `observer` as arguments. The values passed to `callback` are copied from the observable, so you can't mutate the observable value in the callback (that would create an infinite loop anyways, so don't try it 🤯).
 If you're observing an object, `updatedKey` can be useful in order to retrieve and act on only the property that changed. However, if you're destructuring multiple properties from a nested object, `updatedKey` refers to the key local to the updated object, so in this case make sure not to use the same property name on different levels.
 `observer` is a reference to the observer object, giving access to primarily the `stop()` method.
+
 If the getter is a raw primitive observable, the value is unwrapped before the callback is called, like so:
 
 ```js
@@ -699,6 +703,7 @@ observe(() => `The value is ${o.value}`, ö.log)
 ```
 
 It's a matter of taste, really.
+
 However, when working with larger data structures, try to be as specific as possible in the `getter`, since returned values get copied from the observable (to avoid recursion among other things). As a rule of thumb, get the values you output in the callback, nothing more. Maybe something like this:
 
 ```js

@@ -183,3 +183,14 @@ class Öbablubb {
 }
 ö.log(ö.clone(new Öbablubb("buff")))
 ö.log(Object.getPrototypeOf(ö.clone({ a: 1 })))
+
+ö.log(Map.groupBy([{ assa: "yazza" }, { assa: "brassa" }], (v) => v.assa))
+
+ö.log(ö.groupBy([{ assa: "yazza" }, { assa: "brassa" }], (v) => v.assa))
+
+ö.log(
+    Object.assign(
+        {},
+        ö.groupBy([{ assa: "yazza" }, { assa: "brassa" }], "assa", true),
+    ),
+)
