@@ -1,8 +1,5 @@
 /*
-TypelessScript
-Proxy som kan chaina metoder på alla typer. Pipe on speed 🤪. Closure runt ett värde, returnera this. Return som special keyword. Inspect för debugging kanske? Och f() för customfunktioner? Vilken typ man har får man hålla reda på själv 😄. Eller option på att logga värde/typ för varje steg?
-Async förstås? Eller? Går det? Yepp!
-
+TypelessScript™
 */
 
 import * as ö from "../ö.mjs"
@@ -111,8 +108,8 @@ const createProxy = (o, isAsync, isThrowing) => {
         q.push([
             key,
             isAsync ?
-            async () => (o.val = await lookupMethod(key, o.val, isThrowing,)(...args))
-            :   () => (o.val = lookupMethod(key, o.val, isThrowing)(...args)),
+            async () => (o.val = await lookupMethod(key, o.val, isThrowing)(...args))
+            :     () => (o.val = lookupMethod(key, o.val, isThrowing)(...args)),
         ])
         return p
     }

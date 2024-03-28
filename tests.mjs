@@ -188,9 +188,4 @@ class Öbablubb {
 
 ö.log(ö.groupBy([{ assa: "yazza" }, { assa: "brassa" }], (v) => v.assa))
 
-ö.log(
-    Object.assign(
-        {},
-        ö.groupBy([{ assa: "yazza" }, { assa: "brassa" }], "assa", true),
-    ),
-)
+ö.log([...ö.range(10)])

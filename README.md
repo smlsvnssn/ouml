@@ -181,6 +181,14 @@ Example:
 
 Returns `true` if `a` is a subset of `b`.
 
+#### ö.isSuperset( a, b ) → Boolean
+
+Returns `true` if `a` is a superset of `b`.
+
+#### ö.isDisjoint( a, b ) → Boolean
+
+Returns `true` if `a` and `b` share no members.
+
 ### Logical / generic
 
 #### ö.isEqual/ö.equals( a, b, deep = true ) → Boolean
@@ -457,6 +465,12 @@ Less verbose than `typeof`/`Array.isArray`/`instanceof`:
 #### ö.isIterable( v ) → Boolean
 
 Checks for `[Symbol.iterator]` in `v`.
+
+### Type conversion
+
+#### ö.mapToObj = ( map ) → Object
+
+#### ö.objToMap = ( obj ) → Map
 
 ### DOM and browser
 

@@ -17,20 +17,11 @@ export const range = function* (start, end, step = 1) {
 }
 
 // iterators
-export const times = (times, f = (i) => i, ...rest) => {
-    const a = []
-    for (let i of range(Math.abs(times))) a.push(f(i, ...rest))
-    return a
-}
+export const times = (times, f = (i) => i, ...rest) =>
+    [...range(Math.abs(times))].map((i) => f(i, ...rest))
 
 // arr
-export const rangeArray = (start, end, step = 1) => {
-    let arr = [],
-        i = 0
-    for (const n of range(start, end, step)) arr[i++] = n
-    return arr
-}
-
+export const rangeArray = (start, end, step = 1) => [...range(start, end, step)]
 export const map = (arr, f) => arr.map(isFunc(f) ? f : (v) => v[f])
 
 export const unique = (arr) => [...new Set(arr)]
@@ -151,6 +142,14 @@ export const union = (a, b) => [
 export const isSubset = (a, b) => {
     ;[a, b] = [Array.from(a), Array.from(b)]
     return a.length <= b.length && a.every((v) => b.includes(v))
+}
+export const isSuperset = (a, b) => {
+    ;[a, b] = [Array.from(a), Array.from(b)]
+    return a.length >= b.length && b.every((v) => a.includes(v))
+}
+export const isDisjoint = (a, b) => {
+    ;[a, b] = [Array.from(a), Array.from(b)]
+    return a.every((v) => !b.includes(v))
 }
 
 // DOM
@@ -597,6 +596,10 @@ export const isObj = (v) =>
 
 export const isIterable = (v) =>
     v != null && typeof v[Symbol.iterator] === "function"
+
+// conversion
+export const mapToObj = (map) => Object.fromEntries(map.entries())
+export const objToMap = (obj) => new Map(Object.entries(obj))
 
 // throttle, debounce, onAnimationFrame
 
