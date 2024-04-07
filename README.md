@@ -372,7 +372,7 @@ Waits `t` milliseconds. If `resetPrevCall == true`, previous pending call is rej
 
 [browser] Waits one frame.
 
-#### ö.waitFrames ( n = 1, f, everyFrame = false ) → Promise
+#### ö.waitFrames( n = 1, f, everyFrame = false ) → Promise
 
 [browser] Waits `n` frames. If `everyFrame == true`, callback is executed every frame.
 
@@ -480,9 +480,9 @@ Checks for `[Symbol.iterator]` in `v`.
 
 ### Type conversion
 
-#### ö.mapToObj = ( map ) → Object
+#### ö.mapToObj( map ) → Object
 
-#### ö.objToMap = ( obj ) → Map
+#### ö.objToMap( obj ) → Map
 
 ### DOM and browser
 
@@ -490,15 +490,15 @@ Checks for `[Symbol.iterator]` in `v`.
 
 [browser] Gets `item` from local storage, if any. Converts item to `Object` via `JSON.parse`.
 
-#### ö.setLocal = ( item, v ) → v
+#### ö.setLocal( item, v ) → v
 
 [browser] Sets `item` in local storage to `v`, and returns `v`.
 
-#### ö.getCss = ( prop, selector = ':root') → css property value
+#### ö.getCss( prop, selector = ':root') → css property value
 
 [browser] Gets `prop` on selected element, or from `document.documentElement` if `selector` is unset. and returns `v`. Mainly used for getting global `--props`, using css as master for global variables.
 
-#### ö.setCss = ( prop, v, selector = ':root') → v
+#### ö.setCss( prop, v, selector = ':root') → v
 
 [browser] Sets `prop` to `v`, optionally on selected element, and returns `v`.
 
@@ -587,7 +587,7 @@ Chain exports two methods:
 
 #### chain( value, isThrowing = false, isAsync = false ) → Proxy
 
-Chain wraps a value, and creates a `Proxy` that handles the chaining. `chain` evaluates lazily, so nothing is calculated until `.return()` or `.value` is called. Errors are skipped by default, set `isThrowing` to true to throw erors instead. Optionally, set `isAsync` to `true` to handle async values, or use:
+Chain wraps a value, and creates a `Proxy` that handles the chaining. `chain` evaluates lazily, so nothing is calculated until `.return()` or `.value` is called. Errors are skipped by default, set `isThrowing` to true to throw errors instead. Optionally, set `isAsync` to `true` to handle async values, or use:
 
 #### chainAsync( value, isThrowing = false ) → Proxy
 

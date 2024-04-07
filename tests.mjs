@@ -154,19 +154,19 @@ const obj = { return: "123" }
 ö.log(ö.nChooseK(16, 2))
 
 const parsePersonnummer = (s) => {
+    s = s.replaceAll(/[\s-]/g, "")
+    if (s.length === 12) return s
     const thisYear = +String(new Date().getFullYear()).substring(2)
-    s = s.replaceAll("-", "")
     if (s.length === 10) {
         if (+s.substring(0, 2) > thisYear) return `19${s}`
         return `20${s}`
     }
-    if (s.length === 12) return s
-    return "FELFELFEL"
+    throw new Error("Fel")
 }
 
-ö.log(parsePersonnummer("7705143316"))
+ö.log(parsePersonnummer("770514-3316"))
 
-ö.log(parsePersonnummer("201105143316"))
+ö.log(parsePersonnummer("110514 3316"))
 
 ö.log("Output: ", ö.isEqual(0, 1))
 
