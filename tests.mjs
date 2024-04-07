@@ -199,23 +199,23 @@ blubb.evenmore = { a: 1, b: 2, c: ö.clone(blubb) }
 if (1) if (1) ö.log("test")
 
 ö.time(() => {
-    for (let i = 0; i < 1000000; i++) {
+    for (let i = 0; i < 100000; i++) {
         ö.clone(blubb, true, false, false)
     }
 }, "Hello function")
 
 ö.time()
-for (let i = 0; i < 1000000; i++) {
+for (let i = 0; i < 100000; i++) {
     ö.clone(blubb, true, false, true)
 }
 ö.timeEnd()
 ö.time()
-for (let i = 0; i < 1000000; i++) {
+for (let i = 0; i < 100000; i++) {
     structuredClone(blubb)
 }
 ö.timeEnd()
 ö.time()
-for (let i = 0; i < 1000000; i++) {
+for (let i = 0; i < 100000; i++) {
     JSON.parse(JSON.stringify(blubb))
 }
 ö.timeEnd()

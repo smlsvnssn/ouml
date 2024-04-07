@@ -1,6 +1,6 @@
 {
     "name": "ouml",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "description": "smlsvnssn",
     "main": "ö.mjs",
     "module": "ö.mjs",
@@ -38,7 +38,10 @@
         "@vitest/coverage-c8": "^0.25.4",
         "jsdom": "^20.0.3",
         "vite": "^3.2.3",
-        "vitest": "^0.25.3"
+        "vitest": "^0.25.3",
+        "@types/node": "^16.10.2",
+        "prettier": "latest",
+        "typescript": "^5.2.2"
     },
     "repository": {
         "type": "git",
@@ -53,9 +56,5 @@
         "url": "https://github.com/smlsvnssn/ouml/issues"
     },
     "homepage": "https://github.com/smlsvnssn/ouml#readme",
-    "dependencies": {
-        "@types/node": "^16.10.2",
-        "prettier": "latest",
-        "typescript": "^5.2.2"
-    }
+    "dependencies": {}
 }
