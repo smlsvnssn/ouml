@@ -378,10 +378,8 @@ export const wrapFirstWords = (
     s
         .slice(startAtChar)
         .replace(
-            new RegExp(
-                "([\\s]*[a-zA-ZåäöÅÄÖøØ0-9'’\"-]+){0," + numWords + "}\\S?",
-            ),
-            startWrap + "$&" + endWrap,
+            new RegExp(`([\\s]*[\\w\\dåäöÅÄÖøØ'’\"-]+){${numWords}}\\S?`),
+            `${startWrap}$&${endWrap}`,
         )
 
 export const toCamelCase = (s) =>

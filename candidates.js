@@ -13,6 +13,10 @@ multiply and convolve for arrays
 Beziers?
 Cubic, Quadratic
 
-Replace ö.clone with structuredClone? https://developer.mozilla.org/en-US/docs/Web/API/structuredClone
+Rework colour functions to include oklch and new css features (browser only? Use create element hack?)
+
+√ Replace ö.clone with structuredClone? 
+	TODO: include option to bypass prototype cloning (i.e. fast option)
+https://developer.mozilla.org/en-US/docs/Web/API/structuredClone
 
 */

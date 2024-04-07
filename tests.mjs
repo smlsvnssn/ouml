@@ -117,7 +117,7 @@ import { chain, chainAsync } from "./chain/index.mjs"
 )
 */
 
-const errorMessage = "error"
+/* const errorMessage = "error"
 const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
     .load(true, errorMessage)
     .returnIf((v) => v === errorMessage)
@@ -128,6 +128,7 @@ const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
     .return()
 
 ö.log("Output: ", nameOfPriciestProduct)
+ */
 
 ö.log(chain("AnyValueOfAnyType").toKebabCase().split("-").at(1).return())
 
@@ -189,3 +190,5 @@ class Öbablubb {
 ö.log(ö.groupBy([{ assa: "yazza" }, { assa: "brassa" }], (v) => v.assa))
 
 ö.log([...ö.range(10)])
+
+ö.log(ö.wrapFirstWords("jag älskar hjortron utan kärnor", 4))
