@@ -223,8 +223,14 @@ export const isEqual = (a, b, deep = true) =>
     : Object.keys(a).every((k) => (deep ? isEqual(a[k], b[k]) : a[k] === b[k]))
 export const equals = isEqual
 // clone
-export const clone = (v, deep = true, immutable = false) => {
-    const doClone = (v) => (deep ? clone(v, deep, immutable) : v)
+export const clone = (
+    v,
+    deep = true,
+    immutable = false,
+    preservePrototype = true,
+) => {
+    const doClone = (v) =>
+        deep ? clone(v, deep, immutable, preservePrototype) : v
     const doFreeze = (v) => (immutable ? Object.freeze(v) : v)
 
     // no cloning of functions, too gory. They are passed by reference instead
@@ -238,7 +244,9 @@ export const clone = (v, deep = true, immutable = false) => {
     const o = {}
     for (const key of Object.keys(v)) o[key] = doClone(v[key])
     return doFreeze(
-        Object.assign(Object.create(Object.getPrototypeOf(v) ?? {}), o),
+        preservePrototype ?
+            Object.assign(Object.create(Object.getPrototypeOf(v) ?? {}), o)
+        :   o,
     )
 }
 
@@ -687,7 +695,23 @@ export const log = (...msg) => {
     if (isVerbose) console.log(...msg)
     return msg.length === 1 ? msg[0] : msg
 }
-export const message = (s) => `ö🍳uery says: ${s}\n`
+
+const defaultLabel = "ö.time says"
+export const time = (f, label = defaultLabel) => {
+    if (isnt(f) || isStr(f)) if (isVerbose) console.time(label)
+    if (isFunc(f)) {
+        let result
+        if (isVerbose) console.time(label)
+        result = f()
+        if (isVerbose) console.timeEnd(label)
+        return result
+    }
+}
+export const timeEnd = (label = defaultLabel) => {
+    if (isVerbose) console.timeEnd(label)
+}
+
+export const message = (s) => `ö says: ${s}\n`
 
 // stuff
 export const toString = () => `Hello ö🍳uery!`

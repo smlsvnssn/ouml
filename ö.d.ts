@@ -1,4 +1,4 @@
-declare module 'ouml' {
+declare module "ouml" {
     export function grid(width: number, height?: number): IterableIterator<{}>
     export function range(
         start: number,
@@ -62,7 +62,12 @@ declare module 'ouml' {
     export function deepest(element: Element, selector?: string): any
 
     export function isEqual(a: any, b: any, deep?: boolean): Element
-    export function clone(v: any, deep?: boolean, immutable?: boolean): any
+    export function clone(
+        v: any,
+        deep?: boolean,
+        immutable?: boolean,
+        preservePrototype?: boolean,
+    ): any
     export function immutable(v: any, deep?: boolean): any
     export function pipe(v: any, ...funcs: Function[]): any
     export function memoise(
@@ -163,7 +168,7 @@ declare module 'ouml' {
         url: string,
         isJSON?: boolean,
         errorMessage?: string,
-        settings?: {}
+        settings?: {},
     ): Promise<{} | string>
 
     export function isBool(v: any): boolean
@@ -206,6 +211,8 @@ declare module 'ouml' {
     export function error(e: any, ...r: any[]): any
     export function warn(msg: any, ...r: any[]): any
     export function log(...msg: any[]): any
+    export function time(f?: Function | string, label?: string): any | undefined
+    export function timeEnd(label?: string): undefined
     export function message(s: string): string
     export function toString(): string
     export function rorövovarorsospoproråkoketot(s: string): string

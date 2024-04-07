@@ -195,11 +195,11 @@ Returns `true` if `a` and `b` share no members.
 
 Checks equality by value rather than reference. Checks own enumerable properties only. Works for all basic types and most built in classes, but may produce unexpected results in edge cases. Equality is tricky, and depends on what you personally beleive to be equal 😇. Does deep comparison by default, and may be slow for large data structures. If `deep == false`, does flat comparison instead.
 
-#### ö.clone( v, deep = true, immutable = false ) → cloned value
+#### ö.clone( v, deep = true, immutable = false, preservePrototype = true ) → cloned value
 
-Performs cloning of most common types, including `Array` and typed arrays, `Map`, `Set`, `Date` and objects. Defaults to deep cloning, set `deep` to `false` for shallow cloning. Tries to preserve `prototype` when cloning objects, but may fail in untested edge cases. Does not clone functions, and doesn't handle circular references. Use with some caution 🤫.
+Performs cloning of most common types, including `Array` and typed arrays, `Map`, `Set`, `Date` and objects. Defaults to deep cloning, set `deep` to `false` for shallow cloning. Tries to preserve `prototype` when cloning objects, but may fail in untested edge cases. Set `preservePrototype` to false to disable this (this is somewhat faster). Does not clone functions, and doesn't handle circular references. Use with some caution 🤫.
 
-`structuredClone` is probably faster in most cases, and handles circular references, but errors on functions, and doesn't preserve prototype. Choose wisely!
+The native `structuredClone` is probably slower (by alot!) in most cases, errors on functions, and doesn't preserve prototype, but it handles circular references. Choose wisely!
 
 #### ö.immutable(v, deep = true) immutable value
 
@@ -404,21 +404,33 @@ Debounces execution of `f` until no calls are made within `t` milliseconds. If c
 
 ### Error handling and logging
 
+All logging methods can be silenced globally by calling `ö.verbose(false)`.
+
 #### ö.verbose( isVerbose, isThrowing = false ) → Boolean
 
 Get/set `isVerbose`, turns off error/message logging when set to `false`. Defaults to `true`. Optionally set `isThrowing` to `true`, in order to throw errors instead.
 
 #### ö.error( error, ...rest ) → console.error or thrown Error, arguments
 
-Logs errors to console, optionally throws instead. Can be silenced globally by calling `ö.verbose(false)`. Returns single argument, or multiple arguments as an array.
+Logs errors to console, optionally throws instead. Returns single argument, or multiple arguments as an array.
 
 #### ö.warn( message, ...rest ) → console.warn, arguments
 
-Outputs arguments to console. Can be silenced globally by calling `ö.verbose(false)`. Returns single argument, or multiple arguments as an array.
+Outputs arguments to console. Returns single argument, or multiple arguments as an array.
 
 #### ö.log( ...messages ) → console.log, arguments
 
-Outputs arguments to console. Can be silenced globally by calling `ö.verbose(false)`. Returns single argument, or multiple arguments as an array. Can be used like so: `const x = ö.log( y*z );` or to tap into a call chain.
+Outputs arguments to console. Returns single argument, or multiple arguments as an array. Can be used like so: `const x = ö.log( y*z );` or to tap into a call chain.
+
+#### ö.time( f, label ) → logs time, f return value | undefined
+
+The basic usecase is as a simple wrapper for `console.time`, optionally with a label. If `f`is a string, it is used as a label. In that case, the timer ends when calling `ö.timeEnd` with a matching label.
+
+Optionally, it accepts a function with no arguments, which gets timed, called and its value returned. In this case `console.timeEnd` is called internally.
+
+#### ö.timeEnd( label ) → logs time
+
+Simple wrapper for `console.timeEnd`.
 
 #### ö.message( str ) → 'ö🍳uery says: ${str}'
 

@@ -60,7 +60,7 @@ const object = öbservable.observable({ test: 'Yes, test' })
 
 ...`)
 
-const cb = (...v) => console.log('callback: ', ...v)
+const cb = (...v) => ö.log('callback: ', ...v)
 primitive.observe(cb)
 array.observe(cb)
 object.observe(cb)
@@ -182,7 +182,7 @@ class Öbablubb {
         this.test = t
     }
 }
-ö.log(ö.clone(new Öbablubb("buff")))
+ö.log(ö.clone(new Öbablubb("buff"), true, false, false))
 ö.log(Object.getPrototypeOf(ö.clone({ a: 1 })))
 
 ö.log(Map.groupBy([{ assa: "yazza" }, { assa: "brassa" }], (v) => v.assa))
@@ -192,3 +192,30 @@ class Öbablubb {
 ö.log([...ö.range(10)])
 
 ö.log(ö.wrapFirstWords("jag älskar hjortron utan kärnor", 4))
+
+let blubb = new Öbablubb("buff")
+blubb.more = ö.clone(blubb)
+blubb.evenmore = { a: 1, b: 2, c: ö.clone(blubb) }
+if (1) if (1) ö.log("test")
+
+ö.time(() => {
+    for (let i = 0; i < 1000000; i++) {
+        ö.clone(blubb, true, false, false)
+    }
+}, "Hello function")
+
+ö.time()
+for (let i = 0; i < 1000000; i++) {
+    ö.clone(blubb, true, false, true)
+}
+ö.timeEnd()
+ö.time()
+for (let i = 0; i < 1000000; i++) {
+    structuredClone(blubb)
+}
+ö.timeEnd()
+ö.time()
+for (let i = 0; i < 1000000; i++) {
+    JSON.parse(JSON.stringify(blubb))
+}
+ö.timeEnd()
