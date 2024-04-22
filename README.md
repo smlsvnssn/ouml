@@ -227,13 +227,18 @@ Same as `ö.pipe`, but awaits functions and returns a `Promise`.
 
 Creates and returns memoised functions. By default, the arguments to the memoised function are used as key for storing the result (If only one argument, the raw input is used as key, if more than one, the arguments are joined to a string). If the arguments are objects instead of primitive values, you should provide a `keymaker`. `keymaker` receives all inputs from the memoised function, and should return something unique to use as a `Map` key for a given set of inputs. Use for example `JSON.stringify` when you expect objects as input.
 
-#### ö.createEnum( arr ) → Object;
+#### ö.createEnum( object ) → Object;
 
-Creates and returns an enumerable, i.e. an object where the keys and values are the same. Lets you create kinda sorta vanilla typechecking light. Takes strings, or an array of strings, as input.
+Creates and returns an enumerable, i.e. a frozen object where the keys and values are the same. Lets you create kinda sorta vanilla typechecking light. Takes an object, or strings, or an array of strings, as input.
 Example:
 
 ```js
+const sizes = ö.createEnum({ small: "small", medium: "medium", large: "large" })
+// or:
 const sizes = ö.createEnum("small", "medium", "large")
+// or:
+const sizes = ö.createEnum(["small", "medium", "large"])
+
 giveMeIcecream(sizes.large)
 ```
 

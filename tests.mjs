@@ -273,5 +273,27 @@ for (let i = 0; i < 100000; i++) {
  */
 
 ö.time(() => {
-    ö.log(ö.sum(ö.sample([...ö.range(10_000_000)], 1_000)))
+    ö.log(ö.sum(ö.sample([...ö.range(10_000_00)], 1_000)))
 }, "Hello function")
+
+ö.log(
+    ö.createEnum({
+        small: "s",
+        medium: "m",
+        large: "l",
+    }),
+)
+
+const buff = ö.createEnum({
+    small: "s",
+    medium: "m",
+    large: "l",
+})
+
+const biff = {
+    small: "s",
+    medium: "m",
+    large: "l",
+}
+
+buff.

@@ -22,6 +22,7 @@ export const times = (times, f = (i) => i, ...rest) =>
 
 // arr
 export const rangeArray = (start, end, step) => [...range(start, end, step)]
+
 export const map = (arr, f) => arr.map(isFunc(f) ? f : (v) => v[f])
 
 export const unique = (arr) => [...new Set(arr)]
@@ -38,17 +39,17 @@ export const shuffle = (arr) => {
     return a
 }
 
-export const sample = (arr, samples = 1) => {
-    if (samples === 1) return arr[random(arr.length)]
+export const sample = (arr, samples = 1) =>
     // since shuffle is fast, shuffle whole array before sampling, ez!
-    return shuffle(arr).slice(0, samples)
-}
+    samples === 1 ? arr[random(arr.length)] : shuffle(arr).slice(0, samples)
 
 //sum = arr => arr.reduce( (a, v) => a + Number(v) , 0); < 10xslower
 export const sum = (arr) => {
     arr = Array.from(arr)
+
     let a = 0
     for (let i = 0; i < arr.length; i++) a += Number(arr[i])
+
     return a
 }
 
@@ -58,6 +59,7 @@ export const median = (arr) => {
     // no mutation
     const a = Array.from(arr).sort((a, b) => Number(a) - Number(b)),
         m = Math.floor(arr.length / 2)
+
     return m % 2 ? (Number(a[m - 1]) + Number(a[m])) / 2 : Number(a[m])
 }
 
@@ -115,17 +117,21 @@ export const filterDeep = (arr, val, subArrayProp, prop) => {
 }
 
 // SET OPS
-// Todo: Optimise! https://spin.atomicobject.com/optimize-javascript-array-patterns/
 export const intersect = (a, b) => {
     ;[a, b] = [new Set(a), new Set(b)]
+
     return [...a].filter((v) => b.has(v))
 }
+
 export const subtract = (a, b) => {
     ;[a, b] = [new Set(a), new Set(b)]
+
     return [...a].filter((v) => !b.has(v))
 }
+
 export const exclude = (a, b) => {
     ;[a, b] = [new Set(a), new Set(b)]
+
     return [
         ...[...a].filter((v) => !b.has(v)),
         ...[...b].filter((v) => !a.has(v)),
@@ -136,24 +142,31 @@ export const union = (a, b) => [...new Set([...a, ...b])]
 
 export const isSubset = (a, b) => {
     ;[a, b] = [new Set(a), new Set(b)]
+
     return a.size <= b.size && [...a].every((v) => b.has(v))
 }
+
 export const isSuperset = (a, b) => {
     ;[a, b] = [new Set(a), new Set(b)]
+
     return a.size >= b.size && [...b].every((v) => a.has(v))
 }
+
 export const isDisjoint = (a, b) => {
     ;[a, b] = [new Set(a), new Set(b)]
+
     return [...a].every((v) => !b.has(v))
 }
 
 // DOM
 export const createElement = (html, isSvg = false) => {
     const template = document.createElement("template")
+
     if (isSvg) {
         template.innerHTML = `<svg>${html.trim()}</svg>`
         return template.content.firstChild.firstChild
     }
+
     template.innerHTML = html.trim()
     return template.content.firstChild
 }
@@ -161,11 +174,13 @@ export const createElement = (html, isSvg = false) => {
 export const parseDOMStringMap = (obj) => {
     // convert from DOMStringMap to object
     const o = { ...obj }
+
     // parse what's parseable
     for (const key in o)
         try {
             o[key] = JSON.parse(o[key])
         } catch (e) {}
+
     return o
 }
 
@@ -175,17 +190,20 @@ const d = new WeakMap()
 export const data = (element, key, value) => {
     const thisData =
         d.has(element) ? d.get(element) : parseDOMStringMap(element?.dataset)
+
     if (is(value) || isObj(key))
         d.set(
             element,
             Object.assign(thisData, isObj(key) ? key : { [key]: value }),
         )
+
     return isStr(key) ? thisData[key] : thisData
 }
 
 // Finds deepestElement in element matching selector. Potential performance hog for deep DOM structures.
 export const deepest = (element, selector = "*") => {
     let deepestEl = { depth: 0, deepestElement: element }
+
     for (const el of element.querySelectorAll(selector)) {
         let depth = 0
         for (e = el; e !== element; depth++) e = e.parentNode // from bottom up
@@ -194,6 +212,7 @@ export const deepest = (element, selector = "*") => {
                 { depth: depth, deepestElement: el }
             :   deepestEl
     }
+
     return deepestEl.deepestElement
 }
 
@@ -216,7 +235,9 @@ export const isEqual = (a, b, deep = true) =>
     : Object.keys(a).length !== Object.keys(b).length ? false
         // have same properties and values? (Recursively if deep)
     : Object.keys(a).every((k) => (deep ? isEqual(a[k], b[k]) : a[k] === b[k]))
+
 export const equals = isEqual
+
 // clone
 export const clone = (
     v,
@@ -238,6 +259,7 @@ export const clone = (
 
     const o = {}
     for (const key of Object.keys(v)) o[key] = doClone(v[key])
+
     return doFreeze(
         preservePrototype ?
             Object.assign(Object.create(Object.getPrototypeOf(v) ?? {}), o)
@@ -254,6 +276,7 @@ export const pipeAsync = async (v, ...funcs) =>
 
 export const memoise = (f, keymaker) => {
     const cache = new Map()
+
     return (...args) => {
         const key =
             isFunc(keymaker) ? keymaker(...args)
@@ -261,19 +284,26 @@ export const memoise = (f, keymaker) => {
             : args[0]
 
         if (cache.has(key)) return cache.get(key)
+
         const result = f(...args)
         cache.set(key, result)
+
         return result
     }
 }
+
 // for the yankees
 export const memoize = memoise
 
 // thx https://masteringjs.io/tutorials/fundamentals/enum
+// TODO: Fix generic type for codehinting purposes
 export const createEnum = (...v) => {
-    const enu = {}
+    if (v.length === 1 && isObj(v[0])) return Object.freeze(v[0])
+
     if (v.length === 1 && isArr(v[0])) v = v[0] //if only one argument, use as array
+    const enu = {}
     for (const val of v) enu[val] = val
+
     return Object.freeze(enu)
 }
 
@@ -287,6 +317,7 @@ export const random = (min, max, float = false) => {
             isnt(min) ? [0, 2]
             :   [0, +min]
         :   [+min, +max]
+
     return float ?
             Math.random() * (max - min) + min
         :   Math.floor(Math.random() * (max - min)) + min
@@ -296,7 +327,9 @@ export const randomNormal = (mean = 0, sigma = 1) => {
     const samples = 6
     let sum = 0,
         i = 0
+
     for (i; i < samples; i++) sum += Math.random()
+
     return (sigma * 8.35 * (sum - samples / 2)) / samples + mean
     //              ^ hand made spread constant :-)
 }
@@ -307,6 +340,7 @@ export const round = (n, precision = 0) =>
 export const nthRoot = (x, n) => x ** (1 / Math.abs(n))
 
 export const factorial = (n) => (n <= 1 ? 1 : n * factorial(n - 1))
+
 export const nChooseK = (n, k) => {
     if (k < 0 || k > n) return 0
     if (k === 0 || k === n) return 1
@@ -317,6 +351,7 @@ export const nChooseK = (n, k) => {
 
     return Math.round(res)
 }
+
 export const lerp = (a, b, t) => {
     t = clamp(t, 0, 1)
     return (1 - t) * a + t * b
@@ -324,7 +359,9 @@ export const lerp = (a, b, t) => {
 
 // https://en.wikipedia.org/wiki/Smoothstep
 export const smoothstep = (a, b, t) => lerp(a, b, 3 * t ** 2 - 2 * t ** 3)
+
 export const easeIn = (a, b, t) => lerp(a, b, t ** 2)
+
 export const easeOut = (a, b, t) => lerp(a, b, t * (2 - t))
 
 export const clamp = (n, min, max) => Math.min(Math.max(n, min), max)
@@ -335,6 +372,7 @@ export const normalize = (n, min, max, doClamp = true) => {
     n = (n - min) / (max - min + Number.EPSILON) // Prevent / by 0
     return doClamp ? clamp(n, 0, 1) : n
 }
+
 // for the britons
 export const normalise = normalize
 
@@ -360,7 +398,9 @@ export const prettyNumber = (n, locale = "sv-SE", precision = 2) => {
     // locale can be omitted
     ;[locale, precision] =
         isNum(locale) ? ["sv-SE", locale] : [locale, precision]
+
     n = round(n, precision)
+
     return (
         Number.isNaN(n) ? "-"
         : isInt(n) ? n.toLocaleString(locale)
@@ -508,10 +548,12 @@ let timeout, rejectPrev // wow! Closure just works!
 export const wait = async (t = 1, f, resetPrevCall = false) => {
     // callback is optional
     resetPrevCall = isBool(f) ? f : resetPrevCall
+
     if (resetPrevCall && rejectPrev) {
         clearTimeout(timeout)
         rejectPrev()
     }
+
     try {
         await new Promise((resolve, reject) => {
             timeout = setTimeout(resolve, t)
@@ -600,17 +642,19 @@ export const isIterable = (v) =>
 
 // conversion
 export const mapToObj = (map) => Object.fromEntries(map.entries())
+
 export const objToMap = (obj) => new Map(Object.entries(obj))
 
 // throttle, debounce, onAnimationFrame
-
 export const throttle = (f, t = 50, debounce = false, immediately = false) => {
     let timeout,
         lastRan,
         running = false
+
     return function () {
         const context = this,
             args = arguments
+
         if (!lastRan || (debounce && !running)) {
             // first run or debounce rerun
             if (!debounce || immediately) f.apply(context, args)
@@ -637,9 +681,11 @@ export const debounce = (f, t = 50, immediately = false) =>
 
 export const onAnimationFrame = (f) => {
     let timeout
+
     return function () {
         const context = this,
             args = arguments
+
         cancelAnimationFrame(timeout)
         timeout = requestAnimationFrame(() => f.apply(context, args))
     }
@@ -692,14 +738,17 @@ export const log = (...msg) => {
 }
 
 const defaultLabel = "ö.time says"
+
 export const time = (f, label = defaultLabel) => {
     if (!isFunc(f))
         return isVerbose ? console.time(isStr(f) ? f : label) : undefined
 
     let result
+
     if (isVerbose) console.time(label)
     result = f()
     if (isVerbose) console.timeEnd(label)
+
     return result
 }
 export const timeEnd = (label = defaultLabel) => {
