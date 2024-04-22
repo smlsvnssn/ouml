@@ -21,7 +21,7 @@ export const times = (times, f = (i) => i, ...rest) =>
     [...range(Math.abs(times))].map((i) => f(i, ...rest))
 
 // arr
-export const rangeArray = (start, end, step = 1) => [...range(start, end, step)]
+export const rangeArray = (start, end, step) => [...range(start, end, step)]
 export const map = (arr, f) => arr.map(isFunc(f) ? f : (v) => v[f])
 
 export const unique = (arr) => [...new Set(arr)]
@@ -121,35 +121,36 @@ export const filterDeep = (arr, val, subArrayProp, prop) => {
 }
 
 // SET OPS
-export const intersect = (a, b) =>
-    Array.from(a).filter((v) => Array.from(b).includes(v))
-
-export const subtract = (a, b) =>
-    Array.from(a).filter((v) => !Array.from(b).includes(v))
-
+// Todo: Optimise! https://spin.atomicobject.com/optimize-javascript-array-patterns/
+export const intersect = (a, b) => {
+    ;[a, b] = [new Set(a), new Set(b)]
+    return [...a].filter((v) => b.has(v))
+}
+export const subtract = (a, b) => {
+    ;[a, b] = [new Set(a), new Set(b)]
+    return [...a].filter((v) => b.has(v))
+}
 export const exclude = (a, b) => {
-    ;[a, b] = [Array.from(a), Array.from(b)]
+    ;[a, b] = [new Set(a), new Set(b)]
     return [
-        ...a.filter((v) => !b.includes(v)),
-        ...b.filter((v) => !a.includes(v)),
+        ...[...a].filter((v) => !b.has(v)),
+        ...[...b].filter((v) => !a.has(v)),
     ]
 }
 
-export const union = (a, b) => [
-    ...new Set([...Array.from(a), ...Array.from(b)]),
-]
+export const union = (a, b) => [...new Set([...a, ...b])]
 
 export const isSubset = (a, b) => {
-    ;[a, b] = [Array.from(a), Array.from(b)]
-    return a.length <= b.length && a.every((v) => b.includes(v))
+    ;[a, b] = [new Set(a), new Set(b)]
+    return a.size <= b.size && [...a].every((v) => b.has(v))
 }
 export const isSuperset = (a, b) => {
-    ;[a, b] = [Array.from(a), Array.from(b)]
-    return a.length >= b.length && b.every((v) => a.includes(v))
+    ;[a, b] = [new Set(a), new Set(b)]
+    return a.size >= b.size && [...b].every((v) => a.has(v))
 }
 export const isDisjoint = (a, b) => {
-    ;[a, b] = [Array.from(a), Array.from(b)]
-    return a.every((v) => !b.includes(v))
+    ;[a, b] = [new Set(a), new Set(b)]
+    return [...a].every((v) => !b.has(v))
 }
 
 // DOM
@@ -698,14 +699,14 @@ export const log = (...msg) => {
 
 const defaultLabel = "ö.time says"
 export const time = (f, label = defaultLabel) => {
-    if (isnt(f) || isStr(f)) if (isVerbose) console.time(label)
-    if (isFunc(f)) {
-        let result
-        if (isVerbose) console.time(label)
-        result = f()
-        if (isVerbose) console.timeEnd(label)
-        return result
-    }
+    if (!isFunc(f))
+        return isVerbose ? console.time(isStr(f) ? f : label) : undefined
+
+    let result
+    if (isVerbose) console.time(label)
+    result = f()
+    if (isVerbose) console.timeEnd(label)
+    return result
 }
 export const timeEnd = (label = defaultLabel) => {
     if (isVerbose) console.timeEnd(label)

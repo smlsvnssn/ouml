@@ -138,8 +138,8 @@ Same as `ö.findDeep`, except it returns all matches.
 
 ### Set operations
 
-Methods for comparing arrays or array-like objects. Inputs are coerced to `Array`. All methods return a new `Array`, or `Boolean`.
-If all inputs to these methods are `Set`s, the outputs adhere to strict set logic. If the inputs are `Array`s, duplicate items are allowed (except in `union()`).
+Methods for comparing arrays or array-like objects. Inputs are coerced to `Set`. All methods return a new `Array`, or `Boolean`.
+The outputs adhere to strict set logic. If the inputs are `Array`s, duplicate items are removed. All these methods will be replaced by internal `Set` methods when these become widely available in browsers.
 
 #### ö.intersect( a, b ) → Array
 
@@ -579,7 +579,7 @@ const processedValue = chain("AnyValueOfAnyType")
     .return()
 ```
 
-A quick note on performance: `chain` does string matching, proxying and other fun stuff that adds some overhead. It is untested performance-wise, and might not be the best option in a game loop 😇. It's mainly a proof of concept, but since it produces some really nice, terse and readable code, it might come in handy in some situations!
+A quick note on performance: `chain` does string matching, proxying and other fun stuff that adds some overhead. It adds a small hit performance-wise, and might not be the best option in a game loop 😇. It's mainly a proof of concept, but since it produces some really nice, terse and readable code, it might come in handy in some situations!
 
 ### Methods
 

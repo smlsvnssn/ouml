@@ -130,6 +130,55 @@ const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
 ö.log("Output: ", nameOfPriciestProduct)
  */
 
+/* ö.time(() => {
+    ö.times(100000, (arg) => {
+        const test = chain(11)
+            .f((v) => [...Array(v).keys()])
+            .map((v) => v ** v)
+            .sum()
+            .toString()
+            .length()
+            .return()
+    })
+}, "with chain")
+
+ö.time(() => {
+    ö.times(100000, (arg) => {
+        const test = ö
+            .sum([...Array(11).keys()].map((v) => v ** v))
+            .toString().length
+    })
+}, "without chain")
+
+ö.time(() => {
+    ö.times(100000, (arg) => {
+        const test = chain("Hilarious")
+            .toUpperCase()
+            .split("")
+            .map((v) => `### ${v} ###`)
+            .shuffle()
+            .join("")
+            .f((v) => v.split("").reverse())
+            .join("").value
+    })
+}, "with chain")
+
+ö.time(() => {
+    ö.times(100000, (arg) => {
+        const test = ö
+            .shuffle(
+                "Hilarious"
+                    .toUpperCase()
+                    .split("")
+                    .map((v) => `### ${v} ###`),
+            )
+            .join("")
+            .split("")
+            .reverse()
+            .join("")
+    })
+}, "without chain") */
+
 ö.log(chain("AnyValueOfAnyType").toKebabCase().split("-").at(1).return())
 
 ö.log(chain(5).toString().toUpperCase().return())
@@ -177,11 +226,13 @@ la.a = 2
 
 ö.log(typeof new Array())
 class Öbablubb {
-    test = "bubb"
-    constructor(t) {
-        this.test = t
+    constructor(test = "bubb") {
+        this.test = test
     }
 }
+
+const makeUbablubb = (test = "bubb") => ({ test })
+
 ö.log(ö.clone(new Öbablubb("buff"), true, false, false))
 ö.log(Object.getPrototypeOf(ö.clone({ a: 1 })))
 
@@ -198,7 +249,7 @@ blubb.more = ö.clone(blubb)
 blubb.evenmore = { a: 1, b: 2, c: ö.clone(blubb) }
 if (1) if (1) ö.log("test")
 
-ö.time(() => {
+/* ö.time(() => {
     for (let i = 0; i < 100000; i++) {
         ö.clone(blubb, true, false, false)
     }
@@ -219,3 +270,13 @@ for (let i = 0; i < 100000; i++) {
     JSON.parse(JSON.stringify(blubb))
 }
 ö.timeEnd()
+ */
+
+ö.time(() => {
+    ö.intersect(ö.rangeArray(0, 1000000), ö.rangeArray(1, 1000000))
+}, "Hello function")
+
+ö.time(() => {
+    const arr2Set = new Set(ö.rangeArray(1, 1000000))
+    ö.rangeArray(0, 1000000).filter((x) => !arr2Set.has(x))
+}, "Hello function")
