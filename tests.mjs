@@ -273,10 +273,5 @@ for (let i = 0; i < 100000; i++) {
  */
 
 ö.time(() => {
-    ö.intersect(ö.rangeArray(0, 1000000), ö.rangeArray(1, 1000000))
-}, "Hello function")
-
-ö.time(() => {
-    const arr2Set = new Set(ö.rangeArray(1, 1000000))
-    ö.rangeArray(0, 1000000).filter((x) => !arr2Set.has(x))
+    ö.log(ö.isDisjoint(ö.rangeArray(10, 20), ö.rangeArray(0, 10)))
 }, "Hello function")

@@ -128,7 +128,7 @@ export const intersect = (a, b) => {
 }
 export const subtract = (a, b) => {
     ;[a, b] = [new Set(a), new Set(b)]
-    return [...a].filter((v) => b.has(v))
+    return [...a].filter((v) => !b.has(v))
 }
 export const exclude = (a, b) => {
     ;[a, b] = [new Set(a), new Set(b)]
