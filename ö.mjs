@@ -119,19 +119,16 @@ export const filterDeep = (arr, val, subArrayProp, prop) => {
 // SET OPS
 export const intersect = (a, b) => {
     ;[a, b] = [new Set(a), new Set(b)]
-
     return [...a].filter((v) => b.has(v))
 }
 
 export const subtract = (a, b) => {
     ;[a, b] = [new Set(a), new Set(b)]
-
     return [...a].filter((v) => !b.has(v))
 }
 
 export const exclude = (a, b) => {
     ;[a, b] = [new Set(a), new Set(b)]
-
     return [
         ...[...a].filter((v) => !b.has(v)),
         ...[...b].filter((v) => !a.has(v)),
@@ -142,19 +139,16 @@ export const union = (a, b) => [...new Set([...a, ...b])]
 
 export const isSubset = (a, b) => {
     ;[a, b] = [new Set(a), new Set(b)]
-
     return a.size <= b.size && [...a].every((v) => b.has(v))
 }
 
 export const isSuperset = (a, b) => {
     ;[a, b] = [new Set(a), new Set(b)]
-
     return a.size >= b.size && [...b].every((v) => a.has(v))
 }
 
 export const isDisjoint = (a, b) => {
     ;[a, b] = [new Set(a), new Set(b)]
-
     return [...a].every((v) => !b.has(v))
 }
 
