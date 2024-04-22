@@ -38,16 +38,8 @@ export const shuffle = (arr) => {
 }
 
 export const sample = (arr, samples = 1) => {
-    // no mutation, array coercion
-    const a = Array.from(arr),
-        s = []
-    for (const i of range(
-        samples > a.length ? a.length
-        : samples > 0 ? samples
-        : 1,
-    ))
-        s.push(a.splice(random(a.length), 1)[0])
-    return samples === 1 ? s[0] : s
+    if (samples === 1) return arr[random(a.length)]
+    return shuffle(arr).slice(0, samples)
 }
 
 //sum = arr => arr.reduce( (a, v) => a + Number(v) , 0); < 10xslower

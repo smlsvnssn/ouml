@@ -273,5 +273,5 @@ for (let i = 0; i < 100000; i++) {
  */
 
 ö.time(() => {
-    ö.log(ö.isDisjoint(ö.rangeArray(10, 20), ö.rangeArray(0, 10)))
+    ö.log(ö.sample(ö.rangeArray(100_000_000), 1_000))
 }, "Hello function")
