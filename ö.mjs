@@ -26,6 +26,7 @@ export const map = (arr, f) => arr.map(isFunc(f) ? f : (v) => v[f])
 
 export const unique = (arr) => [...new Set(arr)]
 
+// https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
 export const shuffle = (arr) => {
     // no mutation, array coercion
     const a = Array.from(arr)
@@ -38,7 +39,8 @@ export const shuffle = (arr) => {
 }
 
 export const sample = (arr, samples = 1) => {
-    if (samples === 1) return arr[random(a.length)]
+    if (samples === 1) return arr[random(arr.length)]
+    // since shuffle is fast, shuffle whole array before sampling, ez!
     return shuffle(arr).slice(0, samples)
 }
 

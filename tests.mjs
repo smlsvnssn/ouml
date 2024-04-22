@@ -273,5 +273,5 @@ for (let i = 0; i < 100000; i++) {
  */
 
 ö.time(() => {
-    ö.log(ö.sample(ö.rangeArray(100_000_000), 1_000))
+    ö.log(ö.sum(ö.sample([...ö.range(10_000_000)], 1_000)))
 }, "Hello function")
