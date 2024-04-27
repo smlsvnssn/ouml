@@ -268,6 +268,13 @@ export const pipe = (v, ...funcs) => funcs.reduce((x, f) => f(x), v)
 export const pipeAsync = async (v, ...funcs) =>
     await funcs.reduce(async (x, f) => f(await x), v)
 
+export const curry =
+    (f) =>
+    (...args) =>
+        f.length > args.length ?
+            (...newArgs) => curry(f)(...args, ...newArgs)
+        :   f(...args)
+
 export const memoise = (f, keymaker) => {
     const cache = new Map()
 
@@ -357,6 +364,11 @@ export const smoothstep = (a, b, t) => lerp(a, b, 3 * t ** 2 - 2 * t ** 3)
 export const easeIn = (a, b, t) => lerp(a, b, t ** 2)
 
 export const easeOut = (a, b, t) => lerp(a, b, t * (2 - t))
+
+// https://lisyarus.github.io/blog/posts/exponential-smoothing.html
+//export const spring = (a, b, t, speed = 5) =>
+//    lerp(a, b, 1 - Math.exp(-speed * t))
+// todo: test
 
 export const clamp = (n, min, max) => Math.min(Math.max(n, min), max)
 

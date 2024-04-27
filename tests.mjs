@@ -296,4 +296,8 @@ const biff = {
     large: "l",
 }
 
-buff.
+const test = (a, b, c, d) => a + b + c + d
+
+const curried = ö.curry(test)
+
+ö.log(curried(1, 2, 3, 4, 5))

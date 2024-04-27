@@ -223,6 +223,18 @@ Pipes function calls. For multiple arguments, use closures. Usage:
 
 Same as `ö.pipe`, but awaits functions and returns a `Promise`.
 
+#### ö.curry( f ) → f
+
+Returns a <a href='https://en.wikipedia.org/wiki/Currying' target=_blank>curried</a> version of `f`, allowing partial application of arguments. If `f` takes three arguments, it can be called like so:
+
+```js
+const curriedF = ö.curry((a, b, c) => a + b + c)
+curriedF(1)(2)(3) // returns 6
+// or
+const partialF = curriedF(1, 2)
+partialF(3) // also 6
+```
+
 #### ö.memoise/ö.memoize( f, keymaker ) → f
 
 Creates and returns memoised functions. By default, the arguments to the memoised function are used as key for storing the result (If only one argument, the raw input is used as key, if more than one, the arguments are joined to a string). If the arguments are objects instead of primitive values, you should provide a `keymaker`. `keymaker` receives all inputs from the memoised function, and should return something unique to use as a `Map` key for a given set of inputs. Use for example `JSON.stringify` when you expect objects as input.
