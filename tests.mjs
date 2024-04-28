@@ -194,11 +194,7 @@ const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
 
 const obj = { return: "123" }
 
-ö.log(
-    chain(obj)
-        .f((v) => v.return)
-        .return(),
-)
+ö.log(chain(obj)((v) => v.return).return())
 
 ö.log(ö.nChooseK(16, 2))
 
@@ -301,3 +297,13 @@ const test = (a, b, c, d) => a + b + c + d
 const curried = ö.curry(test)
 
 ö.log(curried(1, 2, 3, 4, 5))
+
+ö.log(
+    // prettier-ignore
+    chain(1)
+        (curried(1, 1, 1))
+        .peek()
+        .returnIf((v) => v === 4)
+        ((v) => v ** 2)
+        (),
+)

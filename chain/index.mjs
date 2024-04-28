@@ -88,9 +88,9 @@ const createProxy = (o, isAsync, isThrowing) => {
         return p
     }
 
-    const caseFunction = (key) => (f) => {
+    const caseFunction = (f) => {
         q.push([
-            key,
+            f.name || "anonymous",
             isAsync ?
                 async () => (o.val = await f(o.val))
             :   () => (o.val = f(o.val)),
@@ -114,15 +114,18 @@ const createProxy = (o, isAsync, isThrowing) => {
         return p
     }
 
-    const p = new Proxy(o, {
+    const p = new Proxy(() => {}, {
         // prettier-ignore
         get: (_, key) =>
-            key === "value" ?       caseRunQ()
-            : key === "return" ?    caseRunQ
-            : key === "returnIf" ?  caseReturnIf(key)
-            : key === "peek" ?      casePeek(key)
-            : key === "f" ?         caseFunction(key)
-            :                       caseDefault(key),
+             key === "value" ?      caseRunQ()
+           : key === "return" ?     caseRunQ
+           : key === "returnIf" ?   caseReturnIf(key)
+           : key === "peek" ?       casePeek(key)
+           : key === "f" ?          caseFunction
+           :                        caseDefault(key),
+
+        apply: (_, thisArg, args) =>
+            args.length ? caseFunction(...args) : caseRunQ(),
     })
     return p
 }

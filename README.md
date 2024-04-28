@@ -356,9 +356,9 @@ Returns `numChars` random characters. Max for `numChars` is 100. Useful for prod
 
 Returns a string without html tags.
 
-#### ö.when( bool, t, f = false ) → value | empty string;
+#### ö.when( bool, whenTrue, whenFalse = false ) → value | empty string;
 
-A slightly more readable wrapper around a ternary expression. Returns `t` if `bool` is true, otherwise returns the empty string. Optionally returns `f` if specified. Useful primarily in template strings.
+A slightly more readable wrapper around a ternary expression. Returns `whenTrue` if `bool` is true, otherwise returns the empty string. Optionally returns `whenFalse` if specified. Useful primarily in template strings.
 
 ### Colours
 
@@ -584,13 +584,13 @@ Use like so:
 ```js
 import { chain, chainAsync } from "ouml/chain"
 
-const processedValue = chain("AnyValueOfAnyType")
+const processedValue = chain("AnyValueOfAnyType")(anyFunction)
+    .f(anyFunction)
     .anyMethodOnCurrentType()
     .anyPropertyOnCurrentValue()
     .anyMethodInÖ()
     .anyMethodInGlobalScope()
-    .anyObjectInGlobalScope_anyMethod()
-    .f(anyFunction)
+    .AnyObjectInGlobalScope_anyMethod()
     .peek() // Logs current value and type
     .returnIf(anyFunctionReturningABoolean)
     .return()
@@ -616,15 +616,19 @@ The chain proxy defines a few special cases, that looks and behaves like methods
 
 #### .return() → value
 
-Executes call stack, and returns computed value.
+Executes call chain, and returns computed value.
 
 #### .value → value
 
-Same as `.return()`, executes call stack, and returns computed value.
+Same as `.return()`, executes call chain, and returns computed value.
+
+#### () → value
+
+A method call with no arguments has the same effect as `.return()` or `.value`, executes call chain, and returns computed value.
 
 #### .returnIf( function ) → value | Proxy
 
-Guard clause, lets you exit the call chain early. The function receives the current value as argument, and is expected to return a boolean. Returns on truthy values.
+Guard clause, lets you exit the call chain early. The function receives the current value as argument, and is expected to return a boolean. Returns current value on truthy values, otherwise continues call chain.
 
 #### .peek() → Proxy
 
@@ -633,6 +637,16 @@ Lets you peek into the call chain, logging current value and type to the console
 #### .f( function ) → Proxy
 
 `f` allows arbitrary functions to be passed into the call chain. The function receives the current value as argument. `f` is particularly useful for methods defined in a function or module scope, since these scopes are unreachable otherwise.
+
+#### ( function ) → Proxy
+
+A variant for passing in arbitrary functions is directly with parentheses, in effect calling the proxy as a function, with your function as the argument. This in turn can be chained, like so:
+
+```js
+const v = chain("Hi")(letsDo)(cool)(stuff).return()
+```
+
+This doesn't play that nicely with Prettier, if you happen to use that, but it's cool!
 
 #### .anyMethodOnCurrentType( ...args ) → Proxy
 
