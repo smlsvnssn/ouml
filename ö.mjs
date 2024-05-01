@@ -265,8 +265,18 @@ export const immutable = (v, deep = true) => clone(v, deep, true)
 
 export const pipe = (v, ...funcs) => funcs.reduce((x, f) => f(x), v)
 
+export const toPiped =
+    (...funcs) =>
+    (v) =>
+        pipe(v, ...funcs)
+
 export const pipeAsync = async (v, ...funcs) =>
     await funcs.reduce(async (x, f) => f(await x), v)
+
+export const toPipedAsync =
+    (...funcs) =>
+    (v) =>
+        pipeAsync(v, ...funcs)
 
 export const curry =
     (f) =>
@@ -549,7 +559,7 @@ export const hsla = (h, s = 70, l = 50, a = 1) => {
 }
 
 // async
-let timeout, rejectPrev // wow! Closure just works!
+let timeout, rejectPrev
 
 export const wait = async (t = 1, f, resetPrevCall = false) => {
     // callback is optional

@@ -86,6 +86,7 @@ thisGuy.observe(v => ö.log(`Name: ${v.name}  Surname: ${v.surname}`))
 thisGuy.surname = 'Fawkes' */
 
 import { chain, chainAsync } from "./chain/index.mjs"
+import { toPiped } from "ouml"
 
 //ö.log('Output: ', chain([100]).pop().toString(2).value)
 
@@ -296,14 +297,13 @@ const test = (a, b, c, d) => a + b + c + d
 
 const curried = ö.curry(test)
 
-ö.log(curried(1, 2, 3, 4, 5))
-
 ö.log(
     // prettier-ignore
     chain(1)
-        (curried(1, 1, 1))
+        (curried(1, 1, 2))
         .peek()
         .returnIf((v) => v === 4)
+        (Math.cos)
         ((v) => v ** 2)
         (),
 )

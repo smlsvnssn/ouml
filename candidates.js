@@ -45,7 +45,18 @@ const hash = (str, seed = 0) => {
     return format(h2) + format(h1)
 }
 
+const bubblePipe = (val) =>
+    function next(f) {
+        if (f === undefined) return val
+        val = typeof f === "function" ? f(val) : val
+        return next
+    }
+
 import * as ö from "ouml"
+
+bubblePipe(1)(Math.cos)(Math.sin)(ö.log)()
+
+ö.log(bubblePipe(1)())
 
 ö.time(() => {
     let s =

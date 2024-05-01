@@ -70,6 +70,9 @@ declare module "ouml" {
     ): any
     export function immutable(v: any, deep?: boolean): any
     export function pipe(v: any, ...funcs: Function[]): any
+    export function toPiped(...funcs: Function[]): (v: any) => any
+    export function pipeAsync(v: any, ...funcs: Function[]): Promise<any>
+    export function toPipedAsync(...funcs: Function[]): (v: any) => Promise<any>
     export function memoise(
         f: Function,
         keymaker?: Function,
@@ -78,7 +81,7 @@ declare module "ouml" {
         f: Function,
         keymaker?: Function,
     ): (...args: any[]) => any
-    export function createEnum(...v: string[] | string): {}
+    export function createEnum<T>(...v: T | string[] | string): T
 
     export function random(min?: number, max?: number, float?: boolean): number
     export function randomNormal(mean?: number, sigma?: number): number

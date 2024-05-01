@@ -189,7 +189,7 @@ Returns `true` if `a` is a superset of `b`.
 
 Returns `true` if `a` and `b` share no members.
 
-### Logical / generic
+### Logical / generic / functional
 
 #### ö.isEqual/ö.equals( a, b, deep = true ) → Boolean
 
@@ -207,7 +207,7 @@ Returns a freezed clone of `v`. Set `deep` to `false` to make only top level imm
 
 #### ö.pipe( v, ...funcs ) → value
 
-Pipes function calls. For multiple arguments, use closures. Usage:
+Pipes function calls for a value. For multiple arguments, use closures. Usage:
 
 ```js
 ö.pipe(
@@ -219,20 +219,41 @@ Pipes function calls. For multiple arguments, use closures. Usage:
 ) // logs 42
 ```
 
+#### ö.toPiped( ...funcs ) → function( v ) → value
+
+Pipes function calls, and returns a function that takes the value to pipe. The data last save for later version of pipe.
+Usage:
+
+```js
+const myPipe = ö.toPiped(
+    (x) => x * 6,
+    (x) => x ** 2,
+    (x) => x + 6,
+    ö.log,
+)
+myPipe(1) // logs 42
+```
+
 #### ö.pipeAsync( v, ...funcs ) → Promise
 
 Same as `ö.pipe`, but awaits functions and returns a `Promise`.
 
-#### ö.curry( f ) → f
+#### ö.toPipedAsync( ...funcs ) → function( v ) → Promise
+
+Pipes function calls, and returns a function that takes the value to pipe. That function returns a `Promise`.
+
+#### ö.curry( f ) → function
 
 Returns a <a href='https://en.wikipedia.org/wiki/Currying' target=_blank>curried</a> version of `f`, allowing partial application of arguments. If `f` takes three arguments, it can be called like so:
 
 ```js
-const curriedF = ö.curry((a, b, c) => a + b + c)
-curriedF(1)(2)(3) // returns 6
+const f = (a, b, c) => a + b + c
+const curried = ö.curry(f)
+
+curried(1)(2)(3) // returns 6
 // or
-const partialF = curriedF(1, 2)
-partialF(3) // also 6
+const partial = curried(1, 2)
+partial(3) // also 6
 ```
 
 #### ö.memoise/ö.memoize( f, keymaker ) → f
@@ -241,7 +262,7 @@ Creates and returns memoised functions. By default, the arguments to the memoise
 
 #### ö.createEnum( object ) → Object;
 
-Creates and returns an enumerable, i.e. a frozen object where the keys and values are the same. Lets you create kinda sorta vanilla typechecking light. Takes an object, or strings, or an array of strings, as input.
+Creates and returns an enumerable, i.e. a frozen object where the keys and values are the same. Lets you create kinda sorta vanilla typechecking light, but at runtime 🤪. Takes an object, or strings, or an array of strings, as input.
 Example:
 
 ```js
@@ -254,9 +275,9 @@ const sizes = ö.createEnum(["small", "medium", "large"])
 giveMeIcecream(sizes.large)
 ```
 
-#### ö.data( object, key, value ) → data | data.key
+#### ö.data( anyVal, key, value ) → data | data.key
 
-Adds a `data` property to `object` via a `WeakMap`. With only `key` set, acts as a getter for `key`. With `key` and `value` set, acts as a setter. Useful for associating data with DOM elements.
+Associates `anyVal` with data via a `WeakMap`. With only `key` set, acts as a getter for `key`. With `key` and `value` set, acts as a setter. Useful for associating data with DOM elements. If given an `Element`, it parses the `dataset` property and adds its properties to `data`.
 
 If no `key`, returns `data` object.
 
