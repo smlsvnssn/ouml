@@ -68,7 +68,7 @@ export const max = (arr) => Math.max(...arr)
 export const min = (arr) => Math.min(...arr)
 
 export const groupBy = (arr, prop, asObject = false) =>
-    globalThis[asObject ? "Object" : "Map"].groupBy(
+    globalThis[asObject ? 'Object' : 'Map'].groupBy(
         arr,
         isFunc(prop) ? prop : (v) => v[prop],
     )
@@ -87,17 +87,43 @@ export const groupBy = (arr, prop, asObject = false) =>
 }
 */
 
+export const mapToTree = (arr, idProp, parentProp) => {
+    const lookup = new Map()
+    for (const [i, v] of arr.entries()) {
+        const index =
+            isFunc(idProp) ?
+                idProp(v, i, arr) ?? -1
+            :   arr.findIndex((parent) => parent[idProp] === v?.[parentProp])
+
+        lookup.set(
+            index,
+            lookup.has(index) ? [...lookup.get(index), { i, v }] : [{ i, v }],
+        )
+    }
+
+    const traverse = (index) =>
+        lookup.get(index)?.map((v) => ({
+            // did you see the guard clause? Pretty small eh?
+            ...v.v,
+            children: traverse(v.i),
+        }))
+
+    return traverse(-1)
+}
+
 // find deep in array of nested objects
 export const findDeep = (arr, val, subArrayProp, prop) => {
     for (const [i, v] of arr.entries()) {
         if (isFunc(val)) {
             if (val(v, i, arr)) return v
         } else if (v[prop] === val) return v
+
         if (v[subArrayProp]) {
             const result = findDeep(v[subArrayProp], val, subArrayProp, prop)
             if (result) return result
         }
     }
+
     return undefined
 }
 
@@ -108,11 +134,13 @@ export const filterDeep = (arr, val, subArrayProp, prop) => {
         if (isFunc(val)) {
             if (val(v, i, arr)) out.push(v)
         } else if (v[prop] === val) out.push(v)
+
         if (v[subArrayProp]) {
             const result = filterDeep(v[subArrayProp], val, subArrayProp, prop)
             if (result) out.push(result)
         }
     }
+
     return out.flat()
 }
 
@@ -154,7 +182,7 @@ export const isDisjoint = (a, b) => {
 
 // DOM
 export const createElement = (html, isSvg = false) => {
-    const template = document.createElement("template")
+    const template = document.createElement('template')
 
     if (isSvg) {
         template.innerHTML = `<svg>${html.trim()}</svg>`
@@ -195,7 +223,7 @@ export const data = (element, key, value) => {
 }
 
 // Finds deepestElement in element matching selector. Potential performance hog for deep DOM structures.
-export const deepest = (element, selector = "*") => {
+export const deepest = (element, selector = '*') => {
     let deepestEl = { depth: 0, deepestElement: element }
 
     for (const el of element.querySelectorAll(selector)) {
@@ -220,9 +248,9 @@ export const isEqual = (a, b, deep = true) =>
         // are same date?
     : a instanceof Date && b instanceof Date ? a.getTime() === b.getTime()
         // are lexically same functions? (Closures not compared)
-    : a instanceof Function && b instanceof Function ? "" + a === "" + b
+    : a instanceof Function && b instanceof Function ? '' + a === '' + b
         // are nullish?
-    : !a || !b || (typeof a !== "object" && typeof b !== "object") ? a === b
+    : !a || !b || (typeof a !== 'object' && typeof b !== 'object') ? a === b
         // have same prototype?
     : Object.getPrototypeOf(a) !== Object.getPrototypeOf(b) ? false
         // have same length ? (Iterables)
@@ -244,9 +272,9 @@ export const clone = (
     const doFreeze = (v) => (immutable ? Object.freeze(v) : v)
 
     // no cloning of functions, too gory. They are passed by reference instead
-    if (typeof v !== "object" || isNull(v)) return v
+    if (typeof v !== 'object' || isNull(v)) return v
     // catch arraylike
-    if ("map" in v && isFunc(v.map)) return doFreeze(v.map((i) => doClone(i)))
+    if ('map' in v && isFunc(v.map)) return doFreeze(v.map((i) => doClone(i)))
     if (isMap(v)) return doFreeze(new Map(doClone(Array.from(v))))
     if (isSet(v)) return doFreeze(new Set(doClone(Array.from(v))))
     if (isDate(v)) return doFreeze(new Date().setTime(v.getTime()))
@@ -291,7 +319,7 @@ export const memoise = (f, keymaker) => {
     return (...args) => {
         const key =
             isFunc(keymaker) ? keymaker(...args)
-            : args.length > 1 ? args.join("-")
+            : args.length > 1 ? args.join('-')
             : args[0]
 
         if (cache.has(key)) return cache.get(key)
@@ -410,15 +438,15 @@ export const toCartesian = (r, theta) => ({
 // }
 
 // string
-export const prettyNumber = (n, locale = "sv-SE", precision = 2) => {
+export const prettyNumber = (n, locale = 'sv-SE', precision = 2) => {
     // locale can be omitted
     ;[locale, precision] =
-        isNum(locale) ? ["sv-SE", locale] : [locale, precision]
+        isNum(locale) ? ['sv-SE', locale] : [locale, precision]
 
     n = round(n, precision)
 
     return (
-        Number.isNaN(n) ? "-"
+        Number.isNaN(n) ? '-'
         : isInt(n) ? n.toLocaleString(locale)
         : n.toLocaleString(locale, {
                 minimumFractionDigits: precision,
@@ -429,8 +457,8 @@ export const prettyNumber = (n, locale = "sv-SE", precision = 2) => {
 export const wrapFirstWords = (
     s,
     numWords = 3,
-    startWrap = "<span>",
-    endWrap = "</span>",
+    startWrap = '<span>',
+    endWrap = '</span>',
     startAtChar = 0,
 ) =>
     s.slice(0, startAtChar) +
@@ -453,8 +481,8 @@ export const toKebabCase = (s) =>
     s.match(/^\-\-/) ?
         s // is css var, so leave it alone
     :   s
-            .replace(/\s/g, "-")
-            .replace(/([a-z0-9])([A-Z0-9])/g, "$1-$2")
+            .replace(/\s/g, '-')
+            .replace(/([a-z0-9])([A-Z0-9])/g, '$1-$2')
             .toLowerCase()
 
 export const capitalise = (s) => s[0].toUpperCase() + s.slice(1)
@@ -466,9 +494,9 @@ export const randomChars = (numChars = 10) =>
         .toString(36)
         .substring(0, numChars)
 
-export const stripTags = (s) => s.replace(/(<([^>]+)>)/gi, "")
+export const stripTags = (s) => s.replace(/(<([^>]+)>)/gi, '')
 
-export const when = (bool, v, f = false) => (bool ? v : f || "")
+export const when = (bool, v, f = false) => (bool ? v : f || '')
 
 // Colours
 export const toHsla = (c, asString = false) => {
@@ -483,10 +511,10 @@ export const toHsla = (c, asString = false) => {
             .slice(1) // remove #
             .flatMap(
                 (v, i, a) =>
-                    a.length <= 4 ? [Number("0x" + v + v)]
+                    a.length <= 4 ? [Number('0x' + v + v)]
                     : i % 2 ?
                         [] // omitted by flatmap
-                    :   [Number("0x" + v + a[i + 1])], // current + next
+                    :   [Number('0x' + v + a[i + 1])], // current + next
             )
         // fix alpha
         if (rgba.length === 4) rgba[3] / 255
@@ -626,13 +654,13 @@ export const load = async (
 const istype = (t) => (v) => typeof v === t
 const isof = (t) => (v) => v instanceof t
 
-export const isBool = istype("boolean")
-export const isNum = istype("number")
+export const isBool = istype('boolean')
+export const isNum = istype('number')
 export const isInt = (v) => Number.isInteger(v)
-export const isBigInt = istype("bigint")
-export const isStr = istype("string")
-export const isSym = istype("symbol")
-export const isFunc = istype("function")
+export const isBigInt = istype('bigint')
+export const isStr = istype('string')
+export const isSym = istype('symbol')
+export const isFunc = istype('function')
 export const isnt = (v) => v === undefined
 export const isUndefined = isnt
 export const is = (v) => v !== undefined
@@ -645,7 +673,7 @@ export const isSet = isof(Set)
 export const isRegex = isof(RegExp)
 
 export const isObj = (v) =>
-    typeof v === "object" &&
+    typeof v === 'object' &&
     v !== null &&
     !isArr(v) &&
     !isDate(v) &&
@@ -654,7 +682,7 @@ export const isObj = (v) =>
     !isRegex(v)
 
 export const isIterable = (v) =>
-    v != null && typeof v[Symbol.iterator] === "function"
+    v != null && typeof v[Symbol.iterator] === 'function'
 
 // conversion
 export const mapToObj = (map) => Object.fromEntries(map.entries())
@@ -721,10 +749,10 @@ export const setLocal = (item, v) => (
     localStorage.setItem(item, JSON.stringify(v)), v
 )
 
-export const getCss = (prop, selector = ":root") =>
+export const getCss = (prop, selector = ':root') =>
     document.querySelector(selector).style.getPropertyValue(prop)
 
-export const setCss = (prop, v, selector = ":root") => (
+export const setCss = (prop, v, selector = ':root') => (
     document.querySelector(selector).style.setProperty(prop, v), v
 )
 
@@ -753,7 +781,7 @@ export const log = (...msg) => {
     return msg.length === 1 ? msg[0] : msg
 }
 
-const defaultLabel = "ö.time says"
+const defaultLabel = 'ö.time says'
 
 export const time = (f, label = defaultLabel) => {
     if (!isFunc(f))
@@ -777,7 +805,7 @@ export const message = (s) => `ö says: ${s}\n`
 export const toString = () => `Hello ö🍳uery!`
 
 export const rorövovarorsospoproråkoketot = (s) =>
-    (s || "").replace(
+    (s || '').replace(
         /[bcdfghjklmnpqrstvwxyz]/gi,
         (m) => `${m}o${m.toLowerCase()}`,
     )

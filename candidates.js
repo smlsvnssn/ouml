@@ -1,3 +1,5 @@
+import * as ö from 'ouml'
+import { isFunc, mapToTree } from 'ouml'
 /* 
 TODO:
 Environment methods, ie isMobile, isTouchscreen, isHiResScreen, isDesktop, isServer etc
@@ -28,7 +30,7 @@ const hash = (str, seed = 0) => {
             Math.imul(b ^ (b >>> 13), 3266489909)) >>>
         0
 
-    const format = (n) => n.toString(36).padStart(7, "0")
+    const format = (n) => n.toString(36).padStart(7, '0')
 
     let h1 = 0xdeadbeef ^ seed,
         h2 = 0x41c6ce57 ^ seed
@@ -48,21 +50,48 @@ const hash = (str, seed = 0) => {
 const bubblePipe = (val) =>
     function next(f) {
         if (f === undefined) return val
-        val = typeof f === "function" ? f(val) : val
+        val = typeof f === 'function' ? f(val) : val
         return next
     }
 
-import * as ö from "ouml"
+//bubblePipe(1)(Math.cos)(Math.sin)(ö.log)()
 
-bubblePipe(1)(Math.cos)(Math.sin)(ö.log)()
+//ö.log(bubblePipe(1)())
 
-ö.log(bubblePipe(1)())
-
-ö.time(() => {
+/* ö.time(() => {
     let s =
         "jkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb "
     ö.times(100, () => {
         ö.log(hash(s))
         s = s.slice(1)
     })
-})
+}) */
+
+const flat = [
+    { id: '1' },
+    { id: '1.1', parent: '1' },
+    { id: '1.1.1', parent: '1.1' },
+    { id: '1.2', parent: '1' },
+    { id: '1.2.1', parent: '1.2' },
+    { id: '1.3', parent: '1' },
+    { id: '2' },
+    { id: '2.2', parent: '2' },
+    { id: '2.2.1', parent: '2.2' },
+]
+const tree = mapToTree(flat, (child, _, arr) =>
+    arr.findIndex(
+        (parent) => parent.id === child.id.split('.').slice(0, -1).join('.'),
+    ),
+)
+
+// or
+const sameTree = mapToTree(flat, 'id', 'parent')
+
+ö.log(JSON.stringify(tree, null, 2))
+ö.log(ö.equals(tree, sameTree))
+
+console.log(
+    flat.map((v, _, a) =>
+        a.findIndex((vv) => vv.id === v.id.split('.').slice(0, -1).join('.')),
+    ),
+)

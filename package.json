@@ -1,6 +1,6 @@
 {
     "name": "ouml",
-    "version": "0.1.9",
+    "version": "0.1.10",
     "description": "smlsvnssn",
     "main": "ö.mjs",
     "module": "ö.mjs",
@@ -27,7 +27,8 @@
     "prettier": {
         "experimentalTernaries": true,
         "tabWidth": 4,
-        "semi": false
+        "semi": false,
+        "singleQuote": true
     },
     "scripts": {
         "dev": "vite",

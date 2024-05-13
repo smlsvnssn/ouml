@@ -1,4 +1,4 @@
-declare module "ouml" {
+declare module 'ouml' {
     export function grid(width: number, height?: number): IterableIterator<{}>
     export function range(
         start: number,
@@ -30,6 +30,11 @@ declare module "ouml" {
         arr: Iterable<any>,
         prop: string | Function,
     ): [any[]]
+    export function mapToTree(
+        arr: any[],
+        idProp: string | Function,
+        parentProp?: string,
+    ): any[]
     export function findDeep(
         arr: any[],
         val: Function | any,
