@@ -78,15 +78,16 @@ const flat = [
     { id: '2.2', parent: '2' },
     { id: '2.2.1', parent: '2.2' },
 ]
-const tree = mapToTree(flat, (child, _, arr) =>
-    arr.findIndex(
-        (parent) => parent.id === child.id.split('.').slice(0, -1).join('.'),
-    ),
-)
+const tree = mapToTree(flat, (child) => [
+    child.id,
+    child.id.split('.').slice(0, -1).join('.') || null,
+])
 
+ö.log('tree:', tree)
 // or
 const sameTree = mapToTree(flat, 'id', 'parent')
 
+ö.log('same:', sameTree)
 ö.log(JSON.stringify(tree, null, 2))
 ö.log(ö.equals(tree, sameTree))
 

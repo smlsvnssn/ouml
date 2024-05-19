@@ -31,11 +31,13 @@ export const unique = (arr) => [...new Set(arr)]
 export const shuffle = (arr) => {
     // no mutation, array coercion
     const a = Array.from(arr)
+
     // classic loop for performance reasons
     for (let i = a.length - 1; i > 0; i--) {
         const j = random(i + 1)
         ;[a[i], a[j]] = [a[j], a[i]]
     }
+
     return a
 }
 
@@ -88,27 +90,30 @@ export const groupBy = (arr, prop, asObject = false) =>
 */
 
 export const mapToTree = (arr, idProp, parentProp) => {
-    const lookup = new Map()
-    for (const [i, v] of arr.entries()) {
-        const index =
-            isFunc(idProp) ?
-                idProp(v, i, arr) ?? -1
-            :   arr.findIndex((parent) => parent[idProp] === v?.[parentProp])
+    const parents = new Map()
 
-        lookup.set(
-            index,
-            lookup.has(index) ? [...lookup.get(index), { i, v }] : [{ i, v }],
+    for (const [i, v] of arr.entries()) {
+        const [index, parentIndex] =
+            isFunc(idProp) ?
+                idProp(v, i, arr)
+            :   [v[idProp], v?.[parentProp] ?? null]
+
+        parents.set(
+            parentIndex,
+            parents.has(parentIndex) ?
+                [...parents.get(parentIndex), { index, v }]
+            :   [{ index, v }],
         )
     }
 
-    const traverse = (index) =>
-        lookup.get(index)?.map((v) => ({
+    const traverse = (parentIndex = null) =>
+        parents.get(parentIndex)?.map((v) => ({
             // did you see the guard clause? Pretty small eh?
             ...v.v,
-            children: traverse(v.i),
+            children: traverse(v.index),
         }))
 
-    return traverse(-1)
+    return traverse()
 }
 
 // find deep in array of nested objects

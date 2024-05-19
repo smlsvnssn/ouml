@@ -130,11 +130,9 @@ Maps a flat array of objects to a tree structure. Objects with children get a ne
 
 Either you provide an `idProp` and a `parentProp`, where the `ìdProp` holds a value unique to every item in the array, and `parentProp` holds a reference to the parent's `idProp` value (useful for example if you get a flattened hierarchic list from an api).
 
-Or, you provide a mapping function responsible for finding the parent's index in the provided array. The function receives `value, index, array` as arguments, and should produce the index of the value's parent, or `-1` if it is a root value. Useful for example for mapping urls to a hierarchy.
+Or, you provide a mapping function responsible for providing a unique key for the item, and a unique key for the parent. The function receives `value, index, array` as arguments, and should produce an array with `[ ownKey, parentKey ]`. If the item has no parent, set `parentKey` to `null`. Useful for example for mapping urls to a hierarchy.
 
 Parentless children (orphans) will be discarded.
-
-The performance might not be the best, as it runs `.findIndex` for every item in the array, but it's good enough for daily use.
 
 Example:
 
@@ -146,13 +144,13 @@ const flat = [
     { id: '2' },
     { id: '2.2', parent: '2' },
 ]
-const tree = mapToTree(flat, (child, _, arr) =>
-    arr.findIndex(
-        (parent) => parent.id === child.id.split('.').slice(0, -1).join('.'),
-    ),
-)
+
+const tree = mapToTree(flat, 'id', 'parent')
 // or
-const sameTree = mapToTree(flat, 'id', 'parent')
+const sameTree = mapToTree(flat, (item) => [
+    item.id,
+    item.id.split('.').slice(0, -1).join('.'),
+])
 ```
 
 #### ö.findDeep( arr, val, subArrayProp, prop ) → Array item
