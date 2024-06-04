@@ -17,10 +17,6 @@ Cubic, Quadratic
 
 Rework colour functions to include oklch and new css features (browser only? Use create element hack?)
 
-√ Replace ö.clone with structuredClone? 
-	TODO: include option to bypass prototype cloning (i.e. fast option)
-https://developer.mozilla.org/en-US/docs/Web/API/structuredClone
-
 */
 
 // based on https://gist.github.com/jlevy/c246006675becc446360a798e2b2d781

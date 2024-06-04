@@ -330,13 +330,16 @@ Creates and returns an enumerable, i.e. a frozen object where the keys and value
 Example:
 
 ```js
-const sizes = ö.createEnum({ small: 'small', medium: 'medium', large: 'large' })
+const SIZES = ö.createEnum('small', 'medium', 'large')
 // or:
-const sizes = ö.createEnum('small', 'medium', 'large')
+const SIZES = ö.createEnum(['small', 'medium', 'large'])
 // or:
-const sizes = ö.createEnum(['small', 'medium', 'large'])
-
-giveMeIcecream(sizes.large)
+const SIZES = ö.createEnum({
+    small: 'whatevs',
+    medium: 'anything goes',
+    large: 'must be unique though',
+})
+giveMeIcecream(SIZES.large)
 ```
 
 #### ö.data( anyVal, key, value ) → data | data.key
