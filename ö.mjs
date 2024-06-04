@@ -116,37 +116,68 @@ export const mapToTree = (arr, idProp, parentProp) => {
     return traverse()
 }
 
-// find deep in array of nested objects
-export const findDeep = (arr, val, subArrayProp, prop) => {
+// methods for arrays of nested objects
+export const reduceDeep = (
+    arr,
+    f,
+    subArrayProp,
+    initial,
+    flatten = false,
+    isFirstItem = true,
+) => {
+    const traverse = (subArr, initial) =>
+        reduceDeep(subArr, f, subArrayProp, initial, flatten, false)
+
     for (let [i, v] of arr.entries()) {
-        if (isFunc(val)) {
-            if (val(v, i, arr)) return v
-        } else if (v[prop] === val) return v
+        initial = isFirstItem && isnt(initial) ? v : f(initial, v, i, arr)
 
         if (v[subArrayProp]) {
-            let result = findDeep(v[subArrayProp], val, subArrayProp, prop)
-            if (result) return result
+            if (!flatten && isArr(initial) && isObj(initial[i]))
+                initial[i][subArrayProp] = traverse(v[subArrayProp], [])
+            else initial = traverse(v[subArrayProp], initial)
+        }
+    }
+
+    return initial
+}
+
+export const mapDeep = (arr, f, subArrayProp, flatten = false) =>
+    reduceDeep(
+        arr,
+        (acc, v, i) => (
+            isFunc(f) ? acc.push(f(v, i, arr)) : acc.push(v[f]), acc
+        ),
+        subArrayProp,
+        [],
+        flatten,
+    )
+
+export const filterDeep = (arr, f, subArrayProp, prop) =>
+    reduceDeep(
+        arr,
+        (acc, v, i) => {
+            if (isFunc(f)) {
+                if (f(v, i, arr)) acc.push(v)
+            } else if (v[prop] === f) acc.push(v)
+            return acc
+        },
+        subArrayProp,
+        [],
+    )
+
+export const findDeep = (arr, f, subArrayProp, prop) => {
+    for (let [i, v] of arr.entries()) {
+        if (isFunc(f)) {
+            if (f(v, i, arr)) return v
+        } else if (v[prop] === f) return v
+
+        if (v[subArrayProp]) {
+            let result = findDeep(v[subArrayProp], f, subArrayProp, prop)
+            if (is(result)) return result
         }
     }
 
     return undefined
-}
-
-// filter deep in array of nested objects
-export const filterDeep = (arr, val, subArrayProp, prop) => {
-    const out = []
-    for (const [i, v] of arr.entries()) {
-        if (isFunc(val)) {
-            if (val(v, i, arr)) out.push(v)
-        } else if (v[prop] === val) out.push(v)
-
-        if (v[subArrayProp]) {
-            const result = filterDeep(v[subArrayProp], val, subArrayProp, prop)
-            if (result) out.push(result)
-        }
-    }
-
-    return out.flat()
 }
 
 // SET OPS

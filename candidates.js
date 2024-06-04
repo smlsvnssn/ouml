@@ -120,60 +120,6 @@ let map2 = (a, f, acc = [], i = 0) =>
 //     (i) => ++i,
 // )
 
-const isPlainObj = (v) =>
-    ö.isObj(v) && Object.getPrototypeOf(v) === Object.prototype
-
-const isNakedObj = (v) => ö.isObj(v) && Object.getPrototypeOf(v) === null
-
-export const reduceDeep = (
-    arr,
-    reducer,
-    subArrayProp,
-    initial,
-    flatten = false,
-    isFirstItem = true,
-) => {
-    const traverse = (subArr, initial) =>
-        reduceDeep(subArr, reducer, subArrayProp, initial, flatten, false)
-
-    for (let [i, v] of arr.entries()) {
-        initial =
-            isFirstItem && ö.isnt(initial) ? v : reducer(initial, v, i, arr)
-
-        if (v[subArrayProp]) {
-            if (!flatten && ö.isArr(initial) && ö.isObj(initial[i]))
-                initial[i][subArrayProp] = traverse(v[subArrayProp], [])
-            else initial = traverse(v[subArrayProp], initial)
-        }
-    }
-
-    return initial
-}
-
-const mapDeep = (arr, f, subArrayProp, prop, flatten = false) =>
-    reduceDeep(
-        arr,
-        (acc, v, i) => (
-            ö.isFunc(f) ? acc.push(f(v, i, arr)) : acc.push(v[prop]), acc
-        ),
-        subArrayProp,
-        [],
-        flatten,
-    )
-
-const filterDeep = (arr, f, subArrayProp, prop) =>
-    reduceDeep(
-        arr,
-        (acc, v, i) => {
-            if (ö.isFunc(f)) {
-                if (f(v, i, arr)) acc.push(v)
-            } else if (v[prop] === f) acc.push(v)
-            return acc
-        },
-        subArrayProp,
-        [],
-    )
-
 let a = [
     {
         a: 1,
@@ -189,14 +135,14 @@ let a = [
 
 // ö.log(
 //     JSON.stringify(
-//         reduceDeep(a, (acc, v, i) => (acc.push(1), acc), 'b', [], true),
+//         ö.reduceDeep(a, (acc, v, i) => (acc.push(1), acc), 'b', [], true),
 //         null,
 //         2,
 //     ),
 // )
 ö.log(
     JSON.stringify(
-        mapDeep(
+        ö.mapDeep(
             a,
             () => ({
                 b: 1,
@@ -210,11 +156,23 @@ let a = [
 )
 // ö.log(
 //     JSON.stringify(
-//         filterDeep(a, (v) => v.a === 2, 'b'),
+//         ö.filterDeep(a, (v) => v.a === 2, 'b'),
 //         null,
 //         2,
 //     ),
 // )
-ö.log(reduceDeep([{ k: 'kuk', kuk: ['u'] }], (acc, v) => acc + v, 'kuk'))
+ö.log(ö.reduceDeep([{ k: 'kuk', kuk: ['u'] }], (acc, v) => acc + v, 'kuk'))
 
-ö.log(isPlainObj(a[0]), isPlainObj(new Date()))
+ö.log(ö.isPlainObj(a[0]), ö.isPlainObj(new Date()))
+
+let arr = [
+    {
+        value: 1,
+        children: [
+            { value: 1 },
+            { value: 1 },
+            { value: 1, children: [{ value: -4 }] },
+        ],
+    },
+]
+ö.log(ö.reduceDeep(arr, (acc, v) => acc + v.value, 'children', 0))

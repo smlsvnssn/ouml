@@ -120,9 +120,11 @@ Returns smallest value in `arr`.
 
 #### ö.groupBy( arr, prop, asObject = false) → Map
 
-If `prop` is a string, takes an `Array` of `Objects` with a common property. If `prop` is a function, takes a function returning keys for grouping based on array contents. The function receives `value, index, array` as arguments.
-
 Returns a `Map` with keys corresponding to `prop` values, holding grouped values as arrays. Optionally returns an `object` if `asObject` is set to true.
+
+If `prop` is a string, takes an iterable of `object`s with a common property. If `prop` is a function, takes a function returning keys for grouping based on `arr` contents. The function receives `value, index, array` as arguments.
+
+### Tree structures
 
 #### ö.mapToTree( arr, idProp | f, parentProp) → Nested array
 
@@ -153,17 +155,49 @@ const sameTree = mapToTree(flat, (item) => [
 ])
 ```
 
-#### ö.findDeep( arr, val, subArrayProp, prop ) → Array item
+#### ö.reduceDeep( arr, f, subArrayProp, initial ) → value
 
-Finds first occurence of `val` in arrays of nested objects.
-If `val` is a function, returns first item where `val` returns `true`. The function receives `value, index, array` as arguments. If `val` is a function, `prop` can be omitted.
-If `val` is not a function, `val` is compared to the value of property `prop`.
+Reduces arrays of nested objects to a single value. `subArrayProp` is a `string` matching the property containing nested arrays.
 
-`subArrayProp` is a `string` matching the property containing nested arrays.
+The reducer function `f` receives `accumulator, value, index, array` as arguments. `initial` can be omitted, just like the native `reduce`, in that case the first item of `arr` is used as the initial value.
 
-#### ö.filterDeep( arr, val, subArrayProp, prop ) → Array item
+Example:
 
-Same as `ö.findDeep`, except it returns all matches.
+```js
+let arr = [
+    {
+        value: 1,
+        children: [
+            { value: 1 },
+            { value: 1 },
+            { value: 1, children: [{ value: -4 }] },
+        ],
+    },
+]
+ö.reduceDeep(arr, (acc, v) => acc + v.value, 'children', 0) // returns 0
+```
+
+#### ö.mapDeep( arr, f, subArrayProp, flatten = false ) → Array
+
+Maps over arrays of nested objects. `subArrayProp` is a `string` matching the property containing nested arrays.
+
+If `f` is a function, its return value is mapped to a new array. The function receives `value, index, array` as arguments. If `f` returns an `object`, and `flatten` is `false`, the structure of the original `arr` is preserved, and a property matching `subArrayProp` is added to the object, containing its children.
+
+If `f` is a `string`, the value of the property matching `f` is returned, in a flattened array.
+
+#### ö.filterDeep( arr, f, subArrayProp, prop ) → Array
+
+Finds items that match `f` in arrays of nested objects. `subArrayProp` is a `string` matching the property containing nested arrays.
+
+If `f` is a function, returns first item where `f` returns `true`. The function receives `value, index, array` as arguments. If `f` is a function, `prop` can be omitted.
+
+If `f` is not a function, the value of `f` is compared to the value of property `prop`.
+
+Returns a flat array with matching items, regardless of depth.
+
+#### ö.findDeep( arr, f, subArrayProp, prop ) → Array item
+
+Same as `ö.filterDeep`, except it returns first match.
 
 ### Set operations
 
@@ -230,7 +264,7 @@ Performs cloning of most common types, including `Array` and typed arrays, `Map`
 
 The native `structuredClone` is probably slower (by alot!) in most cases, errors on functions, and doesn't preserve prototype, but it handles circular references. Choose wisely!
 
-#### ö.immutable(v, deep = true) immutable value
+#### ö.immutable(v, deep = true) → immutable value
 
 Returns a freezed clone of `v`. Set `deep` to `false` to make only top level immutable.
 
@@ -289,7 +323,7 @@ partial(3) // also 6
 
 Creates and returns memoised functions. By default, the arguments to the memoised function are used as key for storing the result (If only one argument, the raw input is used as key, if more than one, the arguments are joined to a string). If the arguments are objects instead of primitive values, you should provide a `keymaker`. `keymaker` receives all inputs from the memoised function, and should return something unique to use as a `Map` key for a given set of inputs. Use for example `JSON.stringify` when you expect objects as input.
 
-#### ö.createEnum( object ) → Object;
+#### ö.createEnum( object ) → Object
 
 Creates and returns an enumerable, i.e. a frozen object where the keys and values are the same. Lets you create kinda sorta vanilla typechecking light, but at runtime 🤪. Takes an object, or strings, or an array of strings, as input.
 Example:

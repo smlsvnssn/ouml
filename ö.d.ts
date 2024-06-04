@@ -35,18 +35,32 @@ declare module 'ouml' {
         idProp: string | Function,
         parentProp?: string,
     ): any[]
-    export function findDeep(
+
+    export function reduceDeep(
         arr: any[],
-        val: Function | any,
+        f: Function | any,
         subArrayProp: string,
-        prop?: string,
+        initial?: any,
+        flatten?: boolean,
     ): any
+    export function mapDeep(
+        arr: any[],
+        f: Function | any,
+        subArrayProp: string,
+        flatten?: boolean,
+    ): any[]
     export function filterDeep(
         arr: any[],
-        val: Function | any,
+        f: Function | any,
         subArrayProp: string,
         prop?: string,
     ): any[]
+    export function findDeep(
+        arr: any[],
+        f: Function | any,
+        subArrayProp: string,
+        prop?: string,
+    ): any
 
     export function intersect(a: Iterable<any>, b: Iterable<any>): any[]
     export function subtract(a: Iterable<any>, b: Iterable<any>): any[]
