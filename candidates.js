@@ -60,14 +60,14 @@ const bubblePipe = (val) =>
 
 /* ö.time(() => {
     let s =
-        "jkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb bvffbbfbvfvbfvbfbfbvfbvfbvfbvfbvfbvhfbvbfdbfdbdfbdfbdbdbfdsfbdsbfdsbdsfdffbvbfvbfbvfhbvbfhvbfjkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb "
+        "jkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb"
     ö.times(100, () => {
         ö.log(hash(s))
         s = s.slice(1)
     })
 }) */
 
-const flat = [
+/* const flat = [
     { id: '1' },
     { id: '1.1', parent: '1' },
     { id: '1.1.1', parent: '1.1' },
@@ -96,3 +96,125 @@ console.log(
         a.findIndex((vv) => vv.id === v.id.split('.').slice(0, -1).join('.')),
     ),
 )
+ */
+let loop = (f, until, i = 0, increment = (i) => i + 1) =>
+    !until(i) ? null : (f(i), loop(f, until, increment(i)))
+
+// slow
+let map = (a, f, acc = [], i = 0) =>
+    i >= a.length ? acc : map(a, f, [...acc, f(a[i], i, a)], ++i)
+
+// fast
+let map2 = (a, f, acc = [], i = 0) =>
+    i >= a.length ? acc : map2(a, f, (acc.push(f(a[i], i, a)), acc), ++i)
+
+ö.time(() => map(ö.times(4000), (v) => v * 2), 1)
+ö.time(() => map2(ö.times(4000), (v) => v * 2), 2)
+// 1: 47.631ms
+// 2: 0.864ms
+
+// loop(
+//     (i) => ö.log(i),
+//     (i) => i < 4737,
+//     -2,
+//     (i) => ++i,
+// )
+
+const isPlainObj = (v) =>
+    ö.isObj(v) && Object.getPrototypeOf(v) === Object.prototype
+
+const isNakedObj = (v) => ö.isObj(v) && Object.getPrototypeOf(v) === null
+
+export const reduceDeep = (
+    arr,
+    reducer,
+    subArrayProp,
+    initial,
+    flatten = false,
+    isFirstItem = true,
+) => {
+    const traverse = (subArr, initial) =>
+        reduceDeep(subArr, reducer, subArrayProp, initial, flatten, false)
+
+    for (let [i, v] of arr.entries()) {
+        initial =
+            isFirstItem && ö.isnt(initial) ? v : reducer(initial, v, i, arr)
+
+        if (v[subArrayProp]) {
+            if (!flatten && ö.isArr(initial) && ö.isObj(initial[i]))
+                initial[i][subArrayProp] = traverse(v[subArrayProp], [])
+            else initial = traverse(v[subArrayProp], initial)
+        }
+    }
+
+    return initial
+}
+
+const mapDeep = (arr, f, subArrayProp, prop, flatten = false) =>
+    reduceDeep(
+        arr,
+        (acc, v, i) => (
+            ö.isFunc(f) ? acc.push(f(v, i, arr)) : acc.push(v[prop]), acc
+        ),
+        subArrayProp,
+        [],
+        flatten,
+    )
+
+const filterDeep = (arr, f, subArrayProp, prop) =>
+    reduceDeep(
+        arr,
+        (acc, v, i) => {
+            if (ö.isFunc(f)) {
+                if (f(v, i, arr)) acc.push(v)
+            } else if (v[prop] === f) acc.push(v)
+            return acc
+        },
+        subArrayProp,
+        [],
+    )
+
+let a = [
+    {
+        a: 1,
+        b: [{ a: 1 }, { a: 2 }],
+    },
+    {
+        a: 1,
+        b: [{ a: 1 }, { a: 1, b: [{ a: 1 }, { a: 2 }] }],
+    },
+]
+
+//ö.log(reduceDeep(a, (acc, v, i) => acc + v.a, 'b', 0))
+
+// ö.log(
+//     JSON.stringify(
+//         reduceDeep(a, (acc, v, i) => (acc.push(1), acc), 'b', [], true),
+//         null,
+//         2,
+//     ),
+// )
+ö.log(
+    JSON.stringify(
+        mapDeep(
+            a,
+            () => ({
+                b: 1,
+            }),
+            'b',
+            true,
+        ),
+        null,
+        2,
+    ),
+)
+// ö.log(
+//     JSON.stringify(
+//         filterDeep(a, (v) => v.a === 2, 'b'),
+//         null,
+//         2,
+//     ),
+// )
+ö.log(reduceDeep([{ k: 'kuk', kuk: ['u'] }], (acc, v) => acc + v, 'kuk'))
+
+ö.log(isPlainObj(a[0]), isPlainObj(new Date()))

@@ -195,6 +195,8 @@ declare module 'ouml' {
     export function isSet(v: any): boolean
     export function isRegex(v: any): boolean
     export function isObj(v: any): boolean
+    export function isPlainObj(v: any): boolean
+    export function isNakedObj(v: any): boolean
     export function isIterable(v: any): boolean
 
     export function getLocal(item: string): {} | undefined

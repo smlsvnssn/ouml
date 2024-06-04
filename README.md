@@ -541,6 +541,14 @@ Less verbose than `typeof`/`Array.isArray`/`instanceof`:
 
 `ö.isObj` excludes `Array`, `Map`, `Set`, `Date` and `RegExp`. And `null`, of course.
 
+#### ö.isPlainObj( v ) → Boolean
+
+Checks if `v` is a plain object a.k.a. pojo, that is, has the same prototype as `Object`.
+
+#### ö.isNakedObj( v ) → Boolean
+
+Checks if `v` is a naked object, that is, has `null` as prototype.
+
 #### ö.isIterable( v ) → Boolean
 
 Checks for `[Symbol.iterator]` in `v`.

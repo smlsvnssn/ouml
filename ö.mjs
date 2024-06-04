@@ -93,24 +93,24 @@ export const mapToTree = (arr, idProp, parentProp) => {
     const parents = new Map()
 
     for (const [i, v] of arr.entries()) {
-        const [index, parentIndex] =
+        const [key, parentKey] =
             isFunc(idProp) ?
-                idProp(v, i, arr)
+                idProp(v, i, arr) // Should return [ownKey, parentKey]
             :   [v[idProp], v?.[parentProp] ?? null]
 
         parents.set(
-            parentIndex,
-            parents.has(parentIndex) ?
-                [...parents.get(parentIndex), { index, v }]
-            :   [{ index, v }],
+            parentKey,
+            parents.has(parentKey) ?
+                [...parents.get(parentKey), { key, v }]
+            :   [{ key, v }],
         )
     }
 
     const traverse = (parentIndex = null) =>
-        parents.get(parentIndex)?.map((v) => ({
+        parents.get(parentIndex)?.map((parent) => ({
             // did you see the guard clause? Pretty small eh?
-            ...v.v,
-            children: traverse(v.index),
+            ...parent.v,
+            children: traverse(parent.key),
         }))
 
     return traverse()
@@ -118,13 +118,13 @@ export const mapToTree = (arr, idProp, parentProp) => {
 
 // find deep in array of nested objects
 export const findDeep = (arr, val, subArrayProp, prop) => {
-    for (const [i, v] of arr.entries()) {
+    for (let [i, v] of arr.entries()) {
         if (isFunc(val)) {
             if (val(v, i, arr)) return v
         } else if (v[prop] === val) return v
 
         if (v[subArrayProp]) {
-            const result = findDeep(v[subArrayProp], val, subArrayProp, prop)
+            let result = findDeep(v[subArrayProp], val, subArrayProp, prop)
             if (result) return result
         }
     }
@@ -345,8 +345,8 @@ export const createEnum = (...v) => {
     if (v.length === 1 && isObj(v[0])) return Object.freeze(v[0])
 
     if (v.length === 1 && isArr(v[0])) v = v[0] //if only one argument, use as array
-    const enu = {}
-    for (const val of v) enu[val] = val
+    let enu = {}
+    for (let val of v) enu[val] = val
 
     return Object.freeze(enu)
 }
@@ -685,6 +685,11 @@ export const isObj = (v) =>
     !isMap(v) &&
     !isSet(v) &&
     !isRegex(v)
+
+export const isPlainObj = (v) =>
+    isObj(v) && Object.getPrototypeOf(v) === Object.prototype
+
+export const isNakedObj = (v) => isObj(v) && Object.getPrototypeOf(v) === null
 
 export const isIterable = (v) =>
     v != null && typeof v[Symbol.iterator] === 'function'
