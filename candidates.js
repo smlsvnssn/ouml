@@ -67,7 +67,7 @@ const bubblePipe = (val) =>
     })
 }) */
 
-/* const flat = [
+/* let flat = [
     { id: '1' },
     { id: '1.1', parent: '1' },
     { id: '1.1.1', parent: '1.1' },
@@ -78,14 +78,14 @@ const bubblePipe = (val) =>
     { id: '2.2', parent: '2' },
     { id: '2.2.1', parent: '2.2' },
 ]
-const tree = mapToTree(flat, (child) => [
+let tree = mapToTree(flat, (child) => [
     child.id,
     child.id.split('.').slice(0, -1).join('.') || null,
 ])
 
 ö.log('tree:', tree)
 // or
-const sameTree = mapToTree(flat, 'id', 'parent')
+let sameTree = mapToTree(flat, 'id', 'parent')
 
 ö.log('same:', sameTree)
 ö.log(JSON.stringify(tree, null, 2))
@@ -97,15 +97,15 @@ console.log(
     ),
 )
  */
-let loop = (f, until, i = 0, increment = (i) => i + 1) =>
+const loop = (f, until, i = 0, increment = (i) => i + 1) =>
     !until(i) ? null : (f(i), loop(f, until, increment(i)))
 
 // slow
-let map = (a, f, acc = [], i = 0) =>
+const map = (a, f, acc = [], i = 0) =>
     i >= a.length ? acc : map(a, f, [...acc, f(a[i], i, a)], ++i)
 
 // fast
-let map2 = (a, f, acc = [], i = 0) =>
+const map2 = (a, f, acc = [], i = 0) =>
     i >= a.length ? acc : map2(a, f, (acc.push(f(a[i], i, a)), acc), ++i)
 
 ö.time(() => map(ö.times(4000), (v) => v * 2), 1)

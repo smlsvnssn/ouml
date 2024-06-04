@@ -10,14 +10,14 @@ Usage:
 
 ```js
 import { random } from 'ouml'
-const oneOrZero = random()
+let oneOrZero = random()
 ```
 
 or, with treeshaking:
 
 ```js
 import * as ö from 'ouml'
-const oneOrZero = ö.random()
+let oneOrZero = ö.random()
 ```
 
 Most methods are runnable within node/deno. Some methods require browser API:s, those are marked with [browser].
@@ -139,7 +139,7 @@ Parentless children (orphans) will be discarded.
 Example:
 
 ```js
-const flat = [
+let flat = [
     { id: '1' },
     { id: '1.1', parent: '1' },
     { id: '1.1.1', parent: '1.1' },
@@ -147,9 +147,9 @@ const flat = [
     { id: '2.2', parent: '2' },
 ]
 
-const tree = mapToTree(flat, 'id', 'parent')
+let tree = mapToTree(flat, 'id', 'parent')
 // or
-const sameTree = mapToTree(flat, (item) => [
+let sameTree = mapToTree(flat, (item) => [
     item.id,
     item.id.split('.').slice(0, -1).join('.'),
 ])
@@ -174,6 +174,7 @@ let arr = [
         ],
     },
 ]
+
 ö.reduceDeep(arr, (acc, v) => acc + v.value, 'children', 0) // returns 0
 ```
 
@@ -521,7 +522,7 @@ Outputs arguments to console. Returns single argument, or multiple arguments as 
 
 #### ö.log( ...messages ) → console.log, arguments
 
-Outputs arguments to console. Returns single argument, or multiple arguments as an array. Can be used like so: `const x = ö.log( y*z );` or to tap into a call chain.
+Outputs arguments to console. Returns single argument, or multiple arguments as an array. Can be used like so: `let x = ö.log( y*z );` or to tap into a call chain.
 
 #### ö.time( f, label ) → logs time, f return value | undefined
 
@@ -638,7 +639,7 @@ Here's an example:
 ```js
 import { chain } from 'ouml/chain'
 
-const guessWhat = chain(11)
+let guessWhat = chain(11)
     .f((v) => [...Array(v).keys()])
     .map((v) => v ** v)
     .sum()
@@ -654,9 +655,9 @@ Here's another:
 ```js
 import { chainAsync } from 'ouml/chain'
 
-const errorMessage = 'error'
+let errorMessage = 'error'
 
-const nameOfPriciestProduct = await chainAsync('https://dummyjson.com/products')
+let nameOfPriciestProduct = await chainAsync('https://dummyjson.com/products')
     .load(true, errorMessage)
     .returnIf((v) => v === errorMessage)
     .products()
@@ -676,7 +677,7 @@ Use like so:
 ```js
 import { chain, chainAsync } from 'ouml/chain'
 
-const processedValue = chain('AnyValueOfAnyType')
+let processedValue = chain('AnyValueOfAnyType')
     .anyMethodOnCurrentType()
     .anyPropertyOnCurrentValue()
     .anyMethodInÖ()
@@ -735,7 +736,7 @@ Lets you peek into the call chain, logging current value and type to the console
 A variant for passing in arbitrary functions is directly with parentheses, in effect calling the proxy as a function, with your function as the argument. This in turn can be chained, like so:
 
 ```js
-const v = chain('Hi')(letsDo)(cool)(stuff)()
+let v = chain('Hi')(letsDo)(cool)(stuff)()
 ```
 
 This doesn't play that nicely with Prettier, if you happen to use that, but it's cool!
@@ -774,12 +775,12 @@ Use like so:
 ```js
 import { observable, isObservable, observe } from 'ouml/öbservable'
 
-const obs = observable(['a', 'b', 'c'])
-const lengthObserver = observe(
+let obs = observable(['a', 'b', 'c'])
+let lengthObserver = observe(
     () => obs.length,
     (v) => ö.log(`The length is ${v}`),
 )
-const firstItemObserver = observe(
+let firstItemObserver = observe(
     () => obs[0],
     (v) => ö.log(`The first item is ${v}`),
 )
@@ -793,7 +794,7 @@ obs.shift()
 You can also use the raw observable as input to `observe`, or call `observe` directly on the observable (due to some `Proxy` trickery):
 
 ```js
-const thisGuy = observable({ name: 'Guy', surname: 'This' })
+let thisGuy = observable({ name: 'Guy', surname: 'This' })
 
 observe(thisGuy, (val, oldVal, changedProp) =>
     ö.log(`${changedProp} has changed`),
@@ -822,9 +823,9 @@ x = 'bar' // Won't work.
 ```
 
 ```js
-const x = observable('foo')
+let x = observable('foo')
 observe(x, ö.log)
-x.value = 'bar' // Declare a const, and assign to value instead.
+x.value = 'bar' // Assign to value instead.
 ```
 
 #### observe( getter, callback, deep = false ) → observer object
@@ -838,7 +839,7 @@ If you're observing an object, `updatedKey` can be useful in order to retrieve a
 If the getter is a raw primitive observable, the value is unwrapped before the callback is called, like so:
 
 ```js
-const o = observable(0)
+let o = observable(0)
 observe(o, (v) => ö.log(`The value is ${v}`))
 // logs 'The value is 0'
 ```
@@ -846,7 +847,7 @@ observe(o, (v) => ö.log(`The value is ${v}`))
 If the getter is a function, you need to access the `value` prop, like so:
 
 ```js
-const o = observable(0)
+let o = observable(0)
 observe(() => `The value is ${o.value}`, ö.log)
 // logs 'The value is 0'
 ```
@@ -856,9 +857,9 @@ It's a matter of taste, really.
 However, when working with larger data structures, try to be as specific as possible in the `getter`, since returned values get copied from the observable (to avoid recursion among other things). As a rule of thumb, get the values you output in the callback, nothing more. Maybe something like this:
 
 ```js
-const bigAssObservable = observable(bigAssObject)
+let bigAssObservable = observable(bigAssObject)
 observe(() => {
-    const {
+    let {
         stuff,
         that,
         we,
@@ -871,7 +872,7 @@ observe(() => {
 When working with deep data structures, like a global state object with a reducer function, you may want to enable the `deep` option. This lets you observe an entire object structure, and receive updates when properties on child objects change, like so:
 
 ```js
-const deep = observable({
+let deep = observable({
     a: { b: { c: { d: "What's the purpose of it all?" } } },
 })
 observe(deep, ö.log, true)
@@ -897,8 +898,8 @@ You can also call `observe` directly on an observable object (`observe` is not a
 `observe()` returns observers, holding the current value of the observed observable, and a few methods and properties for flow control. You don't need to save a reference to the object, but it might come in handy if you want to stop observing later on.
 
 ```js
-const x = observable(0)
-const o = observe(x, ö.log)
+let x = observable(0)
+let o = observe(x, ö.log)
 x.value = 666 // logs 666
 o.stop()
 ```
@@ -944,11 +945,11 @@ Set to `true` if stopped, otherwise `undefined`.
 Övents implements she `svelte/action` interface, and are usable as svelte actions, but can be used in any browser context like so:
 
 ```js
-const el = document.querySelector('#someElement')
+let el = document.querySelector('#someElement')
 
 resize(el)
 // or, if you need cleanup:
-const resizer = resize(el)
+let resizer = resize(el)
 
 el.addEventListener('resize', someCallback)
 

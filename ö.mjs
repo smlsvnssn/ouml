@@ -29,12 +29,11 @@ export const unique = (arr) => [...new Set(arr)]
 
 // https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
 export const shuffle = (arr) => {
-    // no mutation, array coercion
-    const a = Array.from(arr)
+    arr = Array.from(arr)
 
     // classic loop for performance reasons
     for (let i = a.length - 1; i > 0; i--) {
-        const j = random(i + 1)
+        let j = random(i + 1)
         ;[a[i], a[j]] = [a[j], a[i]]
     }
 
@@ -59,7 +58,7 @@ export const mean = (arr) => sum(arr) / arr.length
 
 export const median = (arr) => {
     // no mutation
-    const a = Array.from(arr).sort((a, b) => Number(a) - Number(b)),
+    let a = Array.from(arr).sort((a, b) => Number(a) - Number(b)),
         m = Math.floor(arr.length / 2)
 
     return m % 2 ? (Number(a[m - 1]) + Number(a[m])) / 2 : Number(a[m])
@@ -90,10 +89,10 @@ export const groupBy = (arr, prop, asObject = false) =>
 */
 
 export const mapToTree = (arr, idProp, parentProp) => {
-    const parents = new Map()
+    let parents = new Map()
 
-    for (const [i, v] of arr.entries()) {
-        const [key, parentKey] =
+    for (let [i, v] of arr.entries()) {
+        let [key, parentKey] =
             isFunc(idProp) ?
                 idProp(v, i, arr) // Should return [ownKey, parentKey]
             :   [v[idProp], v?.[parentProp] ?? null]
@@ -218,7 +217,7 @@ export const isDisjoint = (a, b) => {
 
 // DOM
 export const createElement = (html, isSvg = false) => {
-    const template = document.createElement('template')
+    let template = document.createElement('template')
 
     if (isSvg) {
         template.innerHTML = `<svg>${html.trim()}</svg>`
@@ -231,10 +230,10 @@ export const createElement = (html, isSvg = false) => {
 
 export const parseDOMStringMap = (obj) => {
     // convert from DOMStringMap to object
-    const o = { ...obj }
+    let o = { ...obj }
 
     // parse what's parseable
-    for (const key in o)
+    for (let key in o)
         try {
             o[key] = JSON.parse(o[key])
         } catch (e) {}
@@ -246,7 +245,7 @@ export const parseDOMStringMap = (obj) => {
 const d = new WeakMap()
 
 export const data = (element, key, value) => {
-    const thisData =
+    let thisData =
         d.has(element) ? d.get(element) : parseDOMStringMap(element?.dataset)
 
     if (is(value) || isObj(key))
@@ -262,7 +261,7 @@ export const data = (element, key, value) => {
 export const deepest = (element, selector = '*') => {
     let deepestEl = { depth: 0, deepestElement: element }
 
-    for (const el of element.querySelectorAll(selector)) {
+    for (let el of element.querySelectorAll(selector)) {
         let depth = 0
         for (e = el; e !== element; depth++) e = e.parentNode // from bottom up
         deepestEl =
@@ -315,8 +314,8 @@ export const clone = (
     if (isSet(v)) return doFreeze(new Set(doClone(Array.from(v))))
     if (isDate(v)) return doFreeze(new Date().setTime(v.getTime()))
 
-    const o = {}
-    for (const key of Object.keys(v)) o[key] = doClone(v[key])
+    let o = {}
+    for (let key of Object.keys(v)) o[key] = doClone(v[key])
 
     return doFreeze(
         preservePrototype ?
@@ -350,17 +349,17 @@ export const curry =
         :   f(...args)
 
 export const memoise = (f, keymaker) => {
-    const cache = new Map()
+    let cache = new Map()
 
     return (...args) => {
-        const key =
+        let key =
             isFunc(keymaker) ? keymaker(...args)
             : args.length > 1 ? args.join('-')
             : args[0]
 
         if (cache.has(key)) return cache.get(key)
 
-        const result = f(...args)
+        let result = f(...args)
         cache.set(key, result)
 
         return result
@@ -399,13 +398,13 @@ export const random = (min, max, float = false) => {
 }
 
 export const randomNormal = (mean = 0, sigma = 1) => {
-    const samples = 6
+    const SAMPLES = 6
     let sum = 0,
         i = 0
 
-    for (i; i < samples; i++) sum += Math.random()
+    for (i; i < SAMPLES; i++) sum += Math.random()
 
-    return (sigma * 8.35 * (sum - samples / 2)) / samples + mean
+    return (sigma * 8.35 * (sum - SAMPLES / 2)) / SAMPLES + mean
     //              ^ hand made spread constant :-)
 }
 
@@ -678,7 +677,7 @@ export const load = async (
     settings = {},
 ) => {
     try {
-        const response = await fetch(url, settings)
+        let response = await fetch(url, settings)
         return (await isJSON) ? response.json() : response.text()
     } catch (e) {
         error(e)
@@ -737,7 +736,7 @@ export const throttle = (f, t = 50, debounce = false, immediately = false) => {
         running = false
 
     return function () {
-        const context = this,
+        let context = this,
             args = arguments
 
         if (!lastRan || (debounce && !running)) {
@@ -768,7 +767,7 @@ export const onAnimationFrame = (f) => {
     let timeout
 
     return function () {
-        const context = this,
+        let context = this,
             args = arguments
 
         cancelAnimationFrame(timeout)
@@ -782,7 +781,7 @@ export const onAnimationFrame = (f) => {
 // export const qa = document.querySelectorAll.bind(document);
 
 export const getLocal = (item) => {
-    const i = localStorage.getItem(item)
+    let i = localStorage.getItem(item)
     return i && JSON.parse(i)
 }
 
@@ -828,10 +827,8 @@ export const time = (f, label = defaultLabel) => {
     if (!isFunc(f))
         return isVerbose ? console.time(isStr(f) ? f : label) : undefined
 
-    let result
-
     if (isVerbose) console.time(label)
-    result = f()
+    let result = f()
     if (isVerbose) console.timeEnd(label)
 
     return result
