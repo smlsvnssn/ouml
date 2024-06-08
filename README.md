@@ -190,7 +190,7 @@ If `f` is a `string`, the value of the property matching `f` is returned, in a f
 
 Finds items that match `f` in arrays of nested objects. `subArrayProp` is a `string` matching the property containing nested arrays.
 
-If `f` is a function, returns first item where `f` returns `true`. The function receives `value, index, array` as arguments. If `f` is a function, `prop` can be omitted.
+If `f` is a function, returns items where `f` returns `true`. The function receives `value, index, array` as arguments. If `f` is a function, `prop` can be omitted.
 
 If `f` is not a function, the value of `f` is compared to the value of property `prop`.
 
