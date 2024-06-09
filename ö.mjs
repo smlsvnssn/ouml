@@ -18,25 +18,26 @@ export const range = function* (start, end, step = 1) {
 
 // iterators
 export const times = (times, f = (i) => i, ...rest) =>
-    [...range(Math.abs(times))].map((i) => f(i, ...rest))
-
+    Array(Math.abs(times))
+        .fill()
+        .map((_, i) => f(i, ...rest))
 // arr
 export const rangeArray = (start, end, step) => [...range(start, end, step)]
 
 export const map = (iterable, f) => {
-    const getter = (f) =>
+    const getMapper = (f) =>
         isFunc(f) ? f
         : isMap(iterable) ? (v) => [v[0], v[1]?.[f]]
         : (v) => v[f]
 
-    const getMap = (iterable) => Array.from(iterable).map(getter(f))
+    const getMap = (iterable) => Array.from(iterable).map(getMapper(f))
 
     if (isIterable(iterable)) {
         if (isStr(iterable)) return getMap(iterable).join('')
         if (isMap(iterable)) return new Map(getMap(iterable))
         if (isSet(iterable)) return new Set(getMap(iterable))
         if ('map' in iterable && isFunc(iterable.map))
-            return iterable.map(getter(f))
+            return iterable.map(getMapper(f))
         // Base case: Just convert to array
         return getMap(iterable)
     }

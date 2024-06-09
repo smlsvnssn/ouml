@@ -82,7 +82,7 @@ Methods for manipulating arrays or array-like objects. Inputs are coerced to `Ar
 
 Returns an `Array` populated with given range.
 
-#### ö.map( iterable, f | str ) → Array
+#### ö.map( iterable, f | str ) → Iterable
 
 Same as a normal map, except it accepts a `string` as a shorthand for retrieving values from an object property, if the iterable contains objects. Oh, and it accepts all iterables, and returns `String`, `Map`, `Set` and `TypedArray` as appropriate. It's a `map` for `Map`! Edge cases such as `NodeList` get converted to an array.
 

@@ -196,3 +196,17 @@ let arr = [
 ]
 ö.log(ö.reduceDeep(arr, (acc, v) => acc + v.value, 'children', 0))
  */
+
+ö.time(() => ö.times(1000000))
+
+const times2 = (times, f = (i) => i, ...rest) =>
+    Array.from({ length: Math.abs(times) }, (v, i) => f(i, ...rest))
+
+ö.time(() => times2(1000000))
+
+const times3 = (times, f = (i) => i, ...rest) =>
+    Array(Math.abs(times))
+        .fill()
+        .map((v, i) => f(i, ...rest))
+
+ö.time(() => ö.log(times3(1000000)))
