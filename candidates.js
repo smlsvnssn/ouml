@@ -96,15 +96,38 @@ console.log(
 const loop = (f, until, i = 0, increment = (i) => i + 1) =>
     !until(i) ? null : (f(i), loop(f, until, increment(i)))
 
+export const map = (iterable, f) => {
+    const getter = (f) =>
+        isFunc(f) ? f
+        : ö.isMap(iterable) ? (v) => [v[0], v[1]?.[f]]
+        : (v) => v[f]
+
+    const getMap = (iterable) => Array.from(iterable).map(getter(f))
+
+    if (ö.isIterable(iterable)) {
+        if (ö.isStr(iterable)) return getMap(iterable).join('')
+        if (ö.isMap(iterable)) return new Map(getMap(iterable))
+        if (ö.isSet(iterable)) return new Set(getMap(iterable))
+        if ('map' in iterable && isFunc(iterable.map))
+            return iterable.map(getter(f))
+        // Base case: Just convert to array
+        return getMap(iterable)
+    }
+    return ö.error('Argument "iterable" must be an iterable.')
+}
+
+let t = 'apa'
+ö.log(map(t, (v) => v + ' '))
+
 // slow
-const map = (a, f, acc = [], i = 0) =>
-    i >= a.length ? acc : map(a, f, [...acc, f(a[i], i, a)], ++i)
+const map3 = (a, f, acc = [], i = 0) =>
+    i >= a.length ? acc : map3(a, f, [...acc, f(a[i], i, a)], ++i)
 
 // fast
 const map2 = (a, f, acc = [], i = 0) =>
     i >= a.length ? acc : map2(a, f, (acc.push(f(a[i], i, a)), acc), ++i)
 
-ö.time(() => map(ö.times(4000), (v) => v * 2), 1)
+ö.time(() => map3(ö.times(4000), (v) => v * 2), 1)
 ö.time(() => map2(ö.times(4000), (v) => v * 2), 2)
 // 1: 47.631ms
 // 2: 0.864ms
@@ -136,7 +159,7 @@ let a = [
 //         2,
 //     ),
 // )
-ö.log(
+/* ö.log(
     JSON.stringify(
         ö.mapDeep(
             a,
@@ -149,7 +172,7 @@ let a = [
         null,
         2,
     ),
-)
+) */
 // ö.log(
 //     JSON.stringify(
 //         ö.filterDeep(a, (v) => v.a === 2, 'b'),
@@ -157,7 +180,7 @@ let a = [
 //         2,
 //     ),
 // )
-ö.log(ö.reduceDeep([{ k: 'kuk', kuk: ['u'] }], (acc, v) => acc + v, 'kuk'))
+/* ö.log(ö.reduceDeep([{ k: 'kuk', kuk: ['u'] }], (acc, v) => acc + v, 'kuk'))
 
 ö.log(ö.isPlainObj(a[0]), ö.isPlainObj(new Date()))
 
@@ -172,3 +195,4 @@ let arr = [
     },
 ]
 ö.log(ö.reduceDeep(arr, (acc, v) => acc + v.value, 'children', 0))
+ */

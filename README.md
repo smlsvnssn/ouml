@@ -48,7 +48,7 @@ import {
 
 Helper methods for iterations, less verbose than regular loops.
 
-#### ö.range( start, end, step = 1 ) yields Number
+#### ö.range( start, end?, step? = 1 ) yields Number
 
 Yields `Number`s within specified range. Parameters `end` and `step` are optional. If `end` is not provided, range starts with `0`, and ends with `start`. Handles negative values. Useful in `for of` loops, for example
 
@@ -56,7 +56,7 @@ Yields `Number`s within specified range. Parameters `end` and `step` are optiona
 for (let i of ö.range(100)) doStuff(i)
 ```
 
-#### ö.grid( width, height ) yields { x, y }
+#### ö.grid( width, height? ) yields { x, y }
 
 Yields `Object` with `x, y` coordinates. If `height` is omitted, `width` is assumed. Use like so:
 
@@ -64,7 +64,7 @@ Yields `Object` with `x, y` coordinates. If `height` is omitted, `width` is assu
 for (let i of ö.grid(8)) drawChessboard(i.x, i.y)
 ```
 
-#### ö.times( times, f = i => i, ...rest ) → Array
+#### ö.times( times, f? = i => i, ...rest ) → Array
 
 Calls a function `times` times, with `index` as argument. Additional arguments are passed on to `f` like so:
 
@@ -78,13 +78,13 @@ Returns an array containing the return values of `f`, or an array containing ind
 
 Methods for manipulating arrays or array-like objects. Inputs are coerced to `Array`, so `String`, `Set` and the like works as input as well. All methods are non-mutating.
 
-#### ö.rangeArray( start, end, step = 1 ) → Array
+#### ö.rangeArray( start, end?, step? = 1 ) → Array
 
 Returns an `Array` populated with given range.
 
-#### ö.map( arr, f | str ) → Array
+#### ö.map( iterable, f | str ) → Array
 
-Same as a normal map, except it accepts a `string` as a shorthand for retrieving values from a property.
+Same as a normal map, except it accepts a `string` as a shorthand for retrieving values from an object property, if the iterable contains objects. Oh, and it accepts all iterables, and returns `String`, `Map`, `Set` and `TypedArray` as appropriate. It's a `map` for `Map`! Edge cases such as `NodeList` get converted to an array.
 
 #### ö.unique( arr ) → Array
 
@@ -94,7 +94,7 @@ Returns an `Array` with unique entries.
 
 Returns a new shuffled `Array`.
 
-#### ö.sample( arr, samples = 1 ) → Array item | Array
+#### ö.sample( arr, samples? = 1 ) → Array item | Array
 
 Returns random sample from `arr`, or an array of samples if `samples` is larger than one.
 
@@ -118,7 +118,7 @@ Returns largest value in `arr`.
 
 Returns smallest value in `arr`.
 
-#### ö.groupBy( arr, prop, asObject = false) → Map
+#### ö.groupBy( arr, prop | f, asObject? = false) → Map
 
 Returns a `Map` with keys corresponding to `prop` values, holding grouped values as arrays. Optionally returns an `object` if `asObject` is set to true.
 
@@ -126,7 +126,7 @@ If `prop` is a string, takes an iterable of `object`s with a common property. If
 
 ### Tree structures
 
-#### ö.mapToTree( arr, idProp | f, parentProp) → Nested array
+#### ö.mapToTree( arr, idProp | f, parentProp?) → Nested array
 
 Maps a flat array of objects to a tree structure. Objects with children get a new `children` property, unsurprisingly containing an array of children 🙄. Leaf nodes have no `children` property. Works in one of two ways:
 
@@ -155,7 +155,7 @@ let sameTree = mapToTree(flat, (item) => [
 ])
 ```
 
-#### ö.reduceDeep( arr, f, subArrayProp, initial ) → value
+#### ö.reduceDeep( arr, f, subArrayProp, initial? ) → value
 
 Reduces arrays of nested objects to a single value. `subArrayProp` is a `string` matching the property containing nested arrays.
 
@@ -178,7 +178,7 @@ let arr = [
 ö.reduceDeep(arr, (acc, v) => acc + v.value, 'children', 0) // returns 0
 ```
 
-#### ö.mapDeep( arr, f, subArrayProp, flatten = false ) → Array
+#### ö.mapDeep( arr, f | prop, subArrayProp, flatten? = false ) → Array
 
 Maps over arrays of nested objects. `subArrayProp` is a `string` matching the property containing nested arrays.
 
@@ -186,7 +186,7 @@ If `f` is a function, its return value is mapped to a new array. The function re
 
 If `f` is a `string`, the value of the property matching `f` is returned, in a flattened array.
 
-#### ö.filterDeep( arr, f, subArrayProp, prop ) → Array
+#### ö.filterDeep( arr, f | value, subArrayProp, prop? ) → Array
 
 Finds items that match `f` in arrays of nested objects. `subArrayProp` is a `string` matching the property containing nested arrays.
 
@@ -196,7 +196,7 @@ If `f` is not a function, the value of `f` is compared to the value of property 
 
 Returns a flat array with matching items, regardless of depth.
 
-#### ö.findDeep( arr, f, subArrayProp, prop ) → Array item
+#### ö.findDeep( arr, f | value, subArrayProp, prop? ) → Array item
 
 Same as `ö.filterDeep`, except it returns first match.
 
@@ -255,17 +255,17 @@ Returns `true` if `a` and `b` share no members.
 
 ### Logical / generic / functional
 
-#### ö.isEqual/ö.equals( a, b, deep = true ) → Boolean
+#### ö.isEqual/ö.equals( a, b, deep? = true ) → Boolean
 
 Checks equality by value rather than reference. Checks own enumerable properties only. Works for all basic types and most built in classes, but may produce unexpected results in edge cases. Equality is tricky, and depends on what you personally beleive to be equal 😇. Does deep comparison by default, and may be slow for large data structures. If `deep == false`, does flat comparison instead.
 
-#### ö.clone( v, deep = true, immutable = false, preservePrototype = true ) → cloned value
+#### ö.clone( v, deep? = true, immutable? = false, preservePrototype? = true ) → cloned value
 
 Performs cloning of most common types, including `Array` and typed arrays, `Map`, `Set`, `Date` and objects. Defaults to deep cloning, set `deep` to `false` for shallow cloning. Tries to preserve `prototype` when cloning objects, but may fail in untested edge cases. Set `preservePrototype` to false to disable this (this is somewhat faster). Does not clone functions, and doesn't handle circular references. Use with some caution 🤫.
 
 The native `structuredClone` is probably slower (by alot!) in most cases, errors on functions, and doesn't preserve prototype, but it handles circular references. Choose wisely!
 
-#### ö.immutable(v, deep = true) → immutable value
+#### ö.immutable(v, deep? = true) → immutable value
 
 Returns a freezed clone of `v`. Set `deep` to `false` to make only top level immutable.
 
@@ -320,7 +320,7 @@ const partial = curried(1, 2)
 partial(3) // also 6
 ```
 
-#### ö.memoise/ö.memoize( f, keymaker ) → f
+#### ö.memoise/ö.memoize( f, keymaker? ) → f
 
 Creates and returns memoised functions. By default, the arguments to the memoised function are used as key for storing the result (If only one argument, the raw input is used as key, if more than one, the arguments are joined to a string). If the arguments are objects instead of primitive values, you should provide a `keymaker`. `keymaker` receives all inputs from the memoised function, and should return something unique to use as a `Map` key for a given set of inputs. Use for example `JSON.stringify` when you expect objects as input.
 
@@ -342,7 +342,7 @@ const SIZES = ö.createEnum({
 giveMeIcecream(SIZES.large)
 ```
 
-#### ö.data( anyVal, key, value ) → data | data.key
+#### ö.data( anyVal, key?, value? ) → data | data.key
 
 Associates `anyVal` with data via a `WeakMap`. With only `key` set, acts as a getter for `key`. With `key` and `value` set, acts as a setter. Useful for associating data with DOM elements. If given an `Element`, it parses the `dataset` property and adds its properties to `data`.
 
@@ -350,15 +350,15 @@ If no `key`, returns `data` object.
 
 ### Mathy
 
-#### ö.random( min, max, float = false ) → integer | Number
+#### ö.random( min, max, float? = false ) → integer | Number
 
 Shorthand for random integers between `min` and `max`-1. If `max` is omitted or `Boolean`, assumes a `min` value of 0. If `max` is `Boolean`, `float` is assumed. If `float` is true, returns float instead of integer.
 
-#### ö.randomNormal( mean = 0, sigma = 1 ) → Number
+#### ö.randomNormal( mean? = 0, sigma? = 1 ) → Number
 
 Returns random number from reasonably approximated normal distribution, centered around `mean`, with <a href=https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule target=_blank>more or less 68.2% of the sample set</a> within ± `sigma`. Values max out at a bit above ± 3 `sigma`, with extreme outliers up to about ± 4 `sigma`. There are <a href=https://observablehq.com/@d3/d3-random#normal target=_blank>more mathematically accurate methods</a> to do this, but this method is fast, and good enough for most people. Use it for fun and visuals, not for statistical analysis 🤓.
 
-#### ö.round( n, precision = 0 ) → Number
+#### ö.round( n, precision? = 0 ) → Number
 
 Returns `n` rounded to `precision` decimals.
 
@@ -370,7 +370,7 @@ Clamps `n` between `min` and `max`.
 
 Checks if `n` is between `min` and `max`.
 
-#### ö.normalise/ö.normalize( n, min, max, clamp = true ) → Number
+#### ö.normalise/ö.normalize( n, min, max, clamp? = true ) → Number
 
 Normalises `n` to a value between 0 and 1, within range given by `min` and `max`. If `clamp == true` and value of `n` is out of range, the value is clamped.
 
@@ -416,11 +416,11 @@ Converts polar coordinates to cartesian.
 
 ### String
 
-#### ö.prettyNumber( n, locale = 'sv-SE', precision = 2 ) → String
+#### ö.prettyNumber( n, locale? = 'sv-SE', precision? = 2 ) → String
 
 Returns `n` rounded to `precision` decimals and formatted by `n.toLocaleString()`. Defaults to swedish formatting, because why not! `locale` is optional, if second argument is `Number`, `precision` is set instead.
 
-#### ö.wrapFirstWords( s, numWords = 3, startWrap = '\<span\>', endWrap = '\</span\>', startAtChar = 0 ) → String
+#### ö.wrapFirstWords( s, numWords? = 3, startWrap? = '\<span\>', endWrap? = '\</span\>', startAtChar? = 0 ) → String
 
 Returns `s` with first `numWords` words wrapped in `startWrap` and `endWrap`. Matches first words up to and including first punctuation. Optionally starts matching at index `startAtChar`. Matches special chars for nordic languages as well as \', ’ and -.
 
@@ -436,7 +436,7 @@ Capitalises first letter. No fuss!
 
 Returns regular sentence or camelCase string converted to kebab-case. Leaves `--customProperties` alone.
 
-#### ö.randomChars( numChars = 10 ) → String
+#### ö.randomChars( numChars? = 10 ) → String
 
 Returns `numChars` random characters. Max for `numChars` is 100. Useful for producing unique values (Or, to be precise, with a 1/426 825 223 812 027 400 796 974 891 518 773 732 340 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 chance of being a dupe 🤯).
 
@@ -444,7 +444,7 @@ Returns `numChars` random characters. Max for `numChars` is 100. Useful for prod
 
 Returns a string without html tags.
 
-#### ö.when( bool, whenTrue, whenFalse = false ) → value | empty string;
+#### ö.when( bool, whenTrue, whenFalse? = false ) → value | empty string;
 
 A slightly more readable wrapper around a ternary expression. Returns `whenTrue` if `bool` is true, otherwise returns the empty string. Optionally returns `whenFalse` if specified. Useful primarily in template strings.
 
@@ -452,7 +452,7 @@ A slightly more readable wrapper around a ternary expression. Returns `whenTrue`
 
 <a href=https://css-tricks.com/yay-for-hsla/ target=_blank>Hsla</a> lets you use colour in an understandable way. `hsla` is great! Use `hsla`!
 
-#### ö.toHsla( colour, asString = false) → { h, s, l, a } | String
+#### ö.toHsla( colour, asString? = false) → { h, s, l, a } | String
 
 Returns `colour` converted to an object with `hsla` values. Optionally returns a colour string in `hsla` format. Takes hex values, as well as all valid forms of rgb/rgba strings.
 Hsla is really easy to work with compared to rgb. For example, a `darken` method could look like this, given a `hsla` object as input:
@@ -461,7 +461,7 @@ Hsla is really easy to work with compared to rgb. For example, a `darken` method
 const darken = (c, amount) => ({ ...c, l: c.l - amount })
 ```
 
-#### ö.hsla( h, s = 70, l = 50, a = 1 ) → String
+#### ö.hsla( h, s? = 70, l? = 50, a? = 1 ) → String
 
 Returns colour string in `hsla` format, for css input. Takes separate values, or a single object with properties `{ h, s, l, a }`.
 
@@ -469,23 +469,23 @@ Returns colour string in `hsla` format, for css input. Takes separate values, or
 
 Awaitable wrappers for `setTimeout`, `requestAnimationFrame` and events. Takes an optional awaited `f` with no arguments. If `f` is provided, returns result from `f`, otherwise returns `undefined`. (Except for `ö.waitFrames`, which calls `f` every frame if `everyFrame` is `true`, but only returns the result of the final call.)
 
-#### ö.wait( t = 0, f, resetPrevCall = false ) → Promise
+#### ö.wait( t? = 0, f?, resetPrevCall? = false ) → Promise
 
 Waits `t` milliseconds. If `resetPrevCall == true`, previous pending call is rejected.
 
-#### ö.nextFrame( f ) → Promise
+#### ö.nextFrame( f? ) → Promise
 
 [browser] Waits one frame.
 
-#### ö.waitFrames( n = 1, f, everyFrame = false ) → Promise
+#### ö.waitFrames( n? = 1, f?, everyFrame? = false ) → Promise
 
 [browser] Waits `n` frames. If `everyFrame == true`, callback is executed every frame.
 
-#### ö.waitFor( selector, event, f ) → Promise
+#### ö.waitFor( selector, event, f? ) → Promise
 
 [browser] Waits for specified event. Takes only one element, and one event type.
 
-#### ö.load( url, isJSON = true, errorMessage = null, settings = {} ) → Promise
+#### ö.load( url, isJSON? = true, errorMessage? = null, settings? = {} ) → Promise
 
 [browser (Alternatively: Use node-fetch)] Loads (and parses) JSON. Optionally loads HTML. Super simple fetch wrapper. On error, simply returns the error message, or optionally returns your custom error message. If you need to pass headers or other settings to the fetch call, use the `settings` object.
 
@@ -495,11 +495,11 @@ See `ö.pipe`.
 
 ### Throttling
 
-#### ö.throttle( f, t = 50 ) → Function
+#### ö.throttle( f, t? = 50 ) → Function
 
 Throttles execution of `f` to one call per `t` milliseconds. If called multiple times per period, the last call gets executed.
 
-#### ö.debounce( f, t = 50, immediately = false ) → Function
+#### ö.debounce( f, t? = 50, immediately? = false ) → Function
 
 Debounces execution of `f` until no calls are made within `t` milliseconds. If called multiple times per period, the last call gets executed. If `immediately` is set to `true`, the first call gets executed as well.
 
@@ -511,7 +511,7 @@ Debounces execution of `f` until no calls are made within `t` milliseconds. If c
 
 All logging methods can be silenced globally by calling `ö.verbose(false)`.
 
-#### ö.verbose( isVerbose, isThrowing = false ) → Boolean
+#### ö.verbose( isVerbose, isThrowing? = false ) → Boolean
 
 Get/set `isVerbose`, turns off error/message logging when set to `false`. Defaults to `true`. Optionally set `isThrowing` to `true`, in order to throw errors instead.
 
@@ -527,13 +527,13 @@ Outputs arguments to console. Returns single argument, or multiple arguments as 
 
 Outputs arguments to console. Returns single argument, or multiple arguments as an array. Can be used like so: `let x = ö.log( y*z );` or to tap into a call chain.
 
-#### ö.time( f, label ) → logs time, f return value | undefined
+#### ö.time( f?, label? ) → logs time, f return value | undefined
 
 The basic usecase is as a simple wrapper for `console.time`, optionally with a label. If `f`is a string, it is used as a label. In that case, the timer ends when calling `ö.timeEnd` with a matching label.
 
 Optionally, it accepts a function with no arguments, which gets timed, called and its value returned. In this case `console.timeEnd` is called internally.
 
-#### ö.timeEnd( label ) → logs time
+#### ö.timeEnd( label? ) → logs time
 
 Simple wrapper for `console.timeEnd`.
 
@@ -607,15 +607,15 @@ Checks for `[Symbol.iterator]` in `v`.
 
 [browser] Sets `item` in local storage to `v`, and returns `v`.
 
-#### ö.getCss( prop, selector = ':root') → css property value
+#### ö.getCss( prop, selector? = ':root') → css property value
 
 [browser] Gets `prop` on selected element, or from `document.documentElement` if `selector` is unset. and returns `v`. Mainly used for getting global `--props`, using css as master for global variables.
 
-#### ö.setCss( prop, v, selector = ':root') → v
+#### ö.setCss( prop, v, selector? = ':root') → v
 
 [browser] Sets `prop` to `v`, optionally on selected element, and returns `v`.
 
-#### ö.createElement( html, isSvg = false ) → Element
+#### ö.createElement( html, isSvg? = false ) → Element
 
 [browser] Creates an `Element` from an html string. Optionally creates an `SVGElement`.
 
@@ -623,7 +623,7 @@ Checks for `[Symbol.iterator]` in `v`.
 
 Parses a `DOMStringMap` as `JSON`. Used internally when reading from `Element.dataset`.
 
-#### ö.deepest( element, selector = '\*' ) → Element
+#### ö.deepest( element, selector? = '\*' ) → Element
 
 [browser] Finds deepest `Element` in `element`, optionally matching `selector`.
 
@@ -698,11 +698,11 @@ A quick note on performance: `chain` does string matching, proxying and other fu
 
 Chain exports two methods:
 
-#### chain( value, isThrowing = false, isAsync = false ) → Proxy
+#### chain( value, isThrowing? = false, isAsync? = false ) → Proxy
 
 Chain wraps a value, and creates a `Proxy` that handles the chaining. `chain` evaluates lazily, so nothing is calculated until `.return()` or `.value` is called. Errors are skipped by default, set `isThrowing` to true to throw errors instead. Optionally, set `isAsync` to `true` to handle async values, or use:
 
-#### chainAsync( value, isThrowing = false ) → Proxy
+#### chainAsync( value, isThrowing? = false ) → Proxy
 
 Same as `chain`, but results in a `Promise`.
 
@@ -814,7 +814,7 @@ When called as a method, the getter argument to `observe` is omitted.
 
 öbservable exports three methods:
 
-#### observable( value, deep = true, extendable = true ) → observable object
+#### observable( value, deep? = true, extendable? = true ) → observable object
 
 Takes a `value`, and returns it wrapped in an observable `Proxy`. By default, it recursively wraps nested objects as well. Set `deep` to `false` if you only want the top level to be observable (For example for observing changes in an `Array` of complex `Object`s, where the changes in individual objects are irrelevant). By default, if you add a new property to an observable, the new property is made observable as well (if it's not a primitive value). Set `extendable` to `false` to disable this behaviour.
 If `value` is a primitive (`String`, `Number`, `Boolean` etc), the value is wrapped in an object with a single property: `value`. You cannot assign to a primitive observable value directly, you need to use the `value` prop instead, or else you'd overwite the proxy.
@@ -831,7 +831,7 @@ observe(x, ö.log)
 x.value = 'bar' // Assign to value instead.
 ```
 
-#### observe( getter, callback, deep = false ) → observer object
+#### observe( getter, callback, deep? = false ) → observer object
 
 Takes a `getter`, responsible for reading an observable and producing a value, and a `callback` that acts on the value.
 The `getter` can be either a raw observable, or a function returning the processed value of an observable.

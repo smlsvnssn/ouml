@@ -16,7 +16,10 @@ declare module 'ouml' {
         end?: number,
         step?: number,
     ): number[]
-    export function map(arr: Iterable<any>, f: string | Function): any[]
+    export function map(
+        iterable: Iterable<any>,
+        f: string | Function,
+    ): Iterable<any>
     export function unique(arr: Iterable<any>): any[]
     export function shuffle(arr: Iterable<any>): any[]
     export function sample(arr: Iterable<any>, samples?: number): any | any[]
