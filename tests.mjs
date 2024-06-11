@@ -1,8 +1,8 @@
-import * as ö from "./ö.mjs"
-import * as öbservable from "./öbservable/index.mjs"
-import * as övents from "./övents/index.mjs"
+import * as ö from './ö.mjs'
+import * as öbservable from './öbservable/index.mjs'
+import * as övents from './övents/index.mjs'
 
-import testData from "./testdata.js"
+import testData from './testdata.js'
 
 /* ö.log(`
 ---
@@ -85,8 +85,8 @@ thisGuy.observe(v => ö.log(`Name: ${v.name}  Surname: ${v.surname}`))
 
 thisGuy.surname = 'Fawkes' */
 
-import { chain, chainAsync } from "./chain/index.mjs"
-import { toPiped } from "ouml"
+import { chain, chainAsync } from './chain/index.mjs'
+import { toPiped } from 'ouml'
 
 //ö.log('Output: ', chain([100]).pop().toString(2).value)
 
@@ -180,7 +180,7 @@ const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
     })
 }, "without chain") */
 
-ö.log(chain("AnyValueOfAnyType").toKebabCase().split("-").at(1).return())
+ö.log(chain('AnyValueOfAnyType').toKebabCase().split('-').at(1).return())
 
 ö.log(chain(5).toString().toUpperCase().return())
 
@@ -193,28 +193,28 @@ const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
         .return(),
 ) */
 
-const obj = { return: "123" }
+const obj = { return: '123' }
 
 ö.log(chain(obj)((v) => v.return).return())
 
 ö.log(ö.nChooseK(16, 2))
 
 const parsePersonnummer = (s) => {
-    s = s.replaceAll(/[\s-]/g, "")
+    s = s.replaceAll(/[\s-]/g, '')
     if (s.length === 12) return s
     const thisYear = +String(new Date().getFullYear()).substring(2)
     if (s.length === 10) {
         if (+s.substring(0, 2) > thisYear) return `19${s}`
         return `20${s}`
     }
-    throw new Error("Fel")
+    throw new Error('Fel')
 }
 
-ö.log(parsePersonnummer("770514-3316"))
+ö.log(parsePersonnummer('770514-3316'))
 
-ö.log(parsePersonnummer("110514 3316"))
+ö.log(parsePersonnummer('110514 3316'))
 
-ö.log("Output: ", ö.isEqual(0, 1))
+ö.log('Output: ', ö.isEqual(0, 1))
 
 const va = { a: 1 },
     la = va
@@ -223,28 +223,28 @@ la.a = 2
 
 ö.log(typeof new Array())
 class Öbablubb {
-    constructor(test = "bubb") {
+    constructor(test = 'bubb') {
         this.test = test
     }
 }
 
-const makeUbablubb = (test = "bubb") => ({ test })
+const makeUbablubb = (test = 'bubb') => ({ test })
 
-ö.log(ö.clone(new Öbablubb("buff"), true, false, false))
+ö.log(ö.clone(new Öbablubb('buff'), true, false, false))
 ö.log(Object.getPrototypeOf(ö.clone({ a: 1 })))
 
-ö.log(Map.groupBy([{ assa: "yazza" }, { assa: "brassa" }], (v) => v.assa))
+ö.log(Map.groupBy([{ assa: 'yazza' }, { assa: 'brassa' }], (v) => v.assa))
 
-ö.log(ö.groupBy([{ assa: "yazza" }, { assa: "brassa" }], (v) => v.assa))
+ö.log(ö.groupBy([{ assa: 'yazza' }, { assa: 'brassa' }], (v) => v.assa))
 
 ö.log([...ö.range(10)])
 
-ö.log(ö.wrapFirstWords("jag älskar hjortron utan kärnor", 4))
+ö.log(ö.wrapFirstWords('jag älskar hjortron utan kärnor', 4))
 
-let blubb = new Öbablubb("buff")
+let blubb = new Öbablubb('buff')
 blubb.more = ö.clone(blubb)
 blubb.evenmore = { a: 1, b: 2, c: ö.clone(blubb) }
-if (1) if (1) ö.log("test")
+if (1) if (1) ö.log('test')
 
 /* ö.time(() => {
     for (let i = 0; i < 100000; i++) {
@@ -271,26 +271,26 @@ for (let i = 0; i < 100000; i++) {
 
 ö.time(() => {
     ö.log(ö.sum(ö.sample([...ö.range(10_000_00)], 1_000)))
-}, "Hello function")
+}, 'Hello function')
 
 ö.log(
     ö.createEnum({
-        small: "s",
-        medium: "m",
-        large: "l",
+        small: 's',
+        medium: 'm',
+        large: 'l',
     }),
 )
 
 const buff = ö.createEnum({
-    small: "s",
-    medium: "m",
-    large: "l",
+    small: 's',
+    medium: 'm',
+    large: 'l',
 })
 
 const biff = {
-    small: "s",
-    medium: "m",
-    large: "l",
+    small: 's',
+    medium: 'm',
+    large: 'l',
 }
 
 const test = (a, b, c, d) => a + b + c + d
@@ -307,3 +307,5 @@ const curried = ö.curry(test)
         ((v) => v ** 2)
         (),
 )
+
+ö.log(ö.hsla(100))

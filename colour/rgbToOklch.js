@@ -99,21 +99,21 @@ export const rgb2oklch = (rgb) =>
 
 console.log(rgb2oklch([255, 255, 254]))
 
-import { createElement, toHsla, hsla } from "./ö.mjs"
+import { createElement, toHsla, hsla } from '../ö.mjs'
 
 // from https://codepen.io/smlsvnssn/pen/dyQaQvp?editors=0011
 let clrEl
 
 const colorspaces = {
-    oklch: ["l", "c", "h", "a"],
-    lch: ["l", "c", "h", "a"],
-    oklab: ["l", "a", "b", "a"],
-    lab: ["l", "a", "b", "a"],
+    oklch: ['l', 'c', 'h', 'a'],
+    lch: ['l', 'c', 'h', 'a'],
+    oklab: ['l', 'a', 'b', 'a'],
+    lab: ['l', 'a', 'b', 'a'],
 }
 
 const mountClrEl = () => {
-    const e = createElement("<span id=ö_color-mix>")
-    e.style.display = "none"
+    const e = createElement('<span id=ö_color-mix>')
+    e.style.display = 'none'
     document.body.appendChild(e)
     return e
 }
@@ -122,9 +122,9 @@ const clrToObj = (clr) => {
     const clrArr = clr.match(/([a-z0-9\.\-])+/g)
 
     // Throw all srgb variants into hsl conversion
-    if (clrArr[0] === "color")
+    if (clrArr[0] === 'color')
         return {
-            type: "hsl",
+            type: 'hsl',
             ...toHsla(
                 `rgb(${clrArr[2] * 255} ${clrArr[3] * 255} ${clrArr[4] * 255} / ${
                     clrArr[5] || 1
@@ -149,7 +149,7 @@ const clrToObj = (clr) => {
 
 const objToClr = (clrObj) => {
     const v = Object.values(clrObj)
-    if (v[0] === "hsl")
+    if (v[0] === 'hsl')
         return `${v[0]}(${v[1]} ${v[2]}% ${v[3]}% / ${v[4] || 1})`
     return `${v[0]}(${v[1]} ${v[2]} ${v[3]} / ${v[4] || 1})`
 }
@@ -159,7 +159,7 @@ const colorMix = (
     clr2,
     percent1 = 50,
     percent2 = 50,
-    colorspace = "oklab",
+    colorspace = 'oklab',
     asString = false,
 ) => {
     clrEl ??= mountClrEl()
@@ -169,7 +169,7 @@ const colorMix = (
         :   clrToObj(getComputedStyle(clrEl).color)
 }
 
-const toOklch = (clr) => colorMix(clr, clr, 100, 100, "oklch")
-const toOklab = (clr) => colorMix(clr, clr, 100, 100, "oklab")
+const toOklch = (clr) => colorMix(clr, clr, 100, 100, 'oklch')
+const toOklab = (clr) => colorMix(clr, clr, 100, 100, 'oklab')
 
 toOklch()

@@ -96,28 +96,12 @@ console.log(
 const loop = (f, until, i = 0, increment = (i) => i + 1) =>
     !until(i) ? null : (f(i), loop(f, until, increment(i)))
 
-export const map = (iterable, f) => {
-    const getter = (f) =>
-        isFunc(f) ? f
-        : ö.isMap(iterable) ? (v) => [v[0], v[1]?.[f]]
-        : (v) => v[f]
-
-    const getMap = (iterable) => Array.from(iterable).map(getter(f))
-
-    if (ö.isIterable(iterable)) {
-        if (ö.isStr(iterable)) return getMap(iterable).join('')
-        if (ö.isMap(iterable)) return new Map(getMap(iterable))
-        if (ö.isSet(iterable)) return new Set(getMap(iterable))
-        if ('map' in iterable && isFunc(iterable.map))
-            return iterable.map(getter(f))
-        // Base case: Just convert to array
-        return getMap(iterable)
-    }
-    return ö.error('Argument "iterable" must be an iterable.')
-}
-
-let t = 'apa'
-ö.log(map(t, (v) => v + ' '))
+let t = new Map([
+    [1, 'a'],
+    [4, 'b'],
+    [5, 'c'],
+])
+ö.log(ö.map(t, (v, i) => [v, i]))
 
 // slow
 const map3 = (a, f, acc = [], i = 0) =>
@@ -209,4 +193,4 @@ const times3 = (times, f = (i) => i, ...rest) =>
         .fill()
         .map((v, i) => f(i, ...rest))
 
-ö.time(() => ö.log(times3(1000000)))
+ö.time(() => times3(1000000))

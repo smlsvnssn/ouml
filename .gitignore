@@ -3,3 +3,5 @@
 /.vscode
 .DS_Store
 bun.lockb
+package-lock.json
+pnpm-lock.yaml
