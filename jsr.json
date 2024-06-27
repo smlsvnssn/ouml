@@ -1,0 +1,10 @@
+{
+    "name": "@sml/ouml",
+    "version": "0.0.1",
+    "exports": {
+        ".": "./ö.mjs",
+        "./oumlvents": "./övents/index.mjs",
+        "./oumlbservable": "./öbservable/index.mjs",
+        "./chain": "./chain/index.mjs"
+    }
+}

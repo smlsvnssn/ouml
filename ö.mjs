@@ -2,18 +2,25 @@
 export const grid = function* (width, height) {
     height ??= width
     let x = 0
+
     do {
         yield { x: x % width, y: Math.floor(x / width) }
     } while (++x < width * height)
 }
 
+// prettier-ignore
 export const range = function* (start, end, step = 1) {
-    ;[start, end, step] = isnt(end) ? [0, +start, +step] : [+start, +end, +step]
-    const count =
-        start < end ? () => (start += step) < end : () => (start -= step) > end
+    ;[start, end, step] = isnt(end) ?
+        [0, +start, +step]
+    :   [+start, +end, +step]
+
+    const count = start < end ?
+        () => (start += step) < end
+    :   () => (start -= step) > end
+
     do {
         yield start
-    } while (count() !== false)
+    } while (count())
 }
 
 // iterators
@@ -21,6 +28,7 @@ export const times = (times, f = (i) => i, ...rest) =>
     Array(Math.abs(times))
         .fill()
         .map((_, i) => f(i, ...rest))
+
 // arr
 export const rangeArray = (start, end, step) => [...range(start, end, step)]
 
@@ -36,8 +44,11 @@ export const map = (iterable, f) => {
         return error('Argument "iterable" must be an iterable.')
 
     if (isStr(iterable)) return getMap(iterable).join('')
+
     if (isMap(iterable)) return new Map(getMap(iterable))
+
     if (isSet(iterable)) return new Set(getMap(iterable))
+
     if ('map' in iterable && isFunc(iterable.map))
         return iterable.map(getMapper(f))
 
@@ -59,14 +70,16 @@ export const shuffle = (arr) => {
     return a
 }
 
+// prettier-ignore
 export const sample = (arr, samples = 1) =>
     // since shuffle is fast, shuffle whole array before sampling, ez!
-    samples === 1 ? arr[random(arr.length)] : shuffle(arr).slice(0, samples)
+    samples === 1 ?
+        arr[random(arr.length)]
+    :   shuffle(arr).slice(0, samples)
 
 //sum = arr => arr.reduce( (a, v) => a + Number(v) , 0); < 10xslower
 export const sum = (arr) => {
-    arr = Array.from(arr)
-
+    //arr = Array.from(arr)
     let a = 0
     for (let i = 0; i < arr.length; i++) a += Number(arr[i])
 
@@ -75,12 +88,17 @@ export const sum = (arr) => {
 
 export const mean = (arr) => sum(arr) / arr.length
 
+// prettier-ignore
 export const median = (arr) => {
     // no mutation
-    let a = Array.from(arr).sort((a, b) => Number(a) - Number(b)),
-        m = Math.floor(arr.length / 2)
+    let a = Array.from(arr).sort(
+            (a, b) => Number(a) - Number(b)
+        )
+    let m = Math.floor(arr.length / 2)
 
-    return m % 2 ? (Number(a[m - 1]) + Number(a[m])) / 2 : Number(a[m])
+    return m % 2 ? 
+        (Number(a[m - 1]) + Number(a[m])) / 2
+    :   Number(a[m])
 }
 
 export const max = (arr) => Math.max(...arr)
@@ -282,6 +300,7 @@ export const deepest = (element, selector = '*') => {
 
     for (let el of element.querySelectorAll(selector)) {
         let depth = 0
+
         for (e = el; e !== element; depth++) e = e.parentNode // from bottom up
         deepestEl =
             depth > deepestEl.depth ?
@@ -326,11 +345,15 @@ export const clone = (
     const doFreeze = (v) => (immutable ? Object.freeze(v) : v)
 
     // no cloning of functions, too gory. They are passed by reference instead
-    if (typeof v !== 'object' || isNull(v)) return v
+    if (typeof v != 'object' || isNull(v)) return v
+
     // catch arraylike
     if ('map' in v && isFunc(v.map)) return doFreeze(v.map((i) => doClone(i)))
+
     if (isMap(v)) return doFreeze(new Map(doClone(Array.from(v))))
+
     if (isSet(v)) return doFreeze(new Set(doClone(Array.from(v))))
+
     if (isDate(v)) return doFreeze(new Date().setTime(v.getTime()))
 
     let o = {}
@@ -391,9 +414,10 @@ export const memoize = memoise
 // thx https://masteringjs.io/tutorials/fundamentals/enum
 // TODO: Fix generic type for codehinting purposes
 export const createEnum = (...v) => {
-    if (v.length === 1 && isObj(v[0])) return Object.freeze(v[0])
+    if (v.length == 1 && isObj(v[0])) return Object.freeze(v[0])
 
-    if (v.length === 1 && isArr(v[0])) v = v[0] //if only one argument, use as array
+    if (v.length == 1 && isArr(v[0])) v = v[0] //if only one argument, use as array
+
     let enu = {}
     for (let val of v) enu[val] = val
 
@@ -436,8 +460,8 @@ export const factorial = (n) => (n <= 1 ? 1 : n * factorial(n - 1))
 
 export const nChooseK = (n, k) => {
     if (k < 0 || k > n) return 0
-    if (k === 0 || k === n) return 1
-    if (k === 1 || k === n - 1) return n
+    if (k == 0 || k == n) return 1
+    if (k == 1 || k == n - 1) return n
 
     let res = n
     for (let i = 2; i <= k; i++) res *= (n - i + 1) / i
@@ -572,6 +596,7 @@ export const wait = async (t = 1, f, resetPrevCall = false) => {
             timeout = setTimeout(resolve, t)
             rejectPrev = reject
         })
+
         if (isFunc(f)) return await f()
     } catch (e) {}
 }
@@ -620,7 +645,7 @@ export const load = async (
 }
 
 // basic type checking
-const istype = (t) => (v) => typeof v === t
+const istype = (t) => (v) => typeof v == t
 const isof = (t) => (v) => v instanceof t
 
 export const isBool = istype('boolean')
@@ -642,7 +667,7 @@ export const isSet = isof(Set)
 export const isRegex = isof(RegExp)
 
 export const isObj = (v) =>
-    typeof v === 'object' &&
+    typeof v == 'object' &&
     v !== null &&
     !isArr(v) &&
     !isDate(v) &&
@@ -656,7 +681,7 @@ export const isPlainObj = (v) =>
 export const isNakedObj = (v) => isObj(v) && Object.getPrototypeOf(v) === null
 
 export const isIterable = (v) =>
-    v != null && typeof v[Symbol.iterator] === 'function'
+    v != null && typeof v[Symbol.iterator] == 'function'
 
 // conversion
 export const mapToObj = (map) => Object.fromEntries(map.entries())
@@ -752,7 +777,7 @@ export const warn = (msg, ...r) => {
 
 export const log = (...msg) => {
     if (isVerbose) console.log(...msg)
-    return msg.length === 1 ? msg[0] : msg
+    return msg.length == 1 ? msg[0] : msg
 }
 
 const defaultLabel = 'ö.time says'
@@ -774,7 +799,7 @@ export const timeEnd = (label = defaultLabel) => {
 export const message = (s) => `ö says: ${s}\n`
 
 // stuff
-export const toString = () => `Hello ö🍳uery!`
+export const toString = () => `Hello ö!`
 
 export const rorövovarorsospoproråkoketot = (s) =>
     (s || '').replace(

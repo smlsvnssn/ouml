@@ -309,3 +309,9 @@ const curried = ö.curry(test)
 )
 
 ö.log(ö.hsla(100))
+
+ö.log(
+    (
+        BigInt(Math.random() * 2 ** 512) * BigInt(Math.random() * 2 ** 512)
+    ).toString(36)
+)
