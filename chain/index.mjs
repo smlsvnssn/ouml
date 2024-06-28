@@ -4,42 +4,42 @@ TypelessScript™
 
 import * as ö from '../ö.mjs'
 
-const lookupMethod = (key, val, isThrowing) => {
-    // check for methods on val
-    if (ö.isFunc(val[key])) return (...args) => val[key](...args)
+const lookup = (key, v, isThrowing) => {
+    // check for methods on v
+    if (ö.isFunc(v[key])) return (...args) => v[key](...args)
 
-    // check for props on val
-    if (Object.hasOwn(val, key)) return () => val[key]
+    // check for props on v
+    if (Object.hasOwn(v, key)) return () => v[key]
 
     // check for methods on ö
-    if (ö.isFunc(ö[key])) return (...args) => ö[key](val, ...args)
+    if (ö.isFunc(ö[key])) return (...args) => ö[key](v, ...args)
 
     let keys = key.split('_')
 
     // check for methods on globalThis, but only if not compound key
-    if (keys.length === 1 && ö.isFunc(globalThis[key]))
-        return (...args) => globalThis[key](val, ...args)
+    if (keys.length == 1 && ö.isFunc(globalThis[key]))
+        return (...args) => globalThis[key](v, ...args)
 
     // check for methods on global objects
-    if (keys.length === 2 && ö.isFunc(globalThis[keys.at(0)]?.[keys.at(1)]))
-        return (...args) => globalThis[keys.at(0)][keys.at(1)](val, ...args)
+    if (keys.length == 2 && ö.isFunc(globalThis[keys.at(0)]?.[keys.at(1)]))
+        return (...args) => globalThis[keys.at(0)][keys.at(1)](v, ...args)
 
     let errorMsg = `No method or property found for ${key} on type ${
-        val.constructor.name
+        v.constructor.name
     }, and no method for ${keys.join('.')} found in ö or in global scope.`
 
     if (isThrowing) throw new Error(errorMsg)
 
     ö.warn(`${errorMsg} Skipping.`)
 
-    return () => val
+    return () => v
 }
 
-const peek = (i, key, val) =>
+const peek = (i, key, v) =>
     ö.log(`
 Peeking into chain after step ${i}, running ${key}():
-Value: ${JSON.stringify(val, null, 2)}
-Type:  ${val.constructor.name}
+Value: ${JSON.stringify(v, null, 2)}
+Type:  ${v.constructor.name}
 `)
 
 const warn = (i, key, error, isThrowing) => {
@@ -50,79 +50,84 @@ const warn = (i, key, error, isThrowing) => {
     ö.warn(`${errorMsg} Skipping:`, error)
 }
 
-const createProxy = (o, isAsync, isThrowing) => {
+const createProxy = (initial, isAsync, isThrowing) => {
     let q = []
 
     const caseRunQ =
         isAsync ?
             async () => {
-                for (let [i, [key, f]] of q.entries()) {
-                    if (key === 'returnIf' && (await f())) break
+                let v = initial
+
+                for (let [i, { key, f }] of q.entries()) {
+                    if (key === 'returnIf' && (await f(v))) break
 
                     if (key === 'peek') {
-                        if (i > 0) peek(i, q[i - 1][0], o.val)
+                        if (i > 0) peek(i, q[i - 1].key, v)
                         continue
                     }
 
                     try {
-                        await f(o.val)
+                        v = await f(v)
                     } catch (error) {
                         warn(i, key, error, isThrowing)
                     }
                 }
 
-                return o.val
+                return v
             }
         :   () => {
-                for (let [i, [key, f]] of q.entries()) {
-                    if (key === 'returnIf' && f()) break
+                let v = initial
+
+                for (let [i, { key, f }] of q.entries()) {
+                    if (key === 'returnIf' && f(v)) break
 
                     if (key === 'peek') {
-                        if (i > 0) peek(i, q[i - 1][0], o.val)
+                        if (i > 0) peek(i, q[i - 1].key, v)
                         continue
                     }
 
                     try {
-                        f(o.val)
+                        v = f(v)
                     } catch (error) {
                         warn(i, key, error, isThrowing)
                     }
                 }
 
-                return o.val
+                return v
             }
 
     const caseReturnIf = (key) => (f) => {
-        q.push([key, isAsync ? async () => await f(o.val) : () => f(o.val)])
+        q.push({
+            key,
+            f: isAsync ? async (v) => await f(v) : (v) => f(v),
+        })
 
         return p
     }
 
     const caseFunction = (f) => {
-        q.push([
-            f.name || 'anonymous',
-            isAsync ?
-                async () => (o.val = await f(o.val))
-            :   () => (o.val = f(o.val)),
-        ])
+        q.push({
+            key: f.name || 'anonymous',
+            f: isAsync ? async (v) => await f(v) : (v) => f(v),
+        })
 
         return p
     }
 
     const casePeek = (key) => () => {
-        q.push([key])
+        q.push({ key })
 
         return p
     }
 
     // prettier-ignore
     const caseDefault = (key) => (...args) => {
-        q.push([
+        q.push({
             key,
-            isAsync ?
-            async () => (o.val = await lookupMethod(key, o.val, isThrowing)(...args))
-            :     () => (o.val = lookupMethod(key, o.val, isThrowing)(...args)),
-        ])
+            f: isAsync ?
+            async (v) => await lookup(key, v, isThrowing)(...args)
+            :     (v) => lookup(key, v, isThrowing)(...args),
+    })
 
         return p
     }
@@ -144,8 +149,8 @@ const createProxy = (o, isAsync, isThrowing) => {
     return p
 }
 
-export const chain = (val, isThrowing = false, isAsync = false) =>
-    createProxy({ val: ö.clone(val) }, isAsync, isThrowing)
+export const chain = (v, isThrowing = false, isAsync = false) =>
+    createProxy(ö.clone(v), isAsync, isThrowing)
 
-export const chainAsync = (val, isThrowing = false) =>
-    createProxy({ val: ö.clone(val) }, true, isThrowing)
+export const chainAsync = (v, isThrowing = false) =>
+    createProxy(ö.clone(v), true, isThrowing)

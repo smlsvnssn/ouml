@@ -90,22 +90,22 @@ import { toPiped } from 'ouml'
 
 //ö.log('Output: ', chain([100]).pop().toString(2).value)
 
-/* ö.log(
+ ö.log(
 	'Output: ',
 	await chainAsync('Hilarious')
 		.toUpperCase()
 		.testFail()
 		.split('')
 		.map(v => `### ${v} ###`)
-		.shuffle()
+		//.shuffle()
 		.peek()
 		.join('')
 		//.peek()
 		.f(v => v.split('').reverse())
 		.join('').value,
-) */
+) 
 
-/* ö.log(
+ ö.log(
     'Output:',
     chain(11)
         .f(v => [...Array(v).keys()])
@@ -116,7 +116,7 @@ import { toPiped } from 'ouml'
         .length()
         .return(),
 )
-*/
+
 
 /* const errorMessage = "error"
 const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
@@ -182,7 +182,7 @@ const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
 
 ö.log(chain('AnyValueOfAnyType').toKebabCase().split('-').at(1).return())
 
-ö.log(chain(5).toString().toUpperCase().return())
+ö.log(chain('apa').toString().toUpperCase().return())
 
 /* ö.log(
     chain(Math.PI, null, true)
