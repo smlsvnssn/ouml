@@ -118,7 +118,7 @@ import { toPiped } from 'ouml'
 )
 
 
-/* const errorMessage = "error"
+const errorMessage = "error"
 const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
     .load(true, errorMessage)
     .returnIf((v) => v === errorMessage)
@@ -129,7 +129,7 @@ const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
     .return()
 
 ö.log("Output: ", nameOfPriciestProduct)
- */
+
 
 /* ö.time(() => {
     ö.times(100000, (arg) => {
@@ -193,58 +193,58 @@ const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
         .return(),
 ) */
 
-const obj = { return: '123' }
+// const obj = { return: '123' }
 
-ö.log(chain(obj)((v) => v.return).return())
+// ö.log(chain(obj)((v) => v.return).return())
 
-ö.log(ö.nChooseK(16, 2))
+// ö.log(ö.nChooseK(16, 2))
 
-const parsePersonnummer = (s) => {
-    s = s.replaceAll(/[\s-]/g, '')
-    if (s.length === 12) return s
-    const thisYear = +String(new Date().getFullYear()).substring(2)
-    if (s.length === 10) {
-        if (+s.substring(0, 2) > thisYear) return `19${s}`
-        return `20${s}`
-    }
-    throw new Error('Fel')
-}
+// const parsePersonnummer = (s) => {
+//     s = s.replaceAll(/[\s-]/g, '')
+//     if (s.length === 12) return s
+//     const thisYear = +String(new Date().getFullYear()).substring(2)
+//     if (s.length === 10) {
+//         if (+s.substring(0, 2) > thisYear) return `19${s}`
+//         return `20${s}`
+//     }
+//     throw new Error('Fel')
+// }
 
-ö.log(parsePersonnummer('770514-3316'))
+// ö.log(parsePersonnummer('770514-3316'))
 
-ö.log(parsePersonnummer('110514 3316'))
+// ö.log(parsePersonnummer('110514 3316'))
 
-ö.log('Output: ', ö.isEqual(0, 1))
+// ö.log('Output: ', ö.isEqual(0, 1))
 
-const va = { a: 1 },
-    la = va
-la.a = 2
-ö.log(va, la)
+// const va = { a: 1 },
+//     la = va
+// la.a = 2
+// ö.log(va, la)
 
-ö.log(typeof new Array())
-class Öbablubb {
-    constructor(test = 'bubb') {
-        this.test = test
-    }
-}
+// ö.log(typeof new Array())
+// class Öbablubb {
+//     constructor(test = 'bubb') {
+//         this.test = test
+//     }
+// }
 
-const makeUbablubb = (test = 'bubb') => ({ test })
+// const makeUbablubb = (test = 'bubb') => ({ test })
 
-ö.log(ö.clone(new Öbablubb('buff'), true, false, false))
-ö.log(Object.getPrototypeOf(ö.clone({ a: 1 })))
+// ö.log(ö.clone(new Öbablubb('buff'), true, false, false))
+// ö.log(Object.getPrototypeOf(ö.clone({ a: 1 })))
 
-ö.log(Map.groupBy([{ assa: 'yazza' }, { assa: 'brassa' }], (v) => v.assa))
+// ö.log(Map.groupBy([{ assa: 'yazza' }, { assa: 'brassa' }], (v) => v.assa))
 
-ö.log(ö.groupBy([{ assa: 'yazza' }, { assa: 'brassa' }], (v) => v.assa))
+// ö.log(ö.groupBy([{ assa: 'yazza' }, { assa: 'brassa' }], (v) => v.assa))
 
-ö.log([...ö.range(10)])
+// ö.log([...ö.range(10)])
 
-ö.log(ö.wrapFirstWords('jag älskar hjortron utan kärnor', 4))
+// ö.log(ö.wrapFirstWords('jag älskar hjortron utan kärnor', 4))
 
-let blubb = new Öbablubb('buff')
-blubb.more = ö.clone(blubb)
-blubb.evenmore = { a: 1, b: 2, c: ö.clone(blubb) }
-if (1) if (1) ö.log('test')
+// let blubb = new Öbablubb('buff')
+// blubb.more = ö.clone(blubb)
+// blubb.evenmore = { a: 1, b: 2, c: ö.clone(blubb) }
+// if (1) if (1) ö.log('test')
 
 /* ö.time(() => {
     for (let i = 0; i < 100000; i++) {
@@ -269,29 +269,29 @@ for (let i = 0; i < 100000; i++) {
 ö.timeEnd()
  */
 
-ö.time(() => {
-    ö.log(ö.sum(ö.sample([...ö.range(10_000_00)], 1_000)))
-}, 'Hello function')
+// ö.time(() => {
+//     ö.log(ö.sum(ö.sample([...ö.range(10_000_00)], 1_000)))
+// }, 'Hello function')
 
-ö.log(
-    ö.createEnum({
-        small: 's',
-        medium: 'm',
-        large: 'l',
-    }),
-)
+// ö.log(
+//     ö.createEnum({
+//         small: 's',
+//         medium: 'm',
+//         large: 'l',
+//     }),
+// )
 
-const buff = ö.createEnum({
-    small: 's',
-    medium: 'm',
-    large: 'l',
-})
+// const buff = ö.createEnum({
+//     small: 's',
+//     medium: 'm',
+//     large: 'l',
+// })
 
-const biff = {
-    small: 's',
-    medium: 'm',
-    large: 'l',
-}
+// const biff = {
+//     small: 's',
+//     medium: 'm',
+//     large: 'l',
+// }
 
 const test = (a, b, c, d) => a + b + c + d
 
@@ -308,10 +308,10 @@ const curried = ö.curry(test)
         (),
 )
 
-ö.log(ö.hsla(100))
+// ö.log(ö.hsla(100))
 
-ö.log(
-    (
-        BigInt(Math.random() * 2 ** 512) * BigInt(Math.random() * 2 ** 512)
-    ).toString(36)
-)
+// ö.log(
+//     (
+//         BigInt(Math.random() * 2 ** 512) * BigInt(Math.random() * 2 ** 512)
+//     ).toString(36)
+// )

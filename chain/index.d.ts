@@ -1,3 +1,3 @@
-export function chain(v: any, isAsync?: boolean): Proxy
+export function chain(v: any, isThrowing?: boolean, isAsync?: boolean): Proxy
 
-export function chainAsync(v: any): Proxy
+export function chainAsync(v: any, isThrowing?: boolean): Proxy

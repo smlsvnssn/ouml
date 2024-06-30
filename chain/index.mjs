@@ -32,15 +32,18 @@ const lookup = (key, v, isThrowing) => {
 
     ö.warn(`${errorMsg} Skipping.`)
 
+    // on error, just return value
     return () => v
 }
 
-const peek = (i, key, v) =>
-    ö.log(`
+const peek = (i, key, v) => {
+    if (i > 0)
+        ö.log(`
 Peeking into chain after step ${i}, running ${key}():
 Value: ${JSON.stringify(v, null, 2)}
 Type:  ${v.constructor.name}
 `)
+}
 
 const warn = (i, key, error, isThrowing) => {
     let errorMsg = `Chain failed at step ${i} for method ${key}.`
@@ -50,23 +53,31 @@ const warn = (i, key, error, isThrowing) => {
     ö.warn(`${errorMsg} Skipping:`, error)
 }
 
-const createProxy = (initial, isAsync, isThrowing) => {
+export const chain = (initial, isThrowing = false, isAsync = false) => {
+    let v = ö.clone(initial)
     let q = []
 
-    const caseRunQ =
+    const queue = (key, f) => {
+        q.push({ key, f })
+
+        return p
+    }
+
+    const caseRunQueue =
         isAsync ?
             async () => {
-                let v = initial
-
                 for (let [i, { key, f }] of q.entries()) {
-                    if (key === 'returnIf' && (await f(v))) break
-
-                    if (key === 'peek') {
-                        if (i > 0) peek(i, q[i - 1].key, v)
-                        continue
-                    }
-
                     try {
+                        if (key === 'returnIf') {
+                            if (await f(v)) break
+                            else continue
+                        }
+
+                        if (key === 'peek') {
+                            peek(i, q[i - 1].key, v)
+                            continue
+                        }
+
                         v = await f(v)
                     } catch (error) {
                         warn(i, key, error, isThrowing)
@@ -76,17 +87,18 @@ const createProxy = (initial, isAsync, isThrowing) => {
                 return v
             }
         :   () => {
-                let v = initial
-
                 for (let [i, { key, f }] of q.entries()) {
-                    if (key === 'returnIf' && f(v)) break
-
-                    if (key === 'peek') {
-                        if (i > 0) peek(i, q[i - 1].key, v)
-                        continue
-                    }
-
                     try {
+                        if (key === 'returnIf') {
+                            if (f(v)) break
+                            else continue
+                        }
+
+                        if (key === 'peek') {
+                            peek(i, q[i - 1].key, v)
+                            continue
+                        }
+
                         v = f(v)
                     } catch (error) {
                         warn(i, key, error, isThrowing)
@@ -96,61 +108,29 @@ const createProxy = (initial, isAsync, isThrowing) => {
                 return v
             }
 
-    const caseReturnIf = (key) => (f) => {
-        q.push({
-            key,
-            f: isAsync ? async (v) => await f(v) : (v) => f(v),
-        })
+    const caseInternal = (key) => (f) => queue(key, f)
 
-        return p
-    }
+    const caseFunction = (f) => queue(f.name || 'anonymous', f)
 
-    const caseFunction = (f) => {
-        q.push({
-            key: f.name || 'anonymous',
-            f: isAsync ? async (v) => await f(v) : (v) => f(v),
-        })
-
-        return p
-    }
-
-    const casePeek = (key) => () => {
-        q.push({ key })
-
-        return p
-    }
-
-    // prettier-ignore
-    const caseDefault = (key) => (...args) => {
-        q.push({
-            key,
-            f: isAsync ?
-            async (v) => await lookup(key, v, isThrowing)(...args)
-            :     (v) => lookup(key, v, isThrowing)(...args),
-    })
-
-        return p
-    }
+    const caseDefault =
+        (key) =>
+        (...args) =>
+            queue(key, (v) => lookup(key, v, isThrowing)(...args))
 
     let p = new Proxy(() => {}, {
         // prettier-ignore
         get: (_, key) =>
-             key === "value" ?      caseRunQ()
-           : key === "return" ?     caseRunQ
-           : key === "returnIf" ?   caseReturnIf(key)
-           : key === "peek" ?       casePeek(key)
-           : key === "f" ?          caseFunction
-           :                        caseDefault(key),
+             key === "returnIf" || key === "peek" ? caseInternal(key)
+           : key === "value" ?                      caseRunQueue()
+           : key === "return" ?                     caseRunQueue
+           : key === "f" ?                          caseFunction
+           :                                        caseDefault(key),
 
         apply: (_, __, args) =>
-            args.length ? caseFunction(...args) : caseRunQ(),
+            args.length ? caseFunction(...args) : caseRunQueue(),
     })
 
     return p
 }
 
-export const chain = (v, isThrowing = false, isAsync = false) =>
-    createProxy(ö.clone(v), isAsync, isThrowing)
-
-export const chainAsync = (v, isThrowing = false) =>
-    createProxy(ö.clone(v), true, isThrowing)
+export const chainAsync = (v, isThrowing = false) => chain(v, isThrowing, true)
