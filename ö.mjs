@@ -316,6 +316,7 @@ export const deepest = (element, selector = '*') => {
 // Based on https://www.30secondsofcode.org/js/s/equals
 // Checks own enumerable properties only.
 // Does not work for ArrayBuffers because Symbols. Solvable with Object.getOwnPropertySymbols(obj)? Good enough?
+// TODO: Use Reflect?
 export const isEqual = (a, b, deep = true) =>
     a === b ? true
         // are same date?
@@ -324,8 +325,8 @@ export const isEqual = (a, b, deep = true) =>
     : a instanceof Function && b instanceof Function ? '' + a === '' + b
         // are nullish?
     : !a || !b || (typeof a !== 'object' && typeof b !== 'object') ? a === b
-        // have same prototype?
-    : Object.getPrototypeOf(a) !== Object.getPrototypeOf(b) ? false
+                    // have same prototype?
+    : Reflect.getPrototypeOf(a) !== Reflect.getPrototypeOf(b) ? false
         // have same length ? (Iterables)
     : Object.keys(a).length !== Object.keys(b).length ? false
         // have same properties and values? (Recursively if deep)
@@ -361,11 +362,10 @@ export const clone = (
 
     return doFreeze(
         preservePrototype ?
-            Object.assign(Object.create(Object.getPrototypeOf(v) ?? {}), o)
+            Object.assign(Object.create(Reflect.getPrototypeOf(v) ?? {}), o)
         :   o,
     )
 }
-
 export const immutable = (v, deep = true) => clone(v, deep, true)
 
 export const pipe = (v, ...funcs) => funcs.reduce((x, f) => f(x), v)
@@ -413,6 +413,7 @@ export const memoize = memoise
 
 // thx https://masteringjs.io/tutorials/fundamentals/enum
 // TODO: Fix generic type for codehinting purposes
+// TODO: Use Symbol (Or Symbol.for()) instead of str for values
 export const createEnum = (...v) => {
     if (v.length == 1 && isObj(v[0])) return Object.freeze(v[0])
 
@@ -676,9 +677,9 @@ export const isObj = (v) =>
     !isRegex(v)
 
 export const isPlainObj = (v) =>
-    isObj(v) && Object.getPrototypeOf(v) === Object.prototype
+    isObj(v) && Reflect.getPrototypeOf(v) === Object.prototype
 
-export const isNakedObj = (v) => isObj(v) && Object.getPrototypeOf(v) === null
+export const isNakedObj = (v) => isObj(v) && Reflect.getPrototypeOf(v) === null
 
 export const isIterable = (v) =>
     v != null && typeof v[Symbol.iterator] == 'function'

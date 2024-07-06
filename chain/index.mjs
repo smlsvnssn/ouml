@@ -9,7 +9,9 @@ const lookup = (key, v, isThrowing) => {
     if (ö.isFunc(v[key])) return (...args) => v[key](...args)
 
     // check for props on v
-    if (Object.hasOwn(v, key)) return () => v[key]
+    if (Object.hasOwn(v, key))
+        return (newVal) => (ö.is(newVal) ? ((v[key] = newVal), newVal) : v[key])
+    
 
     // check for methods on ö
     if (ö.isFunc(ö[key])) return (...args) => ö[key](v, ...args)

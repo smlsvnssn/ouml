@@ -744,23 +744,23 @@ let v = chain('Hi')(letsDo)(cool)(stuff)()
 
 This doesn't play that nicely with Prettier, if you happen to use that, but it's cool!
 
-#### .anyMethodOnCurrentType( ...args ) → Proxy
+#### .anyMethodOnCurrentType( ...args? ) → Proxy
 
 Lets you call a method of the current value. Methods are called "as is", so for exemple a `.map(v => v)` on an array takes a function, `.toUpperCase()` on a string takes no argument, and `.toUpperCase()` on a number is skipped along with a warning to the console, since no such method exists on a number.
 
-#### .anyPropertyOnCurrentValue() → Proxy
+#### .anyPropertyOnCurrentValue( newVal? ) → Proxy
 
-Lets you access properties on the current value as a method call, for example `.length()` to get the length of a string or an array.
+Lets you access properties on the current value as a method call, for example `.length()` to get the length of a string or an array. If `newVal` is provided, sets the property to `newVal`, and passes `newVal` along the chain.
 
-#### .anyMethodInÖ( ...args ) → Proxy
+#### .anyMethodInÖ( ...args? ) → Proxy
 
 Lets you pass any `ö` method into the chain. The current value is passed as the first argument, so if you would normally call `ö.sum(arr)`, in a chain you need only call `.sum()`.
 
-#### .anyMethodInGlobalScope( ...args ) → Proxy
+#### .anyMethodInGlobalScope( ...args? ) → Proxy
 
 Lets you pass any global method into the chain. The current value is passed as the first argument, so if you would normally call `fetch('http://some.url')`, in a chain you need only call `.fetch()`.
 
-#### .anyObjectInGlobalScope_anyMethod( ...args ) → Proxy
+#### .anyObjectInGlobalScope_anyMethod( ...args? ) → Proxy
 
 Lets you pass any method on a global object into the chain. The current value is passed as the first argument, so if you would normally call `JSON.parse(someString)` or `Array.from(someIterable)`, in a chain you need only call `.JSON_parse()` or `.Array_from()`.
 
