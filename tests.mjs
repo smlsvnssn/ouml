@@ -118,17 +118,17 @@ import { toPiped } from 'ouml'
 )
 
 
-const errorMessage = "error"
-const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
-    .load(true, errorMessage)
-    .returnIf((v) => v === errorMessage)
-    .products()
-    .sort((a, b) => a.price > b.price)
-    .at(0)
-    .title()
-    .return()
+// const errorMessage = "error"
+// const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
+//     .load(true, errorMessage)
+//     .returnIf((v) => v === errorMessage)
+//     .products()
+//     .sort((a, b) => a.price > b.price)
+//     .at(0)
+//     .title()
+//     .return()
 
-ö.log("Output: ", nameOfPriciestProduct)
+// ö.log("Output: ", nameOfPriciestProduct)
 
 
 /* ö.time(() => {
@@ -221,17 +221,17 @@ const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
 // la.a = 2
 // ö.log(va, la)
 
-// ö.log(typeof new Array())
-// class Öbablubb {
-//     constructor(test = 'bubb') {
-//         this.test = test
-//     }
-// }
+class Öbablubb {
+    constructor(test = 'bubb') {
+        this.test = test
+    }
+}
 
-// const makeUbablubb = (test = 'bubb') => ({ test })
+const makeUbablubb = (test = 'bubb') => ({ test })
 
-// ö.log(ö.clone(new Öbablubb('buff'), true, false, false))
-// ö.log(Object.getPrototypeOf(ö.clone({ a: 1 })))
+ö.log(ö.clone(new Öbablubb('buff'), true, false, false))
+ö.log(Object.getPrototypeOf(ö.clone(new Date())))
+ö.log(Object.getPrototypeOf(new Date()))
 
 // ö.log(Map.groupBy([{ assa: 'yazza' }, { assa: 'brassa' }], (v) => v.assa))
 
@@ -241,12 +241,12 @@ const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
 
 // ö.log(ö.wrapFirstWords('jag älskar hjortron utan kärnor', 4))
 
-// let blubb = new Öbablubb('buff')
-// blubb.more = ö.clone(blubb)
-// blubb.evenmore = { a: 1, b: 2, c: ö.clone(blubb) }
-// if (1) if (1) ö.log('test')
+let blubb = new Öbablubb('buff')
+blubb.more = ö.clone(blubb)
+blubb.evenmore = { a: 1, b: 2, c: ö.clone(blubb) }
+if (1) if (1) ö.log('test')
 
-/* ö.time(() => {
+ö.time(() => {
     for (let i = 0; i < 100000; i++) {
         ö.clone(blubb, true, false, false)
     }
@@ -267,7 +267,7 @@ for (let i = 0; i < 100000; i++) {
     JSON.parse(JSON.stringify(blubb))
 }
 ö.timeEnd()
- */
+
 
 // ö.time(() => {
 //     ö.log(ö.sum(ö.sample([...ö.range(10_000_00)], 1_000)))

@@ -316,7 +316,7 @@ export const deepest = (element, selector = '*') => {
 // Based on https://www.30secondsofcode.org/js/s/equals
 // Checks own enumerable properties only.
 // Does not work for ArrayBuffers because Symbols. Solvable with Object.getOwnPropertySymbols(obj)? Good enough?
-// TODO: Use Reflect?
+// TODO: Use Reflect.ownKeys? Testcase?
 export const isEqual = (a, b, deep = true) =>
     a === b ? true
         // are same date?
@@ -325,12 +325,14 @@ export const isEqual = (a, b, deep = true) =>
     : a instanceof Function && b instanceof Function ? '' + a === '' + b
         // are nullish?
     : !a || !b || (typeof a !== 'object' && typeof b !== 'object') ? a === b
-                    // have same prototype?
+        // have same prototype?
     : Reflect.getPrototypeOf(a) !== Reflect.getPrototypeOf(b) ? false
-        // have same length ? (Iterables)
-    : Object.keys(a).length !== Object.keys(b).length ? false
+        // have same length ? 
+    : Reflect.ownKeys(a).length !== Reflect.ownKeys(b).length ? false
         // have same properties and values? (Recursively if deep)
-    : Object.keys(a).every((k) => (deep ? isEqual(a[k], b[k]) : a[k] === b[k]))
+    : Reflect.ownKeys(a).every((k) =>
+            deep ? isEqual(a[k], b[k]) : a[k] === b[k],
+        )
 
 export const equals = isEqual
 
@@ -345,6 +347,7 @@ export const clone = (
         deep ? clone(v, deep, immutable, preservePrototype) : v
     const doFreeze = (v) => (immutable ? Object.freeze(v) : v)
 
+    // Return primitives and functions as is.
     // no cloning of functions, too gory. They are passed by reference instead
     if (typeof v != 'object' || isNull(v)) return v
 
@@ -358,7 +361,7 @@ export const clone = (
     if (isDate(v)) return doFreeze(new Date().setTime(v.getTime()))
 
     let o = {}
-    for (let key of Object.keys(v)) o[key] = doClone(v[key])
+    for (let key of Reflect.ownKeys(v)) o[key] = doClone(v[key])
 
     return doFreeze(
         preservePrototype ?
