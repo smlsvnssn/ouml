@@ -1,5 +1,12 @@
 import { isObj, round, warn } from 'ouml'
 
+/**
+ * 
+ * @param {string} c 
+ * @param {boolean} [asString] 
+ * @returns {(string | { h: number, s: number, l: number, a: number})}
+ */
+
 export const toHsla = (c, asString = false) => {
     let rgba, h, s, l, r, g, b, a
 
@@ -84,6 +91,15 @@ https://bottosson.github.io/posts/oklab/
 
 Optionally: use css's color-mix with shadow element. Potentially slow, browser only?
 */
+
+/**
+ * hsla
+ * @param {(number | { h: number; s: number; l: number; a: number })} h
+ * @param {number} [s]
+ * @param {number} [l]
+ * @param {number} [a]
+ * @returns string
+ */
 
 export const hsla = (h, s = 70, l = 50, a = 1) => {
     if (isObj(h)) ({ h, s, l, a } = h)

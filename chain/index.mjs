@@ -1,7 +1,7 @@
 /*
 TypelessScript™
 */
-
+// @ts-check
 import * as ö from '../ö.mjs'
 
 const lookup = (key, v, isThrowing) => {
@@ -54,6 +54,14 @@ const warn = (i, key, error, isThrowing) => {
 
     ö.warn(`${errorMsg} Skipping:`, error)
 }
+
+/**
+ * Chain
+ * @param {*} initial 
+ * @param {boolean} [isThrowing] 
+ * @param {boolean} [isAsync] 
+ * @returns {Proxy}
+ */
 
 export const chain = (initial, isThrowing = false, isAsync = false) => {
     let v = ö.clone(initial)
@@ -134,5 +142,12 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
 
     return p
 }
+
+/**
+ * ChainAsync
+ * @param {*} v 
+ * @param {boolean} [isThrowing] 
+ * @returns {Proxy}
+ */
 
 export const chainAsync = (v, isThrowing = false) => chain(v, isThrowing, true)

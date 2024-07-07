@@ -90,33 +90,32 @@ import { toPiped } from 'ouml'
 
 //ö.log('Output: ', chain([100]).pop().toString(2).value)
 
- ö.log(
-	'Output: ',
-	await chainAsync('Hilarious')
-		.toUpperCase()
-		.testFail()
-		.split('')
-		.map(v => `### ${v} ###`)
-		//.shuffle()
-		.peek()
-		.join('')
-		//.peek()
-		.f(v => v.split('').reverse())
-		.join('').value,
-) 
+ö.log(
+    'Output: ',
+    await chainAsync('Hilarious')
+        .toUpperCase()
+        .testFail()
+        .split('')
+        .map((v) => `### ${v} ###`)
+        //.shuffle()
+        .peek()
+        .join('')
+        //.peek()
+        .f((v) => v.split('').reverse())
+        .join('').value,
+)
 
- ö.log(
+ö.log(
     'Output:',
     chain(11)
-        .f(v => [...Array(v).keys()])
-        .map(v => v ** v)
+        .f((v) => [...Array(v).keys()])
+        .map((v) => v ** v)
         .peek()
         .sum()
         .toString()
         .length()
         .return(),
 )
-
 
 // const errorMessage = "error"
 // const nameOfPriciestProduct = await chainAsync("https://dummyjson.com/products")
@@ -129,7 +128,6 @@ import { toPiped } from 'ouml'
 //     .return()
 
 // ö.log("Output: ", nameOfPriciestProduct)
-
 
 /* ö.time(() => {
     ö.times(100000, (arg) => {
@@ -250,7 +248,7 @@ if (1) if (1) ö.log('test')
     for (let i = 0; i < 100000; i++) {
         ö.clone(blubb, true, false, false)
     }
-}, "Hello function")
+}, 'Hello function')
 
 ö.time()
 for (let i = 0; i < 100000; i++) {
@@ -267,7 +265,6 @@ for (let i = 0; i < 100000; i++) {
     JSON.parse(JSON.stringify(blubb))
 }
 ö.timeEnd()
-
 
 // ö.time(() => {
 //     ö.log(ö.sum(ö.sample([...ö.range(10_000_00)], 1_000)))
@@ -315,3 +312,14 @@ const curried = ö.curry(test)
 //         BigInt(Math.random() * 2 ** 512) * BigInt(Math.random() * 2 ** 512)
 //     ).toString(36)
 // )
+
+ö.log(ö.equals(blubb, ö.clone(blubb)))
+ö.log(blubb)
+
+let types = { a: 1, b: 2, c: 3 }
+let x = ö.createEnum(types)
+
+let testy = {
+  REJECTED: 1,
+  ACCEPTED: 2
+}

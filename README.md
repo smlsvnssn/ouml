@@ -257,7 +257,7 @@ Returns `true` if `a` and `b` share no members.
 
 #### ö.isEqual/ö.equals( a, b, deep? = true ) → Boolean
 
-Checks equality by value rather than reference. Checks own enumerable properties only. Works for all basic types and most built in classes, but may produce unexpected results in edge cases. Equality is tricky, and depends on what you personally beleive to be equal 😇. Does deep comparison by default, and may be slow for large data structures. If `deep == false`, does flat comparison instead.
+Checks equality by value rather than reference. Compares prototypes, and uses `Reflect.ownKeys` to compare all own keys, including symbols. Works for all basic types and most built in classes, but may produce unexpected results in edge cases. Equality is tricky, and depends on what you personally beleive to be equal 😇. Does deep comparison by default, and may be slow for large data structures. If `deep == false`, does flat comparison instead.
 
 #### ö.clone( v, deep? = true, immutable? = false, preservePrototype? = true ) → cloned value
 
@@ -326,7 +326,9 @@ Creates and returns memoised functions. By default, the arguments to the memoise
 
 #### ö.createEnum( object ) → Object
 
-Creates and returns an enumerable, i.e. a frozen object where the keys and values are the same. Lets you create kinda sorta vanilla typechecking light, but at runtime 🤪. Takes an object, or strings, or an array of strings, as input.
+TODO: rewrite
+
+Creates and returns an enumerable, i.e. a frozen object where the keys have unique values. Lets you create kinda sorta vanilla typechecking light, but at runtime 🤪. Takes an object, or strings, or an array of strings, as input.
 Example:
 
 ```js

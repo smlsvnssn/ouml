@@ -4,25 +4,12 @@
     "description": "smlsvnssn",
     "main": "ö.mjs",
     "module": "ö.mjs",
-    "types": "ö.d.ts",
     "type": "module",
     "exports": {
-        ".": {
-            "types": "./ö.d.ts",
-            "default": "./ö.mjs"
-        },
-        "./övents": {
-            "types": "./övents/index.d.ts",
-            "default": "./övents/index.mjs"
-        },
-        "./öbservable": {
-            "types": "./öbservable/index.d.ts",
-            "default": "./öbservable/index.mjs"
-        },
-        "./chain": {
-            "types": "./chain/index.d.ts",
-            "default": "./chain/index.mjs"
-        }
+        ".": "./ö.mjs",
+        "./övents": "./övents/index.mjs",
+        "./öbservable": "./öbservable/index.mjs",
+        "./chain": "./chain/index.mjs"
     },
     "prettier": {
         "experimentalTernaries": true,

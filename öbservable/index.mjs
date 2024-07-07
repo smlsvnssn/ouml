@@ -1,5 +1,4 @@
 import { isnt, isFunc, clone, isEqual } from '../ö.mjs'
-
 const isobservable = Symbol('observable')
 const extendable = Symbol('extendable')
 const primitive = Symbol('primitive') // a little like a vue ref
@@ -54,6 +53,22 @@ const makeObservable = (v, isExtendable, isPrimitive) => {
     return p
 }
 
+/**
+ * @typedef Observable
+ * @type {Object}
+ * @property {*} [value]
+ * @property {function} observe
+ */
+
+/**
+ * observable
+ * @param {*} v
+ * @param {boolean} [deep]
+ * @param {boolean} [extendable]
+ * @param {boolean} [wrapPrimitive]
+ * @returns {Observable}
+ */
+
 export const observable = (
     v,
     deep = true,
@@ -76,7 +91,26 @@ export const observable = (
     return v
 }
 
+/**
+ * isObservable
+ * @param {*} obj
+ * @returns {boolean}
+ */
+
 export const isObservable = (obj) => !!obj[isobservable]
+
+/**
+ * observe
+ * @param {(function | Observable)} getter
+ * @param {function} callback
+ * @param {boolean} [deep]
+ * @returns {{
+ *	update: Function,
+ *	pause: Function,
+ *	unpause: Function,
+ *	stop: Function,
+ *}}
+ */
 
 export const observe = (getter, callback, deep = false) => {
     const getValue = () => {
@@ -91,6 +125,7 @@ export const observe = (getter, callback, deep = false) => {
 
     // observer with update method (called by proxy setter)
     let o = {
+        paused,
         update(key) {
             ;[o.value, o.prevValue] = [getValue(), o.value]
             if (!isEqual(o.value, o.prevValue))

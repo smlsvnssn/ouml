@@ -5,6 +5,7 @@
 Usage:
 <element use:clickoutside on:clickoutside={callback}></element>
 */
+
 import { data, between } from '../ö.mjs'
 
 //
@@ -27,6 +28,12 @@ const observeResize = (element) => {
 const unobserveResize = (element) => {
     resizeObs.unobserve(element)
 }
+
+/**
+ * resize
+ * @param {Element} node 
+ * @returns {{destroy: function}}
+ */
 
 export const resize = (node) => {
     observeResize(node)
@@ -65,6 +72,12 @@ const unobserveView = (eventType) => (element) => {
     else exitedview.unobserve(element)
 }
 
+/**
+ * enterview
+ * @param {Element} node 
+ * @returns {{destroy: function}}
+ */
+
 export const enterview = (node) => {
     observeView('enterview')(node)
 
@@ -74,6 +87,12 @@ export const enterview = (node) => {
         },
     }
 }
+
+/**
+ * exitview
+ * @param {Element} node 
+ * @returns {{destroy: function}}
+ */
 
 export const exitview = (node) => {
     observeView('exitview')(node)
@@ -127,6 +146,12 @@ const unobserveSticky = (eventType) => (element) => {
     else stickToBottom.unobserve(element)
 }
 
+/**
+ * sticktotop
+ * @param {Element} node 
+ * @returns {{destroy: function}}
+ */
+
 export const sticktotop = (node) => {
 	observeSticky('sticktotop')(node)
 	
@@ -136,6 +161,13 @@ export const sticktotop = (node) => {
         },
     }
 }
+
+/**
+ * sticktobottom
+ * @param {Element} node 
+ * @returns {{destroy: function}}
+ */
+
 export const sticktobottom = (node) => {
 	observeSticky('sticktobottom')(node)
 	
@@ -169,6 +201,12 @@ const unobserveClickOutside = (element) => {
     clickOutsideListeners.size ||
         document.removeEventListener('click', clickOutside)
 }
+
+/**
+ * clickoutside
+ * @param {Element} node 
+ * @returns {{destroy: function}}
+ */
 
 export const clickoutside = (node) => {
 	observeClickOutside(node)
@@ -229,6 +267,12 @@ const unobserveSwipe = (eventType) => (element) => {
     element.removeEventListener('touchstart', listeners[0])
     element.removeEventListener('touchend', listeners[1])
 }
+
+/**
+ * swipe
+ * @param {Element} node 
+ * @returns {{destroy: function}}
+ */
 
 export const swipe = (node) => {
     observeSwipe('swipeleft')(node)
