@@ -4,9 +4,8 @@
  * Generators
  */
 
-
 /**
- * grid
+ * Grid - Yields `Object` with `x, y` coordinates
  * @param {number} width
  * @param {number} [height = width]
  * @yields {IterableIterator.<{x: number, y: number }>}
@@ -22,7 +21,7 @@ export const grid = function* (width, height) {
 }
 
 /**
- * range
+ * Range - Yields `Number`s within specified range.
  * @param {number} start
  * @param {number} [end = start]
  * @param {number} [step = 1]
@@ -55,7 +54,7 @@ export const range = function* (start, end, step = 1) {
  */
 
 /**
- * times
+ * Times - Calls a function `times` times, with `index` as argument.
  * @param {number} times
  * @param {timesCB} f
  * @param  {Array} rest
@@ -73,7 +72,7 @@ export const times = (times, f = (i) => i, ...rest) =>
  */
 
 /**
- * rangeArray
+ * RangeArray - Returns an `Array` populated with given range.
  * @param {number} start
  * @param {number} [end = start]
  * @param {number} [step = 1]
@@ -98,7 +97,7 @@ export const rangeArray = (start, end, step) => [...range(start, end, step)]
  */
 
 /**
- * map
+ * Map - Same as a normal map, except it accepts a `string` as a shorthand for retrieving values from an object property, if the iterable contains objects.
  * @param {Iterable} iterable
  * @param {(string | mapCB)} f
  * @returns {Iterable}
@@ -128,7 +127,7 @@ export const map = (iterable, f) => {
 }
 
 /**
- * unique
+ * Unique - Returns an `Array` with unique entries.
  * @param {Iterable} arr
  * @returns {Array}
  */
@@ -136,7 +135,7 @@ export const map = (iterable, f) => {
 export const unique = (arr) => [...new Set(arr)]
 
 /**
- * Shuffle
+ * Shuffle - Returns a new shuffled `Array`.
  * @param {Iterable} iterable
  * @returns {Array}
  * @see https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
@@ -155,7 +154,7 @@ export const shuffle = (iterable) => {
 }
 
 /**
- * sample
+ * Sample - Returns random sample from `arr`, or an array of samples if `samples` is larger than one.
  * @param {Iterable} iterable
  * @param {number} [samples = 1]
  * @returns {(* | Array)}
@@ -172,7 +171,7 @@ export const sample = (iterable, samples = 1) => {
 }
 
 /**
- * sum
+ * Sum - Sums `arr`, with `Number` coercion.
  * @param {Iterable<number>} iterable
  * @returns {number}
  */
@@ -189,7 +188,7 @@ export const sum = (iterable) => {
 }
 
 /**
- * mean
+ * Mean - Calculates mean value of `arr`, with `Number` coercion.
  * @param {Iterable<number>} iterable
  * @returns {number}
  */
@@ -197,7 +196,7 @@ export const sum = (iterable) => {
 export const mean = (iterable) => sum(iterable) / Array.from(iterable).length
 
 /**
- * median
+ * Median - Calculates median value of `arr`, with `Number` coercion.
  * @param {Iterable<number>} arr
  * @returns {number}
  */
@@ -215,7 +214,7 @@ export const median = (arr) => {
 }
 
 /**
- * max
+ * Max - Returns largest value in `arr`.
  * @param {Iterable<number>} arr
  * @returns {number}
  */
@@ -223,7 +222,7 @@ export const median = (arr) => {
 export const max = (arr) => Math.max(...arr)
 
 /**
- * min
+ * Min - Returns smallest value in `arr`.
  * @param {Iterable<number>} arr
  * @returns {number}
  */
@@ -231,7 +230,7 @@ export const max = (arr) => Math.max(...arr)
 export const min = (arr) => Math.min(...arr)
 
 /**
- * groupBy
+ * GroupBy - Returns a `Map` with keys corresponding to `prop` values.
  * @param {Iterable} arr
  * @param {(string | mapCB)} prop
  * @param {boolean} [asObject = false]
@@ -246,7 +245,7 @@ export const groupBy = (arr, prop, asObject = false) =>
     )
 
 /**
- * mapToTree
+ * MapToTree - Maps a flat array of objects to a tree structure.
  * @param {Array<Object>} arr
  * @param {(string | mapCB)} idProp
  * @param {string} [parentProp]
@@ -285,7 +284,7 @@ export const mapToTree = (arr, idProp, parentProp) => {
  */
 
 /**
- * reduceDeep
+ * ReduceDeep - Reduces arrays of nested objects to a single value.
  * @param {Array<Object>} arr
  * @param {reduceCB} f
  * @param {string} subArrayProp
@@ -320,7 +319,7 @@ export const reduceDeep = (
 }
 
 /**
- * mapDeep
+ * MapDeep - Maps over arrays of nested objects.
  * @param {Array<Object>} arr
  * @param {mapCB} f
  * @param {string} subArrayProp
@@ -340,7 +339,7 @@ export const mapDeep = (arr, f, subArrayProp, flatten = false) =>
     )
 
 /**
- * filterDeep
+ * FilterDeep - Finds items that match `f` in arrays of nested objects.
  * @param {Array<Object>} arr
  * @param {mapCB} f
  * @param {string} subArrayProp
@@ -361,7 +360,7 @@ export const filterDeep = (arr, f, subArrayProp, prop) =>
     )
 
 /**
- * findDeep
+ * FindDeep - Same as `ö.filterDeep`, except it returns first match.
  * @param {Array<Object>} arr
  * @param {mapCB} f
  * @param {string} subArrayProp
@@ -388,7 +387,7 @@ export const findDeep = (arr, f, subArrayProp, prop) => {
  */
 
 /**
- * Intersect
+ * Intersect - Intersection, returns elements that are members of both `a` and `b`.
  * @param {Iterable} a
  * @param {Iterable} b
  * @returns {Array}
@@ -400,7 +399,7 @@ export const intersect = (a, b) => {
 }
 
 /**
- * Subtract
+ * Subtract - Difference, returns members of `a` but not members of `b`, i.e. subtracts `b` from `a`.
  * @param {Iterable} a
  * @param {Iterable} b
  * @returns {Array}
@@ -412,7 +411,7 @@ export const subtract = (a, b) => {
 }
 
 /**
- * Exclude
+ * Exclude - Symmetric difference, returns elements that are members of `a` or `b`, but not both.
  * @param {Iterable} a
  * @param {Iterable} b
  * @returns {Array}
@@ -427,7 +426,7 @@ export const exclude = (a, b) => {
 }
 
 /**
- * Union
+ * Union - Returns (unique) members of both `a` and `b`.
  * @param {Iterable} a
  * @param {Iterable} b
  * @returns {Array}
@@ -436,7 +435,7 @@ export const exclude = (a, b) => {
 export const union = (a, b) => [...new Set([...a, ...b])]
 
 /**
- * isSubset
+ * IsSubset - Returns `true` if `a` is a subset of `b`.
  * @param {Iterable} a
  * @param {Iterable} b
  * @returns {boolean}
@@ -448,7 +447,7 @@ export const isSubset = (a, b) => {
 }
 
 /**
- * isSuperset
+ * IsSuperset - Returns `true` if `a` is a superset of `b`.
  * @param {Iterable} a
  * @param {Iterable} b
  * @returns {boolean}
@@ -460,7 +459,7 @@ export const isSuperset = (a, b) => {
 }
 
 /**
- * isDisjoint
+ * IsDisjoint - Returns `true` if `a` and `b` share no members.
  * @param {Iterable} a
  * @param {Iterable} b
  * @returns {boolean}
@@ -476,7 +475,7 @@ export const isDisjoint = (a, b) => {
  */
 
 /**
- * createElement
+ * CreateElement - Creates an `Element` from an html string. Optionally creates an `SVGElement`.
  * @param {string} html Following the format "<tag>"
  * @param {boolean} [isSvg = false]
  * @returns {HTMLElement | SVGElement}
@@ -520,20 +519,20 @@ export const parseDOMStringMap = (obj) => {
 const d = new WeakMap()
 
 /**
- * Data
- * @param {*} element
+ * Data - Associates `anyVal` with data via a `WeakMap`.
+ * @param {*} anyVal
  * @param {(string | Object)} key
  * @param {*} value
  * @returns {Object.<string, *> | *}
  */
 
-export const data = (element, key, value) => {
+export const data = (anyVal, key, value) => {
     let thisData =
-        d.has(element) ? d.get(element) : parseDOMStringMap(element?.dataset)
+        d.has(anyVal) ? d.get(anyVal) : parseDOMStringMap(anyVal?.dataset)
 
     if (is(value) || isObj(key))
         d.set(
-            element,
+            anyVal,
             Object.assign(thisData, isObj(key) ? key : { [key]: value }),
         )
 
@@ -541,7 +540,7 @@ export const data = (element, key, value) => {
 }
 
 /**
- * Finds deepest element in element matching selector.
+ * Deepest - Finds deepest element in element matching selector.
  * Potential performance hog for deep DOM structures.
  * @param {Element} element
  * @param {string} [selector]
@@ -570,7 +569,7 @@ export const deepest = (element, selector = '*') => {
  */
 
 /**
- * isEqual
+ * IsEqual - Checks equality by value rather than reference.
  * Based on https://www.30secondsofcode.org/js/s/equals
  * TODO: Use Reflect.ownKeys? Testcase?
  * @param {*} a
@@ -599,7 +598,7 @@ export const isEqual = (a, b, deep = true) =>
 export const equals = isEqual
 
 /**
- * clone
+ * Clone - Performs deep cloning of most common types.
  * @param {*} v
  * @param {boolean} [deep]
  * @param {boolean} [immutable]
@@ -641,7 +640,7 @@ export const clone = (
 }
 
 /**
- * immutable
+ * Immutable - Returns a freezed clone of `v`.
  * @param {*} v
  * @param {boolean} deep
  * @returns {*}
@@ -650,7 +649,7 @@ export const clone = (
 export const immutable = (v, deep = true) => clone(v, deep, true)
 
 /**
- * pipe
+ * Pipe - Pipes function calls for a value.
  * @param {*} v
  * @param  {...function} funcs
  * @returns {*}
@@ -659,7 +658,7 @@ export const immutable = (v, deep = true) => clone(v, deep, true)
 export const pipe = (v, ...funcs) => funcs.reduce((x, f) => f(x), v)
 
 /**
- * toPiped
+ * ToPiped - Pipes function calls, and returns a function that takes the value to pipe.
  * @param  {...function} funcs
  * @returns {(v: any) => any}
  */
@@ -670,7 +669,7 @@ export const toPiped =
         pipe(v, ...funcs)
 
 /**
- * pipeAsync
+ * PipeAsync
  * @param {*} v
  * @param  {...function} funcs
  * @returns {Promise}
@@ -680,7 +679,7 @@ export const pipeAsync = async (v, ...funcs) =>
     await funcs.reduce(async (x, f) => f(await x), v)
 
 /**
- * toPipedAsync
+ * ToPipedAsync
  * @param  {...function} funcs
  * @returns {(v: *) => Promise}
  */
@@ -691,7 +690,7 @@ export const toPipedAsync =
         pipeAsync(v, ...funcs)
 
 /**
- * curry
+ * Curry - Returns a curried version of `f`.
  * @param {function} f
  * @returns {(...args: *) => (function | *)}
  */
@@ -704,7 +703,7 @@ export const curry =
         :   f(...args)
 
 /**
- *
+ * Memoise - Creates and returns memoised functions.
  * @param {function} f
  * @param {(...args: *) => (string | number)} [keymaker]
  * @returns {function}
@@ -732,7 +731,7 @@ export const memoise = (f, keymaker) => {
 export const memoize = memoise
 
 /**
- * createEnum
+ * CreateEnum - Creates and returns an enumerable.
  * @template T
  * @param {T} v This lies a bit. TODO: Find solution
  * @returns {Readonly<T>}
@@ -754,14 +753,14 @@ export const createEnum = (v, ...rest) => {
  */
 
 /**
- * random
+ * Random - random integers between `min` and `max`-1.
  * @param {number} [min = 0]
- * @param {(number | boolean)} [max = 1]
+ * @param {(number | boolean)} [max = 2]
  * @param {boolean} [float = false]
  * @returns {number}
  */
 
-export const random = (min = 0, max = 1, float = false) => {
+export const random = (min = 0, max = 2, float = false) => {
     // max can be omitted
     float = isBool(max) ? max : float
     ;[min, max] =
@@ -777,7 +776,7 @@ export const random = (min = 0, max = 1, float = false) => {
 }
 
 /**
- * randomNormal
+ * RandomNormal - random number from reasonably approximated normal distribution.
  * @param {number} [mean = 0]
  * @param {number} [sigma = 1]
  * @returns {number}
@@ -795,7 +794,7 @@ export const randomNormal = (mean = 0, sigma = 1) => {
 }
 
 /**
- * round
+ * Round - Returns `n` rounded to `precision` decimals.
  * @param {number} n
  * @param {number} [precision = 0]
  * @returns {number}
@@ -805,7 +804,7 @@ export const round = (n, precision = 0) =>
     Math.round(n * 10 ** precision + Number.EPSILON) / 10 ** precision
 
 /**
- * nthRoot
+ * NthRoot - Returns nth root of positive number.
  * @param {number} x
  * @param {number} n
  * @returns {number}
@@ -814,7 +813,7 @@ export const round = (n, precision = 0) =>
 export const nthRoot = (x, n) => x ** (1 / Math.abs(n))
 
 /**
- * factorial
+ * Factorial
  * @param {number} n
  * @returns {number}
  */
@@ -822,7 +821,7 @@ export const nthRoot = (x, n) => x ** (1 / Math.abs(n))
 export const factorial = (n) => (n <= 1 ? 1 : n * factorial(n - 1))
 
 /**
- * nChooseK
+ * nChooseK - Returns the number of ways to choose `k` elements from a set of `n` elements.
  * @param {number} n
  * @param {number} k
  * @returns {number}
@@ -840,7 +839,7 @@ export const nChooseK = (n, k) => {
 }
 
 /**
- * lerp
+ * Lerp - Interpolates linearly between `a` and `b`.
  * @param {number} a
  * @param {number} b
  * @param {number} t
@@ -853,7 +852,7 @@ export const lerp = (a, b, t) => {
 }
 
 /**
- * smoothstep
+ * Smoothstep - Interpolates smoothly between `a` and `b`.
  * @param {number} a
  * @param {number} b
  * @param {number} t
@@ -864,7 +863,7 @@ export const lerp = (a, b, t) => {
 export const smoothstep = (a, b, t) => lerp(a, b, 3 * t ** 2 - 2 * t ** 3)
 
 /**
- * easeIn
+ * EaseIn - Eases in from `a` to `b`.
  * @param {number} a
  * @param {number} b
  * @param {number} t
@@ -874,7 +873,7 @@ export const smoothstep = (a, b, t) => lerp(a, b, 3 * t ** 2 - 2 * t ** 3)
 export const easeIn = (a, b, t) => lerp(a, b, t ** 2)
 
 /**
- * easeOut
+ * EaseOut - Eases out from `a` to `b`.
  * @param {number} a
  * @param {number} b
  * @param {number} t
@@ -889,7 +888,7 @@ export const easeOut = (a, b, t) => lerp(a, b, t * (2 - t))
 // todo: test
 
 /**
- * clamp
+ * Clamp - Clamps `n` between `min` and `max`.
  * @param {number} n
  * @param {number} min
  * @param {number} max
@@ -899,7 +898,7 @@ export const easeOut = (a, b, t) => lerp(a, b, t * (2 - t))
 export const clamp = (n, min, max) => Math.min(Math.max(n, min), max)
 
 /**
- * between
+ * Between - Checks if `n` is between `min` and `max`.
  * @param {number} n
  * @param {number} min
  * @param {number} max
@@ -909,7 +908,7 @@ export const clamp = (n, min, max) => Math.min(Math.max(n, min), max)
 export const between = (n, min, max) => n >= min && n < max
 
 /**
- * normalize
+ * Normalize - Normalises `n` to a value between 0 and 1, within range given by `min` and `max`.
  * @param {number} n
  * @param {number} min
  * @param {number} max
@@ -926,7 +925,7 @@ export const normalize = (n, min, max, doClamp = true) => {
 export const normalise = normalize
 
 /**
- * toPolar
+ * ToPolar - Converts cartesian coordinates to polar.
  * @param {number} x
  * @param {number} y
  * @returns {{r: number, theta: number }}
@@ -938,7 +937,7 @@ export const toPolar = (x, y) => ({
 })
 
 /**
- * toCartesian
+ * ToCartesian - Converts polar coordinates to cartesian.
  * @param {number} r
  * @param {number} theta
  * @returns {{x: number, y: number }}
@@ -961,7 +960,7 @@ export const toCartesian = (r, theta) => ({
  */
 
 /**
- * prettyNumber
+ * PrettyNumber - Returns `n` rounded to `precision` decimals and formatted by `n.toLocaleString()`.
  * @param {number} n
  * @param {string} [locale = 'sv-SE']
  * @param {number} [precision = 2]
@@ -985,7 +984,7 @@ export const prettyNumber = (n, locale = 'sv-SE', precision = 2) => {
 }
 
 /**
- * wrapFirstWords
+ * WrapFirstWords - Returns `s` with first `numWords` words wrapped in `startWrap` and `endWrap`.
  * @param {string} s
  * @param {number} [numWords = 3]
  * @param {string} [startWrap]
@@ -1010,7 +1009,7 @@ export const wrapFirstWords = (
         )
 
 /**
- * toCamelCase
+ * ToCamelCase - Returns regular sentence, kebab-case or snake_case string converted to camelCase.
  * @param {string} s
  * @returns {string}
  */
@@ -1023,7 +1022,7 @@ export const toCamelCase = (s) =>
         )
 
 /**
- * toKebabCase
+ * ToKebabCase - Returns regular sentence or camelCase string converted to kebab-case.
  * @param {string} s
  * @returns {string}
  */
@@ -1038,7 +1037,7 @@ export const toKebabCase = (s) =>
             .toLowerCase()
 
 /**
- * capitalise
+ * Capitalise
  * @param {string} s
  * @returns {string}
  */
@@ -1048,7 +1047,7 @@ export const capitalise = (s) => s[0].toUpperCase() + s.slice(1)
 export const capitalize = capitalise
 
 /**
- * randomChars
+ * RandomChars - Returns `numChars` random characters.
  * @param {number} [numChars = 10]
  * @returns {string}
  */
@@ -1059,7 +1058,7 @@ export const randomChars = (numChars = 10) =>
         .substring(0, numChars)
 
 /**
- * stripTags
+ * StripTags - Strips HTML tags.
  * @param {string} s
  * @returns {string}
  */
@@ -1067,7 +1066,7 @@ export const randomChars = (numChars = 10) =>
 export const stripTags = (s) => s.replace(/(<([^>]+)>)/gi, '')
 
 /**
- * when
+ * When - an inline if.
  * @param {boolean} bool
  * @param {*} v
  * @param {*} [f]
@@ -1089,7 +1088,7 @@ export * from './colour/hsla.js'
 let timeout, rejectPrev
 
 /**
- * wait
+ * Wait - Waits `t` milliseconds.
  * @param {number} [t]
  * @param {function} [f]
  * @param {boolean} [resetPrevCall = false]
@@ -1116,7 +1115,7 @@ export const wait = async (t = 1, f, resetPrevCall = false) => {
 }
 
 /**
- * nextFrame
+ * NextFrame - Waits one frame.
  * @param {function} [f]
  * @returns {Promise<void>}
  */
@@ -1131,7 +1130,7 @@ export const nextFrame = async (f) => {
 }
 
 /**
- * waitFrames
+ * WaitFrames - Waits `n` frames.
  * @param {number} [n]
  * @param {function} [f]
  * @param {boolean} [everyFrame]
@@ -1144,7 +1143,7 @@ export const waitFrames = async (n = 1, f, everyFrame = false) => {
 }
 
 /**
- * waitFor
+ * WaitFor - Waits for specified event.
  * @param {string} selector
  * @param {string} event
  * @param {function} [f]
@@ -1165,7 +1164,7 @@ export const waitFor = async (selector, event, f) => {
 }
 
 /**
- * load
+ * Load - Loads (and parses) JSON. Optionally loads HTML.
  * @param {string} url
  * @param {boolean} [isJSON = true]
  * @param {(string | null)} [errorMessage]
@@ -1211,7 +1210,6 @@ export const is = (v) => !isnt(v)
 export const isDefined = is
 
 /**
- * @param {*} v
  * @returns {v is null}
  */
 
@@ -1220,7 +1218,6 @@ export const isNull = (v) => v === null
 export const isArr = (v) => Array.isArray(v)
 
 /**
- * @param {*} v
  * @returns {v is function}
  */
 
@@ -1254,7 +1251,7 @@ export const isNakedObj = (v) => isObj(v) && Reflect.getPrototypeOf(v) === null
  */
 
 export const isIterable = (v) =>
-    v != null && typeof v[Symbol.iterator] == 'function'
+    v !== null && v[Symbol.iterator] instanceof Function
 
 /**
  * Type conversion
@@ -1279,7 +1276,7 @@ export const objToMap = (obj) => new Map(Object.entries(obj))
  */
 
 /**
- * throttle
+ * Throttle - Throttles execution of `f` to one call per `t` milliseconds.
  * @param {function} f
  * @param {number} [t]
  * @param {boolean} [debounce = false]
@@ -1318,7 +1315,7 @@ export const throttle = (f, t = 50, debounce = false, immediately = false) => {
 }
 
 /**
- * debounce
+ * Debounce - Debounces execution of `f` until no calls are made within `t` milliseconds.
  * @param {function} f
  * @param {number} [t]
  * @param {boolean} [immediately = false]
@@ -1329,7 +1326,7 @@ export const debounce = (f, t = 50, immediately = false) =>
     throttle(f, t, true, immediately)
 
 /**
- * onAnimationFrame
+ * OnAnimationFrame - Defers execution of `f` to next animation frame.
  * @param {function} f
  * @returns {(...args: any) => void}
  */
@@ -1354,7 +1351,7 @@ export const onAnimationFrame = (f) => {
 // export const qa = document.querySelectorAll.bind(document);
 
 /**
- * getLocal
+ * GetLocal - Gets `item` from local storage, if any. Converts item to `Object` via `JSON.parse`.
  * @param {*} item
  * @returns {* | undefined}
  */
@@ -1365,7 +1362,7 @@ export const getLocal = (item) => {
 }
 
 /**
- * setLocal
+ * SetLocal - Sets `item` in local storage to `v`, and returns `v`.
  * @template {string} v
  * @param {v} item
  * @returns {v}
@@ -1376,7 +1373,7 @@ export const setLocal = (item, v) => (
 )
 
 /**
- * getCss
+ * GetCss - Gets `prop` on selected element.
  * @param {string} prop
  * @param {string} [selector = ':root']
  * @returns {* | undefined}
@@ -1387,7 +1384,7 @@ export const getCss = (prop, selector = ':root') =>
     document.querySelector(selector)?.style.getPropertyValue(prop)
 
 /**
- * setCss
+ * SetCss - Sets `prop` to `v`.
  * @param {string} prop
  * @param {string} v
  * @param {string} [selector = ':root']
@@ -1409,7 +1406,7 @@ let isVerbose = true,
     isThrowing = false
 
 /**
- * verbose
+ * Verbose - Get/set `isVerbose`.
  * @param {boolean | undefined} verbose
  * @param {*} throwing
  * @returns {boolean}
@@ -1421,7 +1418,7 @@ export const verbose = (verbose, throwing = false) =>
     )
 
 /**
- * error
+ * Error - Logs errors to console, optionally throws instead.
  * @param {*} e
  * @param  {...any} r
  * @returns {* | Array}
@@ -1436,7 +1433,7 @@ export const error = (e, ...r) => {
 }
 
 /**
- * warn
+ * Warn - Outputs arguments to console.
  * @param {*} msg
  * @param  {...any} r
  * @returns {* | Array}
@@ -1448,7 +1445,7 @@ export const warn = (msg, ...r) => {
 }
 
 /**
- * log
+ * Log - Outputs arguments to console. Returns single argument, or multiple arguments as an array.
  * @param  {...any} msg
  * @returns {* | Array}
  */
@@ -1461,7 +1458,7 @@ export const log = (...msg) => {
 const defaultLabel = 'ö.time says'
 
 /**
- * time
+ * Time
  * @param  {(function | string)} f
  * @param  {string} [label]
  * @returns {* | undefined}
@@ -1479,7 +1476,7 @@ export const time = (f, label = defaultLabel) => {
 }
 
 /**
- * timeEnd
+ * TimeEnd
  * @param  {string} [label]
  * @returns {undefined}
  */
@@ -1489,7 +1486,7 @@ export const timeEnd = (label = defaultLabel) => {
 }
 
 /**
- * message
+ * Message
  * @param  {string} s
  * @returns {string}
  */

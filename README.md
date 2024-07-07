@@ -326,9 +326,7 @@ Creates and returns memoised functions. By default, the arguments to the memoise
 
 #### ö.createEnum( object ) → Object
 
-TODO: rewrite
-
-Creates and returns an enumerable, i.e. a frozen object where the keys have unique values. Lets you create kinda sorta vanilla typechecking light, but at runtime 🤪. Takes an object, or strings, or an array of strings, as input.
+Creates and returns an enumerable, i.e. a frozen object where the keys have unique values. Lets you create kinda sorta vanilla typechecking light, but at runtime 🤪. Takes an object, or strings, or an array of strings, as input. In order for codehinting to work, you need to provide an explicit object.
 Example:
 
 ```js
@@ -337,9 +335,9 @@ const SIZES = ö.createEnum('small', 'medium', 'large')
 const SIZES = ö.createEnum(['small', 'medium', 'large'])
 // or:
 const SIZES = ö.createEnum({
-    small: 'whatevs',
-    medium: 'anything goes',
-    large: 'must be unique though',
+    small: Symbol(),
+    medium: Symbol(),
+    large: Symbol(),
 })
 giveMeIcecream(SIZES.large)
 ```
