@@ -239,12 +239,12 @@ const makeUbablubb = (test = 'bubb') => ({ test })
 
 // ö.log(ö.wrapFirstWords('jag älskar hjortron utan kärnor', 4))
 
-let blubb = new Öbablubb('buff')
-blubb.more = ö.clone(blubb)
-blubb.evenmore = { a: 1, b: 2, c: ö.clone(blubb) }
-if (1) if (1) ö.log('test')
+// let blubb = new Öbablubb('buff')
+// blubb.more = ö.clone(blubb)
+// blubb.evenmore = { a: 1, b: 2, c: ö.clone(blubb) }
+// if (1) if (1) ö.log('test')
 
-ö.time(() => {
+/* ö.time(() => {
     for (let i = 0; i < 100000; i++) {
         ö.clone(blubb, true, false, false)
     }
@@ -264,7 +264,7 @@ for (let i = 0; i < 100000; i++) {
 for (let i = 0; i < 100000; i++) {
     JSON.parse(JSON.stringify(blubb))
 }
-ö.timeEnd()
+ö.timeEnd() */
 
 // ö.time(() => {
 //     ö.log(ö.sum(ö.sample([...ö.range(10_000_00)], 1_000)))
@@ -313,8 +313,8 @@ const curried = ö.curry(test)
 //     ).toString(36)
 // )
 
-ö.log(ö.equals(blubb, ö.clone(blubb)))
-ö.log(blubb)
+// ö.log(ö.equals(blubb, ö.clone(blubb)))
+// ö.log(blubb)
 
 let types = { a: 1, b: 2, c: 3 }
 let x = ö.createEnum(types)
@@ -323,3 +323,6 @@ let testy = {
   REJECTED: 1,
   ACCEPTED: 2
 }
+
+ö.log(ö.wrapFirstWords('jag & 3: hjortron utan kärnor', 3))
+ö.log(ö.wrapFirstWords('jag älskar: hjortron utan kärnor', 3))

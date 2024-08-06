@@ -1,28 +1,27 @@
 /*
 TypelessScript™
 */
-// @ts-check
+
 import * as ö from '../ö.mjs'
 
 const lookup = (key, v, isThrowing) => {
-    // check for methods on v
+    // methods in v?
     if (ö.isFunc(v[key])) return (...args) => v[key](...args)
 
-    // check for props on v
+    // props in v?
     if (Object.hasOwn(v, key))
-        return (newVal) => (ö.is(newVal) ? ((v[key] = newVal), newVal) : v[key])
-    
+        return newVal => (ö.is(newVal) ? ((v[key] = newVal), newVal) : v[key])
 
-    // check for methods on ö
+    // methods in ö?
     if (ö.isFunc(ö[key])) return (...args) => ö[key](v, ...args)
 
     let keys = key.split('_')
 
-    // check for methods on globalThis, but only if not compound key
+    // methods in globalThis?
     if (keys.length == 1 && ö.isFunc(globalThis[key]))
         return (...args) => globalThis[key](v, ...args)
 
-    // check for methods on global objects
+    // methods in global objects?
     if (keys.length == 2 && ö.isFunc(globalThis[keys.at(0)]?.[keys.at(1)]))
         return (...args) => globalThis[keys.at(0)][keys.at(1)](v, ...args)
 
@@ -34,7 +33,7 @@ const lookup = (key, v, isThrowing) => {
 
     ö.warn(`${errorMsg} Skipping.`)
 
-    // on error, just return value
+    // on warn, just return value
     return () => v
 }
 
@@ -57,9 +56,9 @@ const warn = (i, key, error, isThrowing) => {
 
 /**
  * Chain
- * @param {*} initial 
- * @param {boolean} [isThrowing] 
- * @param {boolean} [isAsync] 
+ * @param {*} initial
+ * @param {boolean} [isThrowing]
+ * @param {boolean} [isAsync]
  * @returns {Proxy}
  */
 
@@ -118,14 +117,14 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
                 return v
             }
 
-    const caseInternal = (key) => (f) => queue(key, f)
+    const caseInternal = key => f => queue(key, f)
 
-    const caseFunction = (f) => queue(f.name || 'anonymous', f)
+    const caseFunction = f => queue(f.name || 'anonymous', f)
 
     const caseDefault =
-        (key) =>
+        key =>
         (...args) =>
-            queue(key, (v) => lookup(key, v, isThrowing)(...args))
+            queue(key, v => lookup(key, v, isThrowing)(...args))
 
     let p = new Proxy(() => {}, {
         // prettier-ignore
@@ -145,8 +144,8 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
 
 /**
  * ChainAsync
- * @param {*} v 
- * @param {boolean} [isThrowing] 
+ * @param {*} v
+ * @param {boolean} [isThrowing]
  * @returns {Proxy}
  */
 

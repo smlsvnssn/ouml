@@ -61,7 +61,7 @@ export const range = function* (start, end, step = 1) {
  * @returns {Array}
  */
 
-export const times = (times, f = (i) => i, ...rest) =>
+export const times = (times, f = i => i, ...rest) =>
     Array(Math.abs(times))
         .fill(0)
         // @ts-ignore
@@ -104,12 +104,12 @@ export const rangeArray = (start, end, step) => [...range(start, end, step)]
  */
 
 export const map = (iterable, f) => {
-    const getMapper = (f) =>
+    const getMapper = f =>
         isFunc(f) ? f
-        : isMap(iterable) ? (v) => [v[0], v[1]?.[f]]
-        : (v) => v[f]
+        : isMap(iterable) ? v => [v[0], v[1]?.[f]]
+        : v => v[f]
 
-    const getMap = (iterable) => Array.from(iterable).map(getMapper(f))
+    const getMap = iterable => Array.from(iterable).map(getMapper(f))
 
     if (!isIterable(iterable))
         return error('Argument "iterable" must be an iterable.')
@@ -132,7 +132,7 @@ export const map = (iterable, f) => {
  * @returns {Array}
  */
 
-export const unique = (arr) => [...new Set(arr)]
+export const unique = arr => [...new Set(arr)]
 
 /**
  * Shuffle - Returns a new shuffled `Array`.
@@ -141,7 +141,7 @@ export const unique = (arr) => [...new Set(arr)]
  * @see https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
  */
 
-export const shuffle = (iterable) => {
+export const shuffle = iterable => {
     let a = Array.from(iterable)
 
     // classic loop for performance reasons
@@ -178,7 +178,7 @@ export const sample = (iterable, samples = 1) => {
 
 //sum = arr => arr.reduce( (a, v) => a + Number(v) , 0); < 10xslower
 
-export const sum = (iterable) => {
+export const sum = iterable => {
     let arr = Array.from(iterable)
     let a = 0
 
@@ -193,7 +193,7 @@ export const sum = (iterable) => {
  * @returns {number}
  */
 
-export const mean = (iterable) => sum(iterable) / Array.from(iterable).length
+export const mean = iterable => sum(iterable) / Array.from(iterable).length
 
 /**
  * Median - Calculates median value of `arr`, with `Number` coercion.
@@ -219,7 +219,7 @@ export const median = (arr) => {
  * @returns {number}
  */
 
-export const max = (arr) => Math.max(...arr)
+export const max = arr => Math.max(...arr)
 
 /**
  * Min - Returns smallest value in `arr`.
@@ -227,7 +227,7 @@ export const max = (arr) => Math.max(...arr)
  * @returns {number}
  */
 
-export const min = (arr) => Math.min(...arr)
+export const min = arr => Math.min(...arr)
 
 /**
  * GroupBy - Returns a `Map` with keys corresponding to `prop` values.
@@ -241,7 +241,7 @@ export const groupBy = (arr, prop, asObject = false) =>
     // @ts-ignore
     globalThis[asObject ? 'Object' : 'Map'].groupBy(
         arr,
-        isFunc(prop) ? prop : (v) => v[prop],
+        isFunc(prop) ? prop : v => v[prop],
     )
 
 /**
@@ -254,12 +254,13 @@ export const groupBy = (arr, prop, asObject = false) =>
 
 export const mapToTree = (arr, idProp, parentProp) => {
     let parents = new Map()
+    let rootKey = null
 
     for (let [i, v] of arr.entries()) {
         let [key, parentKey] =
             isFunc(idProp) ?
                 idProp(v, i, arr) // Should return [ownKey, parentKey]
-            :   [v[idProp], v?.[parentProp ?? ''] ?? null]
+            :   [v[idProp], v?.[parentProp ?? ''] ?? rootKey]
 
         parents.set(
             parentKey,
@@ -269,9 +270,9 @@ export const mapToTree = (arr, idProp, parentProp) => {
         )
     }
 
-    const traverse = (parentIndex = null) =>
-        parents.get(parentIndex)?.map((parent) => ({
-            // did you see the guard clause? Pretty small eh?
+    const traverse = (parentKey = rootKey) =>
+        parents.get(parentKey)?.map(parent => ({
+            // did you see the base case? Pretty small eh?
             ...parent.v,
             children: traverse(parent.key),
         }))
@@ -395,7 +396,7 @@ export const findDeep = (arr, f, subArrayProp, prop) => {
 
 export const intersect = (a, b) => {
     let [A, B] = [new Set(a), new Set(b)]
-    return [...A].filter((v) => B.has(v))
+    return [...A].filter(v => B.has(v))
 }
 
 /**
@@ -407,7 +408,7 @@ export const intersect = (a, b) => {
 
 export const subtract = (a, b) => {
     let [A, B] = [new Set(a), new Set(b)]
-    return [...A].filter((v) => !B.has(v))
+    return [...A].filter(v => !B.has(v))
 }
 
 /**
@@ -419,10 +420,7 @@ export const subtract = (a, b) => {
 
 export const exclude = (a, b) => {
     let [A, B] = [new Set(a), new Set(b)]
-    return [
-        ...[...A].filter((v) => !B.has(v)),
-        ...[...B].filter((v) => !A.has(v)),
-    ]
+    return [...[...A].filter(v => !B.has(v)), ...[...B].filter(v => !A.has(v))]
 }
 
 /**
@@ -443,7 +441,7 @@ export const union = (a, b) => [...new Set([...a, ...b])]
 
 export const isSubset = (a, b) => {
     let [A, B] = [new Set(a), new Set(b)]
-    return A.size <= B.size && [...A].every((v) => B.has(v))
+    return A.size <= B.size && [...A].every(v => B.has(v))
 }
 
 /**
@@ -455,7 +453,7 @@ export const isSubset = (a, b) => {
 
 export const isSuperset = (a, b) => {
     let [A, B] = [new Set(a), new Set(b)]
-    return A.size >= B.size && [...B].every((v) => A.has(v))
+    return A.size >= B.size && [...B].every(v => A.has(v))
 }
 
 /**
@@ -467,7 +465,7 @@ export const isSuperset = (a, b) => {
 
 export const isDisjoint = (a, b) => {
     let [A, B] = [new Set(a), new Set(b)]
-    return [...A].every((v) => !B.has(v))
+    return [...A].every(v => !B.has(v))
 }
 
 /**
@@ -501,7 +499,7 @@ export const createElement = (html, isSvg = false) => {
  * @returns {Object}
  */
 
-export const parseDOMStringMap = (obj) => {
+export const parseDOMStringMap = obj => {
     // convert from DOMStringMap to object
     let o = { ...obj }
 
@@ -591,7 +589,7 @@ export const isEqual = (a, b, deep = true) =>
         // have same length ?
     : Reflect.ownKeys(a).length !== Reflect.ownKeys(b).length ? false
         // have same properties and values? (Recursively if deep)
-    : Reflect.ownKeys(a).every((k) =>
+    : Reflect.ownKeys(a).every(k =>
             deep ? isEqual(a[k], b[k]) : a[k] === b[k],
         )
 
@@ -612,16 +610,16 @@ export const clone = (
     immutable = false,
     preservePrototype = true,
 ) => {
-    const doClone = (v) =>
+    const doClone = v =>
         deep ? clone(v, deep, immutable, preservePrototype) : v
-    const doFreeze = (v) => (immutable ? Object.freeze(v) : v)
+    const doFreeze = v => (immutable ? Object.freeze(v) : v)
 
     // Return primitives and functions as is.
     // no cloning of functions, too gory. They are passed by reference instead
     if (typeof v != 'object' || isNull(v)) return v
 
     // catch arraylike
-    if ('map' in v && isFunc(v.map)) return doFreeze(v.map((i) => doClone(i)))
+    if ('map' in v && isFunc(v.map)) return doFreeze(v.map(i => doClone(i)))
 
     if (isMap(v)) return doFreeze(new Map(doClone(Array.from(v))))
 
@@ -665,7 +663,7 @@ export const pipe = (v, ...funcs) => funcs.reduce((x, f) => f(x), v)
 
 export const toPiped =
     (...funcs) =>
-    (v) =>
+    v =>
         pipe(v, ...funcs)
 
 /**
@@ -686,7 +684,7 @@ export const pipeAsync = async (v, ...funcs) =>
 
 export const toPipedAsync =
     (...funcs) =>
-    (v) =>
+    v =>
         pipeAsync(v, ...funcs)
 
 /**
@@ -696,7 +694,7 @@ export const toPipedAsync =
  */
 
 export const curry =
-    (f) =>
+    f =>
     (...args) =>
         f.length > args.length ?
             (...newArgs) => curry(f)(...args, ...newArgs)
@@ -818,7 +816,7 @@ export const nthRoot = (x, n) => x ** (1 / Math.abs(n))
  * @returns {number}
  */
 
-export const factorial = (n) => (n <= 1 ? 1 : n * factorial(n - 1))
+export const factorial = n => (n <= 1 ? 1 : n * factorial(n - 1))
 
 /**
  * nChooseK - Returns the number of ways to choose `k` elements from a set of `n` elements.
@@ -993,6 +991,7 @@ export const prettyNumber = (n, locale = 'sv-SE', precision = 2) => {
  * @returns {string}
  */
 
+// \p{L} /u see https://eloquentjavascript.net/09_regexp.html#h-+y54//b0l+
 export const wrapFirstWords = (
     s,
     numWords = 3,
@@ -1004,7 +1003,10 @@ export const wrapFirstWords = (
     s
         .slice(startAtChar)
         .replace(
-            new RegExp(`([\\s]*[\\w\\dåäöÅÄÖøØ'’\"-]+){${numWords}}\\S?`),
+            new RegExp(
+                `([\\s]*[\\p{L}\\p{M}\\p{N}'’\"-&]+){${numWords}}\\S?`,
+                'u',
+            ),
             `${startWrap}$&${endWrap}`,
         )
 
@@ -1014,7 +1016,7 @@ export const wrapFirstWords = (
  * @returns {string}
  */
 
-export const toCamelCase = (s) =>
+export const toCamelCase = s =>
     s.match(/^\-\-/) ?
         s // is css var, so leave it alone
     :   s.replace(/([-_\s])([a-zA-Z0-9])/g, (m, _, c, o) =>
@@ -1028,7 +1030,7 @@ export const toCamelCase = (s) =>
  */
 
 // thx https://gist.github.com/nblackburn/875e6ff75bc8ce171c758bf75f304707
-export const toKebabCase = (s) =>
+export const toKebabCase = s =>
     s.match(/^\-\-/) ?
         s // is css var, so leave it alone
     :   s
@@ -1042,7 +1044,7 @@ export const toKebabCase = (s) =>
  * @returns {string}
  */
 
-export const capitalise = (s) => s[0].toUpperCase() + s.slice(1)
+export const capitalise = s => s[0].toUpperCase() + s.slice(1)
 
 export const capitalize = capitalise
 
@@ -1063,7 +1065,7 @@ export const randomChars = (numChars = 10) =>
  * @returns {string}
  */
 
-export const stripTags = (s) => s.replace(/(<([^>]+)>)/gi, '')
+export const stripTags = s => s.replace(/(<([^>]+)>)/gi, '')
 
 /**
  * When - an inline if.
@@ -1120,8 +1122,8 @@ export const wait = async (t = 1, f, resetPrevCall = false) => {
  * @returns {Promise<void>}
  */
 
-export const nextFrame = async (f) => {
-    return new Promise((resolve) =>
+export const nextFrame = async f => {
+    return new Promise(resolve =>
         requestAnimationFrame(async () => {
             if (isFunc(f)) resolve(await f())
             else resolve()
@@ -1151,10 +1153,10 @@ export const waitFrames = async (n = 1, f, everyFrame = false) => {
  */
 
 export const waitFor = async (selector, event, f) => {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         document.querySelector(selector)?.addEventListener(
             event,
-            async (e) => {
+            async e => {
                 if (isFunc(f)) resolve(await f(e))
                 else resolve()
             },
@@ -1191,47 +1193,47 @@ export const load = async (
  * Basic type checking
  */
 
-export const isBool = (v) => typeof v == 'boolean'
+export const isBool = v => typeof v == 'boolean'
 
-export const isNum = (v) => typeof v == 'number'
+export const isNum = v => typeof v == 'number'
 
-export const isInt = (v) => Number.isInteger(v)
+export const isInt = v => Number.isInteger(v)
 
-export const isBigInt = (v) => typeof v == 'bigint'
+export const isBigInt = v => typeof v == 'bigint'
 
-export const isStr = (v) => typeof v == 'string'
+export const isStr = v => typeof v == 'string'
 
-export const isSym = (v) => typeof v == 'symbol'
+export const isSym = v => typeof v == 'symbol'
 
-export const isnt = (v) => typeof v == 'undefined'
+export const isnt = v => typeof v == 'undefined'
 export const isUndefined = isnt
 
-export const is = (v) => !isnt(v)
+export const is = v => !isnt(v)
 export const isDefined = is
 
 /**
  * @returns {v is null}
  */
 
-export const isNull = (v) => v === null
+export const isNull = v => v === null
 
-export const isArr = (v) => Array.isArray(v)
+export const isArr = v => Array.isArray(v)
 
 /**
  * @returns {v is function}
  */
 
-export const isFunc = (v) => v instanceof Function
+export const isFunc = v => v instanceof Function
 
-export const isDate = (v) => v instanceof Date
+export const isDate = v => v instanceof Date
 
-export const isMap = (v) => v instanceof Map
+export const isMap = v => v instanceof Map
 
-export const isSet = (v) => v instanceof Set
+export const isSet = v => v instanceof Set
 
-export const isRegex = (v) => v instanceof RegExp
+export const isRegex = v => v instanceof RegExp
 
-export const isObj = (v) =>
+export const isObj = v =>
     typeof v == 'object' &&
     v !== null &&
     !isArr(v) &&
@@ -1240,17 +1242,17 @@ export const isObj = (v) =>
     !isSet(v) &&
     !isRegex(v)
 
-export const isPlainObj = (v) =>
+export const isPlainObj = v =>
     isObj(v) && Reflect.getPrototypeOf(v) === Object.prototype
 
-export const isNakedObj = (v) => isObj(v) && Reflect.getPrototypeOf(v) === null
+export const isNakedObj = v => isObj(v) && Reflect.getPrototypeOf(v) === null
 
 /**
  * @param {*} v
  * @returns {v is Iterable}
  */
 
-export const isIterable = (v) =>
+export const isIterable = v =>
     v !== null && v[Symbol.iterator] instanceof Function
 
 /**
@@ -1262,14 +1264,14 @@ export const isIterable = (v) =>
  * @returns {{}}
  */
 
-export const mapToObj = (map) => Object.fromEntries(map.entries())
+export const mapToObj = map => Object.fromEntries(map.entries())
 
 /**
  * @param {{}} obj
  * @returns {Map}
  */
 
-export const objToMap = (obj) => new Map(Object.entries(obj))
+export const objToMap = obj => new Map(Object.entries(obj))
 
 /**
  * Throttle, debounce, onAnimationFrame
@@ -1331,7 +1333,7 @@ export const debounce = (f, t = 50, immediately = false) =>
  * @returns {(...args: any) => void}
  */
 
-export const onAnimationFrame = (f) => {
+export const onAnimationFrame = f => {
     let timeout
 
     return function () {
@@ -1356,7 +1358,7 @@ export const onAnimationFrame = (f) => {
  * @returns {* | undefined}
  */
 
-export const getLocal = (item) => {
+export const getLocal = item => {
     let i = localStorage.getItem(item)
     return i && JSON.parse(i)
 }
@@ -1491,7 +1493,7 @@ export const timeEnd = (label = defaultLabel) => {
  * @returns {string}
  */
 
-export const message = (s) => `ö says: ${s}\n`
+export const message = s => `ö says: ${s}\n`
 
 // stuff
 export const toString = () => `Hello ö!`
@@ -1501,8 +1503,8 @@ export const toString = () => `Hello ö!`
  * @returns {string}
  */
 
-export const rorövovarorsospoproråkoketot = (s) =>
+export const rorövovarorsospoproråkoketot = s =>
     (s || '').replace(
         /[bcdfghjklmnpqrstvwxyz]/gi,
-        (m) => `${m}o${m.toLowerCase()}`,
+        m => `${m}o${m.toLowerCase()}`,
     )

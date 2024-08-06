@@ -15,7 +15,9 @@
         "experimentalTernaries": true,
         "tabWidth": 4,
         "semi": false,
-        "singleQuote": true
+        "singleQuote": true,
+        "bracketSpacing": true,
+        "arrowParens": "avoid"
     },
     "scripts": {
         "dev": "vite",

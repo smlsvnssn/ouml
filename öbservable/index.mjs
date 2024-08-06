@@ -1,4 +1,5 @@
 import { isnt, isFunc, clone, isEqual } from '../ö.mjs'
+
 const isobservable = Symbol('observable')
 const extendable = Symbol('extendable')
 const primitive = Symbol('primitive') // a little like a vue ref
