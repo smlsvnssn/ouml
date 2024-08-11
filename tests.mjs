@@ -316,8 +316,8 @@ const curried = ö.curry(test)
 // ö.log(ö.equals(blubb, ö.clone(blubb)))
 // ö.log(blubb)
 
-let types = { a: 1, b: 2, c: 3 }
-let x = ö.createEnum(types)
+let x = ö.createEnum({ a: 1, b: 2, c: 3 })
+
 
 let testy = {
   REJECTED: 1,

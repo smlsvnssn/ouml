@@ -203,11 +203,11 @@ Same as `ö.filterDeep`, except it returns first match.
 ### Set operations
 
 Methods for comparing arrays or array-like objects. Inputs are coerced to `Set`. All methods return a new `Array`, or `Boolean`.
-The outputs adhere to strict set logic. If the inputs are `Array`s, duplicate items are removed. All these methods will be replaced by internal `Set` methods when these become widely available in browsers.
+The outputs adhere to strict set logic. If the inputs are `Array`s, duplicate items are removed. All these methods are wrappers around internal `Set` methods, but returns arrays. (Available in evergreens and in node 22)
 
 #### ö.intersect( a, b ) → Array
 
-<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="9" height="9" stroke="white"/><rect x="5.5" y="5.5" width="9" height="9" stroke="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 5V10H5V5H10Z" fill="black"/></svg> Intersection, returns elements that are members of both `a` and `b`.
+<svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="0.5" y="0.5" width="9" height="9" stroke="white"/><rect x="5.5" y="5.5" width="9" height="9" stroke="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 5V10H5V5H10Z" fill="black"/></svg> Intersection, returns elements that are members of both `a` and `b`.
 Example:
 
 ```js
@@ -216,7 +216,7 @@ Example:
 
 #### ö.subtract( a, b ) → Array
 
-<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="9" height="9" stroke="white"/><rect x="5.5" y="5.5" width="9" height="9" stroke="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 0H0V10H5V5H10V0Z" fill="black"/></svg> Difference, returns members of `a` but not members of `b`, i.e. subtracts `b` from `a`.
+<svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="0.5" y="0.5" width="9" height="9" stroke="white"/><rect x="5.5" y="5.5" width="9" height="9" stroke="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 0H0V10H5V5H10V0Z" fill="black"/></svg> Difference, returns members of `a` but not members of `b`, i.e. subtracts `b` from `a`.
 Example:
 
 ```js
@@ -225,7 +225,7 @@ Example:
 
 #### ö.exclude( a, b ) → Array
 
-<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 0H0V10H5V15H15V5H10V0ZM10 5H5V10H10V5Z" fill="black"/></svg> Symmetric difference, returns elements that are members of `a` or `b`, but not both.
+<svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 0H0V10H5V15H15V5H10V0ZM10 5H5V10H10V5Z" fill="black"/></svg> Symmetric difference, returns elements that are members of `a` or `b`, but not both.
 Example:
 
 ```js
@@ -234,7 +234,7 @@ Example:
 
 #### ö.union( a, b ) → Array
 
-<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="9" height="9" stroke="white"/><rect x="5.5" y="5.5" width="9" height="9" stroke="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 0H0V10H5V15H15V5H10V0Z" fill="black"/></svg> Returns (unique) members of both `a` and `b`.
+<svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="0.5" y="0.5" width="9" height="9" stroke="white"/><rect x="5.5" y="5.5" width="9" height="9" stroke="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 0H0V10H5V15H15V5H10V0Z" fill="black"/></svg> Returns (unique) members of both `a` and `b`.
 Example:
 
 ```js

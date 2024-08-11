@@ -265,7 +265,8 @@ export const mapToTree = (arr, idProp, parentProp) => {
         parents.set(
             parentKey,
             parents.has(parentKey) ?
-                [...parents.get(parentKey), { key, v }]
+                (parents.get(parentKey).push({ key, v }),
+                parents.get(parentKey)) // Using .push for performance reasons
             :   [{ key, v }],
         )
     }
@@ -394,10 +395,7 @@ export const findDeep = (arr, f, subArrayProp, prop) => {
  * @returns {Array}
  */
 
-export const intersect = (a, b) => {
-    let [A, B] = [new Set(a), new Set(b)]
-    return [...A].filter(v => B.has(v))
-}
+export const intersect = (a, b) => [...new Set(a).intersection(new Set(b))]
 
 /**
  * Subtract - Difference, returns members of `a` but not members of `b`, i.e. subtracts `b` from `a`.
@@ -406,10 +404,7 @@ export const intersect = (a, b) => {
  * @returns {Array}
  */
 
-export const subtract = (a, b) => {
-    let [A, B] = [new Set(a), new Set(b)]
-    return [...A].filter(v => !B.has(v))
-}
+export const subtract = (a, b) => [...new Set(a).difference(new Set(b))]
 
 /**
  * Exclude - Symmetric difference, returns elements that are members of `a` or `b`, but not both.
@@ -418,10 +413,7 @@ export const subtract = (a, b) => {
  * @returns {Array}
  */
 
-export const exclude = (a, b) => {
-    let [A, B] = [new Set(a), new Set(b)]
-    return [...[...A].filter(v => !B.has(v)), ...[...B].filter(v => !A.has(v))]
-}
+export const exclude = (a, b) => [...new Set(a).symmetricDifference(new Set(b))]
 
 /**
  * Union - Returns (unique) members of both `a` and `b`.
@@ -430,7 +422,7 @@ export const exclude = (a, b) => {
  * @returns {Array}
  */
 
-export const union = (a, b) => [...new Set([...a, ...b])]
+export const union = (a, b) => [...new Set(a).union(new Set(b))]
 
 /**
  * IsSubset - Returns `true` if `a` is a subset of `b`.
@@ -439,10 +431,7 @@ export const union = (a, b) => [...new Set([...a, ...b])]
  * @returns {boolean}
  */
 
-export const isSubset = (a, b) => {
-    let [A, B] = [new Set(a), new Set(b)]
-    return A.size <= B.size && [...A].every(v => B.has(v))
-}
+export const isSubset = (a, b) => new Set(a).isSubsetOf(new Set(b))
 
 /**
  * IsSuperset - Returns `true` if `a` is a superset of `b`.
@@ -451,10 +440,7 @@ export const isSubset = (a, b) => {
  * @returns {boolean}
  */
 
-export const isSuperset = (a, b) => {
-    let [A, B] = [new Set(a), new Set(b)]
-    return A.size >= B.size && [...B].every(v => A.has(v))
-}
+export const isSuperset = (a, b) => new Set(a).isSupersetOf(new Set(b))
 
 /**
  * IsDisjoint - Returns `true` if `a` and `b` share no members.
@@ -463,10 +449,7 @@ export const isSuperset = (a, b) => {
  * @returns {boolean}
  */
 
-export const isDisjoint = (a, b) => {
-    let [A, B] = [new Set(a), new Set(b)]
-    return [...A].every(v => !B.has(v))
-}
+export const isDisjoint = (a, b) => new Set(a).isDisjointFrom(new Set(b))
 
 /**
  * DOM methods
