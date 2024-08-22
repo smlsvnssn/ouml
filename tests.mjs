@@ -326,4 +326,6 @@ let testy = {
 ö.log(ö.wrapFirstWords('jag & 3: hjortron utan kärnor', 3))
 ö.log(ö.wrapFirstWords('jag älskar: hjortron utan kärnor', 3))
 
-ö.log(ö.geometricMean([1, 100, 100]))
+ö.log(ö.geometricMean([4, 1, .03125]))
+ö.log(ö.geometricMean([1.1, 0.88, 1.9, 0.7, 1.25]))
+

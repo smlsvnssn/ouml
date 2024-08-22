@@ -120,8 +120,8 @@ export const map = (iterable, f) => {
 
     if (isSet(iterable)) return new Set(getMap(iterable))
 
-    if ('map' in iterable && isFunc(iterable.map))
-        return iterable.map(getMapper(f))
+    // @ts-ignore
+    if (isFunc(iterable.map)) return iterable.map(getMapper(f))
 
     return getMap(iterable) // Base case: Just convert to array
 }
@@ -144,7 +144,7 @@ export const unique = arr => [...new Set(arr)]
 export const shuffle = iterable => {
     let a = Array.from(iterable)
 
-    // classic loop for performance reasons
+    // classic loop for perf
     for (let i = a.length - 1; i > 0; i--) {
         let j = random(i + 1)
         ;[a[i], a[j]] = [a[j], a[i]]
@@ -160,14 +160,12 @@ export const shuffle = iterable => {
  * @returns {(* | Array)}
  */
 
-// prettier-ignore
 export const sample = (iterable, samples = 1) => {
     let arr = Array.from(iterable)
 
-    // since shuffle is fast, shuffle whole array before sampling, ez!
-    return samples === 1 ?
-        arr[random(arr.length)]
-        : shuffle(arr).slice(0, samples)
+    return samples == 1 ?
+            arr[random(arr.length)]
+        :   shuffle(arr).slice(0, samples) // since shuffle is fast, shuffle whole array before sampling, ez!
 }
 
 /**
@@ -177,7 +175,7 @@ export const sample = (iterable, samples = 1) => {
  */
 
 export const sum = iterable =>
-    Array.from(iterable).reduce((a, v) => a + Number(v), 0) 
+    Array.from(iterable).reduce((a, v) => a + Number(v), 0)
 
 /**
  * Mean - Calculates mean value of `arr`, with `Number` coercion.
@@ -194,7 +192,7 @@ export const mean = iterable => sum(iterable) / Array.from(iterable).length
  */
 
 export const product = iterable =>
-    Array.from(iterable).reduce((a, v) => a * Number(v), 1) 
+    Array.from(iterable).reduce((a, v) => a * Number(v), 1)
 
 /**
  * Geometric mean - Calculates the geometric mean of `arr`, with `Number` coercion.
@@ -297,33 +295,25 @@ export const mapToTree = (arr, idProp, parentProp) => {
  * @param {reduceCB} f
  * @param {string} subArrayProp
  * @param {*} [initial]
- * @param {*} [flatten = false]
- * @param {boolean} [isFirstItem = true] Do not set, used by recursive calls
+ * @param {boolean} [flatten = false]
  * @returns {*}
  */
 
-export const reduceDeep = (
-    arr,
-    f,
-    subArrayProp,
-    initial,
-    flatten = false,
-    isFirstItem = true,
-) => {
-    const traverse = (subArr, initial) =>
-        reduceDeep(subArr, f, subArrayProp, initial, flatten, false)
+export const reduceDeep = (arr, f, subArrayProp, initial, flatten = false) => {
+    const traverse = (a, acc, firstRun = false) =>
+        a.reduce((acc, v, i) => {
+            acc = firstRun && isnt(acc) ? v : f(acc, v, i, a)
 
-    for (let [i, v] of arr.entries()) {
-        initial = isFirstItem && isnt(initial) ? v : f(initial, v, i, arr)
+            if (v[subArrayProp]) {
+                if (!flatten && isArr(acc) && isObj(acc[i]))
+                    acc[i][subArrayProp] = traverse(v[subArrayProp], [])
+                else acc = traverse(v[subArrayProp], acc)
+            }
 
-        if (v[subArrayProp]) {
-            if (!flatten && isArr(initial) && isObj(initial[i]))
-                initial[i][subArrayProp] = traverse(v[subArrayProp], [])
-            else initial = traverse(v[subArrayProp], initial)
-        }
-    }
+            return acc
+        }, acc)
 
-    return initial
+    return traverse(arr, initial, true)
 }
 
 /**
@@ -535,20 +525,22 @@ export const data = (anyVal, key, value) => {
  */
 
 export const deepest = (element, selector = '*') => {
-    let deepestEl = { depth: 0, deepestElement: element }
+    let depth = 0
+    let deepestElement = element
 
     for (let el of element.querySelectorAll(selector)) {
-        let depth = 0
+        let thisDepth = 0
 
         // @ts-ignore
-        for (let e = el; e !== element; depth++) e = e.parentNode // from bottom up
-        deepestEl =
-            depth > deepestEl.depth ?
-                { depth: depth, deepestElement: el }
-            :   deepestEl
+        for (let e = el; e !== element; thisDepth++) e = e.parentNode // from bottom up
+
+        if (thisDepth > depth) {
+            depth = thisDepth
+            deepestElement = el
+        }
     }
 
-    return deepestEl.deepestElement
+    return deepestElement
 }
 
 /**
@@ -721,17 +713,17 @@ export const memoize = memoise
  * CreateEnum - Creates and returns an enumerable.
  * @template T
  * @param {T} v This lies a bit. TODO: Find solution
+ * @param {Array<string>} rest
  * @returns {Readonly<T>}
  */
 
 export const createEnum = (v, ...rest) => {
     if (rest.length == 0 && isObj(v)) return Object.freeze(v)
 
-    let enu = {}
+    let enu = Object.create(null)
     for (let val of isArr(v) ? [...v, ...rest] : [v, ...rest])
         enu[val] = Symbol(String(val))
 
-    // @ts-ignore
     return Object.freeze(enu)
 }
 

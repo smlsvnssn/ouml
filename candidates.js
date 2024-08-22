@@ -26,7 +26,7 @@ const hash = (str, seed = 0) => {
             Math.imul(b ^ (b >>> 13), 3266489909)) >>>
         0
 
-    const format = (n) => n.toString(36).padStart(7, '0')
+    const format = n => n.toString(36).padStart(7, '0')
 
     let h1 = 0xdeadbeef ^ seed,
         h2 = 0x41c6ce57 ^ seed
@@ -43,7 +43,7 @@ const hash = (str, seed = 0) => {
     return format(h2) + format(h1)
 }
 
-const bubblePipe = (val) =>
+const bubblePipe = val =>
     function next(f) {
         if (f === undefined) return val
         val = typeof f === 'function' ? f(val) : val
@@ -74,7 +74,7 @@ let flat = [
     { id: '2.2', parent: '2' },
     { id: '2.2.1', parent: '2.2' },
 ]
-let tree = mapToTree(flat, (child) => [
+let tree = mapToTree(flat, child => [
     child.id,
     child.id.split('.').slice(0, -1).join('.') || null,
 ])
@@ -84,17 +84,16 @@ let tree = mapToTree(flat, (child) => [
 let sameTree = mapToTree(flat, 'id', 'parent')
 
 ö.log('same:', sameTree)
-ö.log(JSON.stringify(tree, null, 2))
+//ö.log(JSON.stringify(tree, null, 2))
 ö.log(ö.equals(tree, sameTree))
 
 console.log(
     flat.map((v, _, a) =>
-        a.findIndex((vv) => vv.id === v.id.split('.').slice(0, -1).join('.')),
+        a.findIndex(vv => vv.id === v.id.split('.').slice(0, -1).join('.')),
     ),
 )
 
-
-const loop = (f, until, i = 0, increment = (i) => i + 1) =>
+const loop = (f, until, i = 0, increment = i => i + 1) =>
     !until(i) ? null : (f(i), loop(f, until, increment(i)))
 
 let t = new Map([
@@ -112,8 +111,8 @@ const map3 = (a, f, acc = [], i = 0) =>
 const map2 = (a, f, acc = [], i = 0) =>
     i >= a.length ? acc : map2(a, f, (acc.push(f(a[i], i, a)), acc), ++i)
 
-ö.time(() => map3(ö.times(3000), (v) => v * 2), 1)
-ö.time(() => map2(ö.times(3000), (v) => v * 2), 2)
+ö.time(() => map3(ö.times(3000), v => v * 2), 1)
+ö.time(() => map2(ö.times(3000), v => v * 2), 2)
 // 1: 47.631ms
 // 2: 0.864ms
 
@@ -135,16 +134,16 @@ let a = [
     },
 ]
 
-//ö.log(reduceDeep(a, (acc, v, i) => acc + v.a, 'b', 0))
+ö.log(ö.reduceDeep(a, (acc, v, i) => acc + v.a, 'b', 0))
 
-// ö.log(
-//     JSON.stringify(
-//         ö.reduceDeep(a, (acc, v, i) => (acc.push(1), acc), 'b', [], true),
-//         null,
-//         2,
-//     ),
-// )
-/* ö.log(
+ö.log(
+    JSON.stringify(
+        ö.reduceDeep(a, (acc, v, i) => (acc.push(1), acc), 'b', [], false),
+        null,
+        2,
+    ),
+)
+ö.log(
     JSON.stringify(
         ö.mapDeep(
             a,
@@ -152,20 +151,19 @@ let a = [
                 b: 1,
             }),
             'b',
-            true,
         ),
         null,
         2,
     ),
-) */
-// ö.log(
-//     JSON.stringify(
-//         ö.filterDeep(a, (v) => v.a === 2, 'b'),
-//         null,
-//         2,
-//     ),
-// )
-/* ö.log(ö.reduceDeep([{ k: 'kuk', kuk: ['u'] }], (acc, v) => acc + v, 'kuk'))
+)
+ö.log(
+    JSON.stringify(
+        ö.filterDeep(a, v => v.a === 2, 'b'),
+        null,
+        2,
+    ),
+)
+ö.log(ö.reduceDeep([{ kk: 'kk', k: ['u'] }], (acc, v) => acc + v, 'k'))
 
 ö.log(ö.isPlainObj(a[0]), ö.isPlainObj(new Date()))
 
@@ -180,16 +178,15 @@ let arr = [
     },
 ]
 ö.log(ö.reduceDeep(arr, (acc, v) => acc + v.value, 'children', 0))
- */
 
 ö.time(() => ö.times(1000000))
 
-const times2 = (times, f = (i) => i, ...rest) =>
+const times2 = (times, f = i => i, ...rest) =>
     Array.from({ length: Math.abs(times) }, (v, i) => f(i, ...rest))
 
 ö.time(() => times2(1000000))
 
-const times3 = (times, f = (i) => i, ...rest) =>
+const times3 = (times, f = i => i, ...rest) =>
     Array(Math.abs(times))
         .fill()
         .map((v, i) => f(i, ...rest))
