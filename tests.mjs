@@ -96,20 +96,20 @@ import { toPiped } from 'ouml'
         .toUpperCase()
         .testFail()
         .split('')
-        .map((v) => `### ${v} ###`)
+        .map(v => `### ${v} ###`)
         //.shuffle()
         .peek()
         .join('')
         //.peek()
-        .f((v) => v.split('').reverse())
+        .f(v => v.split('').reverse())
         .join('').value,
 )
 
 ö.log(
     'Output:',
     chain(11)
-        .f((v) => [...Array(v).keys()])
-        .map((v) => v ** v)
+        .f(v => [...Array(v).keys()])
+        .map(v => v ** v)
         .peek()
         .sum()
         .toString()
@@ -318,11 +318,12 @@ const curried = ö.curry(test)
 
 let x = ö.createEnum({ a: 1, b: 2, c: 3 })
 
-
 let testy = {
-  REJECTED: 1,
-  ACCEPTED: 2
+    REJECTED: 1,
+    ACCEPTED: 2,
 }
 
 ö.log(ö.wrapFirstWords('jag & 3: hjortron utan kärnor', 3))
 ö.log(ö.wrapFirstWords('jag älskar: hjortron utan kärnor', 3))
+
+ö.log(ö.geometricMean([1, 100, 100]))

@@ -63,7 +63,7 @@ const bubblePipe = (val) =>
     })
 }) */
 
-/* let flat = [
+let flat = [
     { id: '1' },
     { id: '1.1', parent: '1' },
     { id: '1.1.1', parent: '1.1' },
@@ -92,7 +92,8 @@ console.log(
         a.findIndex((vv) => vv.id === v.id.split('.').slice(0, -1).join('.')),
     ),
 )
- */
+
+
 const loop = (f, until, i = 0, increment = (i) => i + 1) =>
     !until(i) ? null : (f(i), loop(f, until, increment(i)))
 
@@ -111,8 +112,8 @@ const map3 = (a, f, acc = [], i = 0) =>
 const map2 = (a, f, acc = [], i = 0) =>
     i >= a.length ? acc : map2(a, f, (acc.push(f(a[i], i, a)), acc), ++i)
 
-ö.time(() => map3(ö.times(4000), (v) => v * 2), 1)
-ö.time(() => map2(ö.times(4000), (v) => v * 2), 2)
+ö.time(() => map3(ö.times(3000), (v) => v * 2), 1)
+ö.time(() => map2(ö.times(3000), (v) => v * 2), 2)
 // 1: 47.631ms
 // 2: 0.864ms
 

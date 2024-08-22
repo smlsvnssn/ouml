@@ -176,16 +176,8 @@ export const sample = (iterable, samples = 1) => {
  * @returns {number}
  */
 
-//sum = arr => arr.reduce( (a, v) => a + Number(v) , 0); < 10xslower
-
-export const sum = iterable => {
-    let arr = Array.from(iterable)
-    let a = 0
-
-    for (let i = 0; i < arr.length; i++) a += Number(arr[i])
-
-    return a
-}
+export const sum = iterable =>
+    Array.from(iterable).reduce((a, v) => a + Number(v), 0) 
 
 /**
  * Mean - Calculates mean value of `arr`, with `Number` coercion.
@@ -194,6 +186,24 @@ export const sum = iterable => {
  */
 
 export const mean = iterable => sum(iterable) / Array.from(iterable).length
+
+/**
+ * Product - Returns product of `arr`, with `Number` coercion.
+ * @param {Iterable<number>} iterable
+ * @returns {number}
+ */
+
+export const product = iterable =>
+    Array.from(iterable).reduce((a, v) => a * Number(v), 1) 
+
+/**
+ * Geometric mean - Calculates the geometric mean of `arr`, with `Number` coercion.
+ * @param {Iterable<number>} iterable
+ * @returns {number}
+ */
+
+export const geometricMean = iterable =>
+    nthRoot(product(iterable), Array.from(iterable).length)
 
 /**
  * Median - Calculates median value of `arr`, with `Number` coercion.
@@ -262,13 +272,9 @@ export const mapToTree = (arr, idProp, parentProp) => {
                 idProp(v, i, arr) // Should return [ownKey, parentKey]
             :   [v[idProp], v?.[parentProp ?? ''] ?? rootKey]
 
-        parents.set(
-            parentKey,
-            parents.has(parentKey) ?
-                (parents.get(parentKey).push({ key, v }),
-                parents.get(parentKey)) // Using .push for performance reasons
-            :   [{ key, v }],
-        )
+        if (parents.has(parentKey))
+            parents.get(parentKey).push({ key, v }) // Using .push for performance reasons
+        else parents.set(parentKey, [{ key, v }])
     }
 
     const traverse = (parentKey = rootKey) =>
