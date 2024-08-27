@@ -21,17 +21,17 @@
     },
     "scripts": {
         "dev": "vite",
-        "test": "vitest",
+        "test": "vitest --disable-console-intercept",
         "coverage": "vitest run --coverage"
     },
     "devDependencies": {
-        "@types/node": "^16.18.98",
-        "@vitest/coverage-c8": "^0.25.8",
+        "@types/node": "^16.18.106",
+        "@vitest/coverage-c8": "latest",
         "jsdom": "^20.0.3",
         "prettier": "latest",
-        "typescript": "^5.4.5",
+        "typescript": "^5.5.4",
         "vite": "^3.2.10",
-        "vitest": "^1.6.0"
+        "vitest": "latest"
     },
     "repository": {
         "type": "git",
@@ -45,5 +45,8 @@
     "bugs": {
         "url": "https://github.com/smlsvnssn/ouml/issues"
     },
-    "homepage": "https://github.com/smlsvnssn/ouml#readme"
+    "homepage": "https://github.com/smlsvnssn/ouml#readme",
+    "dependencies": {
+        "@vitest/coverage-v8": "^2.0.5"
+    }
 }

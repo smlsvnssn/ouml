@@ -147,7 +147,7 @@ export const shuffle = iterable => {
     // classic loop for perf
     for (let i = a.length - 1; i > 0; i--) {
         let j = random(i + 1)
-        ;[a[i], a[j]] = [a[j], a[i]]
+        ;[a[j], a[i]] = [a[i], a[j]]
     }
 
     return a
@@ -209,16 +209,16 @@ export const geometricMean = iterable =>
  * @returns {number}
  */
 
-// prettier-ignore
 export const median = (arr) => {
     let a = Array.from(arr).sort(
         (a, b) => Number(a) - Number(b)
     )
     let m = Math.floor(a.length / 2)
     
-    return m % 2 ? 
-    (Number(a[m - 1]) + Number(a[m])) / 2
-    :   Number(a[m])
+    return m % 2 ?
+        Number(a[m])
+    :   (Number(a[m - 1]) + Number(a[m])) / 2
+    
 }
 
 /**
@@ -739,7 +739,7 @@ export const createEnum = (v, ...rest) => {
  * @returns {number}
  */
 
-export const random = (min = 0, max = 2, float = false) => {
+export const random = (min, max, float = false) => {
     // max can be omitted
     float = isBool(max) ? max : float
     ;[min, max] =
@@ -1412,7 +1412,7 @@ export const error = (e, ...r) => {
         if (isThrowing) throw new Error(e)
         console.error(message(e), ...r)
     }
-    return r ? [e, ...r] : e
+    return r.length ? [e, ...r] : e
 }
 
 /**
@@ -1424,7 +1424,7 @@ export const error = (e, ...r) => {
 
 export const warn = (msg, ...r) => {
     if (isVerbose) console.warn(message(msg), ...r)
-    return r ? [msg, ...r] : msg
+    return r.length ? [msg, ...r] : msg
 }
 
 /**

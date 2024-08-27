@@ -108,11 +108,11 @@ Calculates mean value of `arr`, with `Number` coercion.
 
 #### ö.product( arr ) → Number
 
-Returns product of `arr`, with `Number` coercion.
+Returns product of `arr`, with `Number` coercion. Reaches `Number.MAX_VALUE` rather quickly for large arrays, so use with some caution. 
 
 #### ö.geometricMean( arr ) → Number
 
-Calculates the geometric mean of `arr`, with `Number` coercion.
+Calculates the geometric mean of `arr`, with `Number` coercion. May return `Infinity` for large arrays or large numbers, since it uses `ö.product`.
 
 #### ö.median( arr ) → Number
 

@@ -134,36 +134,44 @@ let a = [
     },
 ]
 
-ö.log(ö.reduceDeep(a, (acc, v, i) => acc + v.a, 'b', 0))
+// ö.log(ö.reduceDeep(a, (acc, v, i) => acc + v.a, 'b', 0))
+
+// ö.log(
+//     JSON.stringify(
+//         ö.reduceDeep(a, (acc, v, i) => (acc.push(1), acc), 'b', [], false),
+//         null,
+//         2,
+//     ),
+// )
+// ö.log(
+//     JSON.stringify(
+//         ö.mapDeep(
+//             a,
+//             () => ({
+//                 b: 1,
+//             }),
+//             'b',
+//         ),
+//         null,
+//         2,
+//     ),
+// )
+// ö.log(
+//     JSON.stringify(
+//         ö.filterDeep(a, v => v.a === 2, 'b'),
+//         null,
+//         2,
+//     ),
+// )
 
 ö.log(
-    JSON.stringify(
-        ö.reduceDeep(a, (acc, v, i) => (acc.push(1), acc), 'b', [], false),
-        null,
-        2,
+    ö.reduceDeep(
+        [{ kk: 'kk', k: ['u'] }],
+        (acc, v) => (acc.push(v), acc),
+        'k',
+        [],
     ),
 )
-ö.log(
-    JSON.stringify(
-        ö.mapDeep(
-            a,
-            () => ({
-                b: 1,
-            }),
-            'b',
-        ),
-        null,
-        2,
-    ),
-)
-ö.log(
-    JSON.stringify(
-        ö.filterDeep(a, v => v.a === 2, 'b'),
-        null,
-        2,
-    ),
-)
-ö.log(ö.reduceDeep([{ kk: 'kk', k: ['u'] }], (acc, v) => acc + v, 'k'))
 
 ö.log(ö.isPlainObj(a[0]), ö.isPlainObj(new Date()))
 
