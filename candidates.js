@@ -63,35 +63,6 @@ const bubblePipe = val =>
     })
 }) */
 
-let flat = [
-    { id: '1' },
-    { id: '1.1', parent: '1' },
-    { id: '1.1.1', parent: '1.1' },
-    { id: '1.2', parent: '1' },
-    { id: '1.2.1', parent: '1.2' },
-    { id: '1.3', parent: '1' },
-    { id: '2' },
-    { id: '2.2', parent: '2' },
-    { id: '2.2.1', parent: '2.2' },
-]
-let tree = mapToTree(flat, child => [
-    child.id,
-    child.id.split('.').slice(0, -1).join('.') || null,
-])
-
-ö.log('tree:', tree)
-// or
-let sameTree = mapToTree(flat, 'id', 'parent')
-
-ö.log('same:', sameTree)
-//ö.log(JSON.stringify(tree, null, 2))
-ö.log(ö.equals(tree, sameTree))
-
-console.log(
-    flat.map((v, _, a) =>
-        a.findIndex(vv => vv.id === v.id.split('.').slice(0, -1).join('.')),
-    ),
-)
 
 const loop = (f, until, i = 0, increment = i => i + 1) =>
     !until(i) ? null : (f(i), loop(f, until, increment(i)))
@@ -123,69 +94,8 @@ const map2 = (a, f, acc = [], i = 0) =>
 //     (i) => ++i,
 // )
 
-let a = [
-    {
-        a: 1,
-        b: [{ a: 1 }, { a: 2 }],
-    },
-    {
-        a: 1,
-        b: [{ a: 1 }, { a: 1, b: [{ a: 1 }, { a: 2 }] }],
-    },
-]
-
-// ö.log(ö.reduceDeep(a, (acc, v, i) => acc + v.a, 'b', 0))
-
-// ö.log(
-//     JSON.stringify(
-//         ö.reduceDeep(a, (acc, v, i) => (acc.push(1), acc), 'b', [], false),
-//         null,
-//         2,
-//     ),
-// )
-// ö.log(
-//     JSON.stringify(
-//         ö.mapDeep(
-//             a,
-//             () => ({
-//                 b: 1,
-//             }),
-//             'b',
-//         ),
-//         null,
-//         2,
-//     ),
-// )
-// ö.log(
-//     JSON.stringify(
-//         ö.filterDeep(a, v => v.a === 2, 'b'),
-//         null,
-//         2,
-//     ),
-// )
-
-ö.log(
-    ö.reduceDeep(
-        [{ kk: 'kk', k: ['u'] }],
-        (acc, v) => (acc.push(v), acc),
-        'k',
-        [],
-    ),
-)
 
 ö.log(ö.isPlainObj(a[0]), ö.isPlainObj(new Date()))
-
-let arr = [
-    {
-        value: 1,
-        children: [
-            { value: 1 },
-            { value: 1 },
-            { value: 1, children: [{ value: -4 }] },
-        ],
-    },
-]
-ö.log(ö.reduceDeep(arr, (acc, v) => acc + v.value, 'children', 0))
 
 ö.time(() => ö.times(1000000))
 

@@ -106,7 +106,7 @@ describe('ö.map', () => {
         expect(result).toMatchObject(['s', 's', 's'])
     })
 
-    it('should return prop values from a map of objects given a symbol arg', () => {
+    it('should return prop values from a map of objects given a string arg', () => {
         let result = ö.map(
             new Map([
                 [1, { a: 0 }],
@@ -123,10 +123,11 @@ describe('ö.map', () => {
         )
     })
 
-    it('should error if not given an iterable', () => {
-        let result = ö.map(false)
-        ö.log(result)
-        expect(result).toEqual('Argument "iterable" must be an iterable.')
+    it('should return undefined if not given an iterable or an object', () => {
+        expect(ö.map(null)).toBe(undefined)
+        expect(ö.map(/0/)).toBe(undefined)
+        expect(ö.map(1)).toBe(undefined)
+        expect(ö.map(v=>v)).toBe(undefined)
     })
 
     it('should map over Map', () => {
@@ -156,6 +157,18 @@ describe('ö.map', () => {
         let result = ö.map(new Set([1, 2, 3]), v => v + 1)
 
         expect(result).toMatchObject(new Set([2, 3, 4]))
+    })
+
+    it('should map over any object', () => {
+        let result = ö.map({ a: 1, b: 2 }, ([key, v]) => [key, v + 1])
+
+        expect(result).toStrictEqual({ a: 2, b: 3 })
+    })
+
+    it('should get a property from an object', () => {
+        let result = ö.map({ a: 1, b: 2 }, 'a')
+
+        expect(result).toStrictEqual(1)
     })
 })
 
@@ -309,5 +322,126 @@ describe('ö.mapToTree', () => {
         let result = ö.mapToTree(flat, 'id', 'parent')
 
         expect(result).toMatchObject(expected)
+    })
+})
+
+let deepArr = [
+    {
+        a: 1,
+        b: [{ a: 1 }, { a: 2 }],
+    },
+    {
+        a: 1,
+        b: [{ a: 1 }, { a: 1, b: [{ a: 1 }, { a: 2 }] }],
+    },
+]
+
+describe('ö.reduceDeep', () => {
+    it('should return a result from nested props given a reducer', () => {
+        const reducer = (acc, v, i) => acc + v.a
+
+        expect(ö.reduceDeep(deepArr, reducer, 'b', 0)).toBe(10)
+    })
+})
+
+describe('ö.mapDeep', () => {
+    it('should map over nested members given a mapping function', () => {
+        const mapper = v => v.a
+
+        expect(ö.mapDeep(deepArr, mapper, 'b')).toHaveLength(8)
+        expect(ö.sum(ö.mapDeep(deepArr, mapper, 'b'))).toBe(10)
+    })
+
+    it('should preserve structure of tree if given an arr of objects with flatten == true (identity)', () => {
+        const mapper = v => v
+
+        expect(ö.mapDeep(deepArr, mapper, 'b')).toMatchObject(deepArr)
+    })
+
+    it('should return prop values given a string', () => {
+        expect(ö.mapDeep(deepArr, 'a', 'b')).toHaveLength(8)
+        expect(ö.sum(ö.mapDeep(deepArr, 'a', 'b'))).toBe(10)
+    })
+})
+
+describe('ö.filterDeep', () => {
+    it('should find nested members given a filter function', () => {
+        const filter = v => v.a == 2
+
+        let result = ö.filterDeep(deepArr, filter, 'b')
+
+        expect(result).toHaveLength(2)
+        expect(ö.sum(result.map(v => v.a))).toBe(4)
+    })
+
+    it('should find nested members given a value and a prop', () => {
+        let result = ö.filterDeep(deepArr, 2, 'b', 'a')
+
+        expect(result).toHaveLength(2)
+        expect(ö.sum(result.map(v => v.a))).toBe(4)
+    })
+
+    it('should return an empty array with no match', () => {
+        let result = ö.filterDeep(deepArr, 3, 'b', 'a')
+
+        expect(result).toHaveLength(0)
+    })
+})
+
+describe('ö.findDeep', () => {
+    it('should find first match given a filter function', () => {
+        const filter = v => v.a == 2
+
+        let result = ö.findDeep(deepArr, filter, 'b')
+
+        expect(result).toBe(deepArr[0].b[1])
+    })
+
+    it('should find first match given a value and a prop', () => {
+        let result = ö.findDeep(deepArr, 2, 'b', 'a')
+
+        expect(result).toBe(deepArr[0].b[1])
+    })
+
+    it('should return undefined with no match', () => {
+        let result = ö.findDeep(deepArr, 3, 'b', 'a')
+
+        expect(result).toBe(undefined)
+    })
+})
+
+describe('Set ops', () => {
+    let setA = 'ABCD',
+        setB = 'CDEF'
+
+    it('should return the intersection of a & b', () =>
+        expect(ö.intersect(setA, setB)).toStrictEqual(['C', 'D']))
+
+    it('should return the difference of a & b', () =>
+        expect(ö.subtract(setA, setB)).toStrictEqual(['A', 'B']))
+
+    it('should return the symmetric difference of a & b', () =>
+        expect(ö.exclude(setA, setB)).toStrictEqual(['A', 'B', 'E', 'F']))
+
+    it('should return the union of a & b', () =>
+        expect(ö.union(setA, setB)).toStrictEqual([
+            'A',
+            'B',
+            'C',
+            'D',
+            'E',
+            'F',
+        ]))
+
+    it('should return false for set checks', () => {
+        expect(ö.isSubset(setA, setB)).toBe(false)
+        expect(ö.isSuperset(setA, setB)).toBe(false)
+        expect(ö.isDisjoint(setA, setB)).toBe(false)
+    })
+
+    it('should return true for set checks', () => {
+        expect(ö.isSubset('AB', 'ABC')).toBe(true)
+        expect(ö.isSuperset('ABC', 'AB')).toBe(true)
+        expect(ö.isDisjoint('AB', 'CD')).toBe(true)
     })
 })

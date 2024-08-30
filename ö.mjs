@@ -1,5 +1,7 @@
 // @ts-check
 
+import { it } from 'node:test'
+
 /**
  * Generators
  */
@@ -97,22 +99,22 @@ export const rangeArray = (start, end, step) => [...range(start, end, step)]
  */
 
 /**
- * Map - Same as a normal map, except it accepts a `string` as a shorthand for retrieving values from an object property, if the iterable contains objects.
- * @param {Iterable} iterable
+ * Map - Same as a normal map, except it accepts a `string` as a shorthand for retrieving values from an object property, if given an iterable that contains objects.
+ * @param {Iterable | Object} iterable
  * @param {(string | mapCB)} f
- * @returns {Iterable}
+ * @returns {Iterable | Object}
  */
 
 export const map = (iterable, f) => {
     const getMapper = f =>
         isFunc(f) ? f
-        : isMap(iterable) ? v => [v[0], v[1]?.[f]]
+        : isMap(iterable) ? ([key, val]) => [key, val?.[f]]
         : v => v[f]
 
     const getMap = iterable => Array.from(iterable).map(getMapper(f))
 
-    if (!isIterable(iterable))
-        return error('Argument "iterable" must be an iterable.')
+    if (!isIterable(iterable) && !isObj(iterable))
+        error('Argument "iterable" must be an iterable or an object.')
 
     if (isStr(iterable)) return getMap(iterable).join('')
 
@@ -121,9 +123,14 @@ export const map = (iterable, f) => {
     if (isSet(iterable)) return new Set(getMap(iterable))
 
     // @ts-ignore
-    if (isFunc(iterable.map)) return iterable.map(getMapper(f))
+    if (isFunc(iterable?.map)) return iterable.map(getMapper(f))
 
-    return getMap(iterable) // Base case: Just convert to array
+    if (isIterable(iterable)) return getMap(iterable) // Other iterables: Just convert to array
+
+    return isFunc(f) ? Object.assign(
+        Object.create(Reflect.getPrototypeOf(iterable)),
+        Object.fromEntries(Object.entries(iterable).map(getMapper(f))),
+    ) : iterable?.[f]
 }
 
 /**
@@ -209,16 +216,11 @@ export const geometricMean = iterable =>
  * @returns {number}
  */
 
-export const median = (arr) => {
-    let a = Array.from(arr).sort(
-        (a, b) => Number(a) - Number(b)
-    )
+export const median = arr => {
+    let a = Array.from(arr).sort((a, b) => Number(a) - Number(b))
     let m = Math.floor(a.length / 2)
-    
-    return m % 2 ?
-        Number(a[m])
-    :   (Number(a[m - 1]) + Number(a[m])) / 2
-    
+
+    return m % 2 ? Number(a[m]) : (Number(a[m - 1]) + Number(a[m])) / 2
 }
 
 /**
@@ -497,21 +499,17 @@ const d = new WeakMap()
 
 /**
  * Data - Associates `anyVal` with data via a `WeakMap`.
- * @param {*} anyVal
+ * @param {Object | Symbol} obj
  * @param {(string | Object)} key
  * @param {*} value
  * @returns {Object.<string, *> | *}
  */
 
-export const data = (anyVal, key, value) => {
-    let thisData =
-        d.has(anyVal) ? d.get(anyVal) : parseDOMStringMap(anyVal?.dataset)
+export const data = (obj, key, value) => {
+    let thisData = d.has(obj) ? d.get(obj) : parseDOMStringMap(obj?.dataset)
 
     if (is(value) || isObj(key))
-        d.set(
-            anyVal,
-            Object.assign(thisData, isObj(key) ? key : { [key]: value }),
-        )
+        d.set(obj, Object.assign(thisData, isObj(key) ? key : { [key]: value }))
 
     return isStr(key) ? thisData[key] : thisData
 }
@@ -591,8 +589,7 @@ export const clone = (
     immutable = false,
     preservePrototype = true,
 ) => {
-    const doClone = v =>
-        deep ? clone(v, deep, immutable, preservePrototype) : v
+    const doClone = v => (deep ? clone(v, deep, immutable) : v)
     const doFreeze = v => (immutable ? Object.freeze(v) : v)
 
     // Return primitives and functions as is.
@@ -611,11 +608,7 @@ export const clone = (
     let o = {}
     for (let key of Reflect.ownKeys(v)) o[key] = doClone(v[key])
 
-    return doFreeze(
-        preservePrototype ?
-            Object.assign(Object.create(Reflect.getPrototypeOf(v) ?? {}), o)
-        :   o,
-    )
+    return doFreeze(Object.assign(Object.create(Reflect.getPrototypeOf(v)), o))
 }
 
 /**

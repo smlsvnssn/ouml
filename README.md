@@ -82,9 +82,23 @@ Methods for manipulating arrays or array-like objects. Inputs are coerced to `Ar
 
 Returns an `Array` populated with given range.
 
-#### ö.map( iterable, f | str ) → Iterable
+#### ö.map( iterable | obj, f | str ) → Iterable | obj.key
 
-Same as a normal map, except it accepts a `string` as a shorthand for retrieving values from an object property, if the iterable contains objects. Oh, and it accepts all iterables, and returns `String`, `Map`, `Set` and `TypedArray` as appropriate. It's a `map` for `Map`! Edge cases such as `NodeList` get converted to an array.
+Same as a normal map, except it accepts a `string` as a shorthand for retrieving values from an object property, if given an iterable that contains objects. Oh, and it accepts all iterables, and returns `String`, `Map`, `Set` and `TypedArray` as appropriate. It's a `map` for `Map`! Edge case iterables such as `NodeList` get converted to an array.
+
+Oh, and it's a `map` for `Object`s! In the rare case that you would mant to map over the own properties of an object, that also works.
+
+```js
+ö.map({ a: 1, b: 2 }, ([k, v]) => [k, v + 1]) // returns { a: 2, b: 3 }
+```
+
+And in the even rarer case that you would want to use this method as a contrived getter for a single property on an object, that also works:
+
+```js
+ö.map({ a: 1, b: 2 }, 'a') // returns 1
+```
+
+Mapping functions for `Map`s and `Object`s receive an array in the form of `[key, val]` as a value argument, and must return an array in the same format.
 
 #### ö.unique( arr ) → Array
 
@@ -108,7 +122,7 @@ Calculates mean value of `arr`, with `Number` coercion.
 
 #### ö.product( arr ) → Number
 
-Returns product of `arr`, with `Number` coercion. Reaches `Number.MAX_VALUE` rather quickly for large arrays, so use with some caution. 
+Returns product of `arr`, with `Number` coercion. Reaches `Number.MAX_VALUE` rather quickly for large arrays, so use with some caution.
 
 #### ö.geometricMean( arr ) → Number
 
@@ -157,7 +171,7 @@ let flat = [
 
 let tree = mapToTree(flat, 'id', 'parent')
 // or
-let sameTree = mapToTree(flat, (item) => [
+let sameTree = mapToTree(flat, item => [
     item.id,
     item.id.split('.').slice(0, -1).join('.'),
 ])
@@ -284,9 +298,9 @@ Pipes function calls for a value. For multiple arguments, use closures. Usage:
 ```js
 ö.pipe(
     1,
-    (x) => x * 6,
-    (x) => x ** 2,
-    (x) => x + 6,
+    x => x * 6,
+    x => x ** 2,
+    x => x + 6,
     ö.log,
 ) // logs 42
 ```
@@ -298,9 +312,9 @@ Usage:
 
 ```js
 const myPipe = ö.toPiped(
-    (x) => x * 6,
-    (x) => x ** 2,
-    (x) => x + 6,
+    x => x * 6,
+    x => x ** 2,
+    x => x + 6,
     ö.log,
 )
 myPipe(1) // logs 42
@@ -350,9 +364,9 @@ const SIZES = ö.createEnum({
 giveMeIcecream(SIZES.large)
 ```
 
-#### ö.data( anyVal, key?, value? ) → data | data.key
+#### ö.data( obj, key?, value? ) → data | data.key
 
-Associates `anyVal` with data via a `WeakMap`. With only `key` set, acts as a getter for `key`. With `key` and `value` set, acts as a setter. Useful for associating data with DOM elements. If given an `Element`, it parses the `dataset` property and adds its properties to `data`.
+Associates `obj` (Can be an `Object` or a `Symbol`) with data via a `WeakMap`. With only `key` set, acts as a getter for `key`. With `key` and `value` set, acts as a setter. Useful for associating data with DOM elements. If given an `Element`, it parses the `dataset` property and adds its properties to `data`.
 
 If no `key`, returns `data` object.
 
@@ -603,6 +617,8 @@ Checks for `[Symbol.iterator]` in `v`.
 
 #### ö.mapToObj( map ) → Object
 
+Any iterable except strings work, but produce arraylike objects without a `length`.
+
 #### ö.objToMap( obj ) → Map
 
 ### DOM and browser
@@ -651,8 +667,8 @@ Here's an example:
 import { chain } from 'ouml/chain'
 
 let guessWhat = chain(11)
-    .f((v) => [...Array(v).keys()])
-    .map((v) => v ** v)
+    .f(v => [...Array(v).keys()])
+    .map(v => v ** v)
     .sum()
     .toString()
     .length()
@@ -670,7 +686,7 @@ let errorMessage = 'error'
 
 let nameOfPriciestProduct = await chainAsync('https://dummyjson.com/products')
     .load(true, errorMessage)
-    .returnIf((v) => v === errorMessage)
+    .returnIf(v => v === errorMessage)
     .products()
     .sort((a, b) => a.price > b.price)
     .at(0)
@@ -789,11 +805,11 @@ import { observable, isObservable, observe } from 'ouml/öbservable'
 let obs = observable(['a', 'b', 'c'])
 let lengthObserver = observe(
     () => obs.length,
-    (v) => ö.log(`The length is ${v}`),
+    v => ö.log(`The length is ${v}`),
 )
 let firstItemObserver = observe(
     () => obs[0],
-    (v) => ö.log(`The first item is ${v}`),
+    v => ö.log(`The first item is ${v}`),
 )
 // Logs The length is 3, The first item is a
 
@@ -811,7 +827,7 @@ observe(thisGuy, (val, oldVal, changedProp) =>
     ö.log(`${changedProp} has changed`),
 )
 
-thisGuy.observe((v) => ö.log(`Name: ${v.name}  Surname: ${v.surname}`))
+thisGuy.observe(v => ö.log(`Name: ${v.name}  Surname: ${v.surname}`))
 
 thisGuy.surname = 'Fawkes'
 ```
@@ -851,7 +867,7 @@ If the getter is a raw primitive observable, the value is unwrapped before the c
 
 ```js
 let o = observable(0)
-observe(o, (v) => ö.log(`The value is ${v}`))
+observe(o, v => ö.log(`The value is ${v}`))
 // logs 'The value is 0'
 ```
 

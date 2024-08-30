@@ -2,7 +2,7 @@ import * as ö from './ö.mjs'
 import * as öbservable from './öbservable/index.mjs'
 import * as övents from './övents/index.mjs'
 
-import testData from './testdata.js'
+import testData from './tests/testdata.js'
 
 /* ö.log(`
 ---
@@ -328,4 +328,6 @@ let testy = {
 
 ö.log(ö.geometricMean([4, 1, .03125]))
 ö.log(ö.geometricMean([1.1, 0.88, 1.9, 0.7, 1.25]))
+
+ö.log(ö.mapToObj([1,2,3]))
 
