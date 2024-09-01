@@ -7,3 +7,4 @@ import './tests/string.js'
 import './tests/async&throttle.js'
 import './tests/errors&types.js'
 import './tests/dom.js'
+

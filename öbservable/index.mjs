@@ -126,7 +126,6 @@ export const observe = (getter, callback, deep = false) => {
 
     // observer with update method (called by proxy setter)
     let o = {
-        paused,
         update(key) {
             ;[o.value, o.prevValue] = [getValue(), o.value]
             if (!isEqual(o.value, o.prevValue))
