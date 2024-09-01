@@ -390,7 +390,7 @@ Clamps `n` between `min` and `max`.
 
 #### ö.between( n, min, max ) → Boolean
 
-Checks if `n` is between `min` and `max`.
+Checks if `n` is between `min` and up to, but not including, `max`.
 
 #### ö.normalise/ö.normalize( n, min, max, clamp? = true ) → Number
 
@@ -509,7 +509,7 @@ Waits `t` milliseconds. If `resetPrevCall == true`, previous pending call is rej
 
 #### ö.load( url, isJSON? = true, errorMessage? = null, settings? = {} ) → Promise
 
-[browser (Alternatively: Use node-fetch)] Loads (and parses) JSON. Optionally loads HTML. Super simple fetch wrapper. On error, simply returns the error message, or optionally returns your custom error message. If you need to pass headers or other settings to the fetch call, use the `settings` object.
+[browser (Alternatively: Use node 18+)] Loads (and parses) JSON. Optionally loads HTML. Super simple fetch wrapper. On error, simply returns the error message, or optionally returns your custom error message. If you need to pass headers or other settings to the fetch call, use the `settings` object.
 
 #### ö.pipeAsync( v, ...funcs ) → Promise
 
@@ -533,9 +533,11 @@ Debounces execution of `f` until no calls are made within `t` milliseconds. If c
 
 All logging methods can be silenced globally by calling `ö.verbose(false)`.
 
-#### ö.verbose( isVerbose, isThrowing? = false ) → Boolean
+#### ö.verbose( isVerbose?, isThrowing? ) → { isVerbose, isThrowing }
 
-Get/set `isVerbose`, turns off error/message logging when set to `false`. Defaults to `true`. Optionally set `isThrowing` to `true`, in order to throw errors instead.
+Set `isVerbose`, turns off error/message logging when set to `false`. Defaults to `true`. Optionally set `isThrowing` to `true`, in order to throw errors instead of logging them.
+
+Returns an object containing the current state of `{ isThrowing, isVerbose }`.
 
 #### ö.error( error, ...rest ) → console.error or thrown Error, arguments
 
@@ -559,7 +561,7 @@ Optionally, it accepts a function with no arguments, which gets timed, called an
 
 Simple wrapper for `console.timeEnd`.
 
-#### ö.message( str ) → 'ö🍳uery says: ${str}'
+#### ö.message( str ) → 'ö says: ${str}'
 
 Wrapper for internal messages.
 
@@ -592,6 +594,8 @@ Less verbose than `typeof`/`Array.isArray`/`instanceof`:
 #### ö.isSet( v ) → Boolean
 
 #### ö.isRegex( v ) → Boolean
+
+#### ö.isError( v ) → Boolean
 
 #### ö.is( v ) / ö.isDefined( v ) → Boolean
 

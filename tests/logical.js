@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import * as ö from '../ö.mjs'
+import { beforeEach } from 'vitest'
 
 describe('ö.equals', () => {
     it('should evaluate these as equal', () => {
@@ -123,6 +124,9 @@ describe('ö.curry', () => {
 })
 
 describe('ö.memoise', () => {
+    beforeEach(() => {
+        vi.useRealTimers()
+    })
     it('should return a memoised function', () => {
         const f = (a, b) => a ** b
         const memo = ö.memoise(f)
@@ -140,14 +144,14 @@ describe('ö.memoise', () => {
         expect(memo({ a: 2 })).not.toStrictEqual(obj)
     })
 
-    it('should be faster the second time for a slow operation', () => {
+    it('should be faster the second time for a slow operation', async () => {
         const f = (a, b) => ö.sum(ö.times(100000, i => i * a * b))
         const memo = ö.memoise(f)
 
         let before = Date.now()
         let result1 = memo(1, -1)
         let time1 = Date.now() - before
-
+        
         before = Date.now()
         let result2 = memo(1, -1)
         let time2 = Date.now() - before
@@ -171,9 +175,9 @@ describe('ö.createEnum', () => {
         expect(Object.keys(STR)).toEqual(Object.keys(OBJ))
     })
 
-     it('should have symbols as values (if not given an object)', () => {
-         expect(STR.small).toBeTypeOf('symbol')
-     })
+    it('should have symbols as values (if not given an object)', () => {
+        expect(STR.small).toBeTypeOf('symbol')
+    })
 
     it('should return an immutable', () => {
         expect(() => (STR.test = 0)).toThrow('not extensible')
@@ -184,16 +188,15 @@ describe('ö.createEnum', () => {
 
 describe('ö.data', () => {
     let obj = {}
-    
+
     it('should get and set data associated with an object', () => {
         ö.data(obj, 'testdata', 'value')
-        
-        expect(ö.data(obj)).toStrictEqual({testdata: 'value'})
+
+        expect(ö.data(obj)).toStrictEqual({ testdata: 'value' })
         expect(ö.data(obj, 'testdata')).toBe('value')
-        
+
         ö.data(obj, 'testdata', 'newvalue')
 
         expect(ö.data(obj, 'testdata')).toBe('newvalue')
-
     })
 })

@@ -102,6 +102,6 @@ Optionally: use css's color-mix with shadow element. Potentially slow, browser o
  */
 
 export const hsla = (h, s = 70, l = 50, a = 1) => {
-    if (isObj(h)) ({ h, s, l, a } = h)
+    if (isObj(h)) ({ h, s = s, l = l, a = a } = h)
     return `hsla(${h % 360}, ${s}%, ${l}%, ${a})`
 }

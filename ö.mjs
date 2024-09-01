@@ -127,10 +127,12 @@ export const map = (iterable, f) => {
 
     if (isIterable(iterable)) return getMap(iterable) // Other iterables: Just convert to array
 
-    return isFunc(f) ? Object.assign(
-        Object.create(Reflect.getPrototypeOf(iterable)),
-        Object.fromEntries(Object.entries(iterable).map(getMapper(f))),
-    ) : iterable?.[f]
+    return isFunc(f) ?
+            Object.assign(
+                Object.create(Reflect.getPrototypeOf(iterable)),
+                Object.fromEntries(Object.entries(iterable).map(getMapper(f))),
+            )
+        :   iterable?.[f]
 }
 
 /**
@@ -775,6 +777,54 @@ export const randomNormal = (mean = 0, sigma = 1) => {
 export const round = (n, precision = 0) =>
     Math.round(n * 10 ** precision + Number.EPSILON) / 10 ** precision
 
+const smallestFirst = (min, max) => (min > max ? [max, min] : [min, max])
+
+/**
+ * Clamp - Clamps `n` between `min` and `max`.
+ * @param {number} n
+ * @param {number} min
+ * @param {number} max
+ * @returns {number}
+ */
+
+export const clamp = (n, min, max) => {
+    ;[min, max] = smallestFirst(min, max)
+
+    return Math.min(Math.max(n, min), max)
+}
+
+/**
+ * Between - Checks if `n` is between `min` and `max`.
+ * @param {number} n
+ * @param {number} min
+ * @param {number} max
+ * @returns {boolean}
+ */
+
+export const between = (n, min, max) => {
+    ;[min, max] = smallestFirst(min, max)
+
+    return n >= min && n < max
+}
+/**
+ * Normalize - Normalises `n` to a value between 0 and 1, within range given by `min` and `max`.
+ * @param {number} n
+ * @param {number} min
+ * @param {number} max
+ * @param {boolean} [doClamp = true]
+ * @returns {number}
+ */
+
+export const normalize = (n, min, max, doClamp = true) => {
+    ;[min, max] = smallestFirst(min, max)
+
+    n = (n - min) / (max - min + Number.EPSILON) // Prevent / by 0
+    return doClamp ? clamp(n, 0, 1) : n
+}
+
+// for the britons
+export const normalise = normalize
+
 /**
  * NthRoot - Returns nth root of positive number.
  * @param {number} x
@@ -858,43 +908,6 @@ export const easeOut = (a, b, t) => lerp(a, b, t * (2 - t))
 //export const spring = (a, b, t, speed = 5) =>
 //    lerp(a, b, 1 - Math.exp(-speed * t))
 // todo: test
-
-/**
- * Clamp - Clamps `n` between `min` and `max`.
- * @param {number} n
- * @param {number} min
- * @param {number} max
- * @returns {number}
- */
-
-export const clamp = (n, min, max) => Math.min(Math.max(n, min), max)
-
-/**
- * Between - Checks if `n` is between `min` and `max`.
- * @param {number} n
- * @param {number} min
- * @param {number} max
- * @returns {boolean}
- */
-
-export const between = (n, min, max) => n >= min && n < max
-
-/**
- * Normalize - Normalises `n` to a value between 0 and 1, within range given by `min` and `max`.
- * @param {number} n
- * @param {number} min
- * @param {number} max
- * @param {boolean} [doClamp = true]
- * @returns {number}
- */
-
-export const normalize = (n, min, max, doClamp = true) => {
-    n = (n - min) / (max - min + Number.EPSILON) // Prevent / by 0
-    return doClamp ? clamp(n, 0, 1) : n
-}
-
-// for the britons
-export const normalise = normalize
 
 /**
  * ToPolar - Converts cartesian coordinates to polar.
@@ -1127,15 +1140,18 @@ export const waitFrames = async (n = 1, f, everyFrame = false) => {
  */
 
 export const waitFor = async (selector, event, f) => {
-    return new Promise(resolve => {
-        document.querySelector(selector)?.addEventListener(
-            event,
-            async e => {
-                if (isFunc(f)) resolve(await f(e))
-                else resolve()
-            },
-            { once: true },
-        )
+    return new Promise((resolve, reject) => {
+        let el = document.querySelector(selector)
+        if (el) {
+            el.addEventListener(
+                event,
+                async e => {
+                    if (isFunc(f)) resolve(await f(e))
+                    else resolve()
+                },
+                { once: true },
+            )
+        } else reject(error(`Couldn't find element for selector '${selector}'`))
     })
 }
 
@@ -1206,6 +1222,8 @@ export const isMap = v => v instanceof Map
 export const isSet = v => v instanceof Set
 
 export const isRegex = v => v instanceof RegExp
+
+export const isError = v => v instanceof Error
 
 export const isObj = v =>
     typeof v == 'object' &&
@@ -1384,14 +1402,16 @@ let isVerbose = true,
 /**
  * Verbose - Get/set `isVerbose`.
  * @param {boolean | undefined} verbose
- * @param {*} throwing
- * @returns {boolean}
+ * @param {boolean} throwing
+ * @returns {{isThrowing:boolean, isVerbose:boolean} | boolean}
  */
 
-export const verbose = (verbose, throwing = false) =>
-    isnt(verbose) ? isVerbose : (
-        ((isThrowing = !!throwing), (isVerbose = !!verbose))
-    )
+export const verbose = (verbose, throwing) => {
+    if (is(verbose)) isVerbose = !!verbose
+    if (is(throwing)) isThrowing = !!throwing
+
+    return { isVerbose, isThrowing }
+}
 
 /**
  * Error - Logs errors to console, optionally throws instead.
@@ -1402,7 +1422,7 @@ export const verbose = (verbose, throwing = false) =>
 
 export const error = (e, ...r) => {
     if (isVerbose) {
-        if (isThrowing) throw new Error(e)
+        if (isThrowing) throw new Error(e, ...r)
         console.error(message(e), ...r)
     }
     return r.length ? [e, ...r] : e

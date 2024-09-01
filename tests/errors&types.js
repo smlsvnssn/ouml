@@ -1,20 +1,90 @@
-import { describe, expect, it, vi, afterAll } from 'vitest'
+import { describe, expect, it, vi, afterEach } from 'vitest'
 import * as ö from '../ö.mjs'
 
-describe.todo('error methods', () => {
-    // describe('should mock console.log', () => {
-    //     const consoleMock = vi
-    //         .spyOn(console, 'log')
-    //         .mockImplementation(() => undefined)
-    //     afterAll(() => {
-    //         consoleMock.mockReset()
-    //     })
-    //     it('should log `sample output`', () => {
-    //         console.log('sample output')
-    //         expect(consoleMock).toHaveBeenCalledOnce()
-    //         expect(consoleMock).toHaveBeenLastCalledWith('sample output')
-    //     })
-    // })
+const log = vi.spyOn(console, 'log')
+const warn = vi.spyOn(console, 'warn')
+const error = vi.spyOn(console, 'error')
+const time = vi.spyOn(console, 'time')
+const timeEnd = vi.spyOn(console, 'timeEnd')
+
+afterEach(() => {
+    log.mockReset()
+    warn.mockReset()
+    error.mockReset()
+    time.mockReset()
+    timeEnd.mockReset()
+})
+
+describe('ö.verbose', () => {
+    it('should get/set isVerbose & isThrowing', () => {
+        expect(ö.verbose()).toMatchObject({
+            isVerbose: true,
+            isThrowing: false,
+        })
+
+        ö.log('test')
+        expect(log).toHaveBeenCalledOnce()
+
+        expect(ö.verbose(false, true)).toMatchObject({
+            isVerbose: false,
+            isThrowing: true,
+        })
+
+        ö.log('test')
+        expect(log).toHaveBeenCalledOnce()
+
+        // reset
+        ö.verbose(true, false)
+    })
+})
+
+describe('ö.error', () => {
+    it('should log error to console, or throw', () => {
+        expect(ö.error('err')).toEqual('err')
+        expect(ö.error('err', 'rest')).toEqual(['err', 'rest'])
+
+        expect(error).toHaveBeenLastCalledWith('ö says: err\n', 'rest')
+
+        ö.verbose(true, true)
+
+        expect(() => ö.error('err')).toThrow('err')
+
+        // reset
+        ö.verbose(true, false)
+    })
+})
+
+describe('ö.warn', () => {
+    it('should log warning to console', () => {
+        expect(ö.warn('warn')).toEqual('warn')
+        expect(ö.warn('warn', 'rest')).toEqual(['warn', 'rest'])
+
+        expect(warn).toHaveBeenLastCalledWith('ö says: warn\n', 'rest')
+    })
+})
+
+describe('ö.log', () => {
+    it('should log to console', () => {
+        expect(ö.log('hello')).toEqual('hello')
+        expect(ö.log('hello', 'rest')).toEqual(['hello', 'rest'])
+
+        expect(log).toHaveBeenLastCalledWith('hello', 'rest')
+    })
+})
+
+describe('ö.time, ö.timeEnd', () => {
+    it('should log time to console', () => {
+        expect(ö.time(() => 'value', 'hello')).toEqual('value')
+
+        expect(time).toHaveBeenLastCalledWith('hello')
+        expect(timeEnd).toHaveBeenLastCalledWith('hello')
+
+        ö.time('bye')
+        ö.timeEnd('bye')
+
+        expect(time).toHaveBeenLastCalledWith('bye')
+        expect(timeEnd).toHaveBeenLastCalledWith('bye')
+    })
 })
 
 describe('type checking', () => {
@@ -68,6 +138,8 @@ describe('type checking', () => {
 
         expect(new RegExp('0')).toSatisfy(ö.isRegex)
         expect(/0/).toSatisfy(ö.isRegex)
+
+        expect(new TypeError()).toSatisfy(ö.isError)
 
         expect(null).toSatisfy(ö.is)
         expect(undefined).not.toSatisfy(ö.is)
