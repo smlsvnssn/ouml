@@ -47,6 +47,19 @@ describe('observable object', () => {
 
         expect(result).toBe('bar')
     })
+
+    it('should handle multiple observers', () => {
+        let x = observable('foo')
+        let secondResult
+
+        x.observe(setResult)
+        x.observe(v => (secondResult = v))
+
+        x.value = 'bar'
+
+        expect(result).toBe('bar')
+        expect(secondResult).toBe('bar')
+    })
 })
 
 describe('observe', () => {
@@ -117,22 +130,111 @@ describe('observe', () => {
     })
 
     it('should trigger on deep changes', () => {
-        let deep = observable(
-            {
-                a: { b: { c: { d: "What's the purpose of it all?" } } },
-            },
-        )
+        let deep = observable({
+            a: { b: { c: { d: "What's the purpose of it all?" } } },
+        })
         observe(
             deep,
             (value, prevValue, updatedKey, observer) =>
-                (result = { value, prevValue, updatedKey, observer })
+                (result = { value, prevValue, updatedKey, observer }),
         )
 
         deep.a.b.c.d = 'Deep stuff'
-		
+
         expect(deep.a.b.c).toSatisfy(isObservable)
         expect(result.updatedKey).toBe('d')
         expect(result.value.a.b.c.d).toBe('Deep stuff')
+    })
+
+    it('should trigger on array manipulation', () => {
+        let arr = observable([1, 2, 3])
+        observe(
+            arr,
+            (value, prevValue, updatedKey, observer) =>
+                (result = { value, prevValue, updatedKey, observer }),
+        )
+
+        arr.push(4)
+
+        expect(arr).toSatisfy(isObservable)
+        expect(result.updatedKey).toBe('3')
+        expect(result.value).toEqual([1, 2, 3, 4])
+
+        arr.splice(1)
+
+        expect(result.value).toEqual([1])
+    })
+
+    it('should trigger on property deletion', () => {
+        let o = observable({ a: 1, b: 2 })
+        observe(
+            o,
+            (value, prevValue, updatedKey, observer) =>
+                (result = { value, prevValue, updatedKey, observer }),
+        )
+
+        expect(result.value.a).toBe(1)
+
+        delete o.c
+
+        expect(result.updatedKey).toBe(null)
+
+        delete o.a
+
+        expect(result.updatedKey).toBe('a')
+        expect(result.value.a).toBe(undefined)
+    })
+})
+
+describe('observer object', () => {
+    it('should pause and unpause the observer', () => {
+        const o = observable(0)
+        let observer = o.observe(setResult)
+
+        o.value = 1
+
+        expect(result).toBe(1)
+        expect(observer.value).toBe(1)
+        expect(observer.prevValue).toBe(0)
+
+        observer.pause()
+
+        o.value = 2
+
+        expect(observer.paused).toBe(true)
+        expect(result).toBe(1)
+
+        observer.unpause()
+
+        expect(observer.paused).toBe(undefined)
+        expect(result).toBe(1)
+
+        observer.update() // triggers a manual update. Change this to automatic when unpause?
+
+        expect(result).toBe(2)
+
+        o.value = 3
+
+        expect(result).toBe(3)
+        expect(observer.value).toBe(3)
+        expect(observer.prevValue).toBe(2)
+    })
+
+    it('should stop the observer', () => {
+        const o = observable(0)
+        let observer = o.observe(setResult)
+
+        o.value = 1
+
+        expect(result).toBe(1)
+
+        observer.stop()
+
+        o.value = 2
+
+        expect(observer.stopped).toBe(true)
+
+        expect(result).toBe(1)
     })
 })
 
@@ -146,7 +248,6 @@ describe('isObservable', () => {
         expect([]).not.toSatisfy(isObservable)
     })
 })
-
 
 // const cb = (...v) => ö.log('callback: ', ...v)
 // primitive.observe(cb)

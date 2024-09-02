@@ -1,52 +1,50 @@
 {
-    "name": "ouml",
-    "version": "0.2.0",
-    "description": "smlsvnssn",
-    "main": "ö.mjs",
-    "module": "ö.mjs",
-    "type": "module",
-    "exports": {
-        ".": "./ö.mjs",
-        "./övents": "./övents/index.mjs",
-        "./öbservable": "./öbservable/index.mjs",
-        "./chain": "./chain/index.mjs"
-    },
-    "prettier": {
-        "experimentalTernaries": true,
-        "tabWidth": 4,
-        "semi": false,
-        "singleQuote": true,
-        "bracketSpacing": true,
-        "arrowParens": "avoid"
-    },
-    "scripts": {
-        "dev": "vite",
-        "test": "vitest --disable-console-intercept",
-        "coverage": "vitest run --coverage"
-    },
-    "devDependencies": {
-        "@types/node": "^16.18.106",
-        "@vitest/coverage-c8": "latest",
-        "jsdom": "^20.0.3",
-        "prettier": "latest",
-        "typescript": "^5.5.4",
-        "vite": "^3.2.10",
-        "vitest": "latest"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/smlsvnssn/ouml.git"
-    },
-    "keywords": [
-        "ö"
-    ],
-    "author": "smlsvnssn",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/smlsvnssn/ouml/issues"
-    },
-    "homepage": "https://github.com/smlsvnssn/ouml#readme",
-    "dependencies": {
-        "@vitest/coverage-v8": "^2.0.5"
-    }
+	"name": "ouml",
+	"version": "0.2.0",
+	"description": "smlsvnssn",
+	"main": "ö.mjs",
+	"module": "ö.mjs",
+	"type": "module",
+	"exports": {
+		".": "./ö.mjs",
+		"./övents": "./övents/index.mjs",
+		"./öbservable": "./öbservable/index.mjs",
+		"./chain": "./chain/index.mjs"
+	},
+	"prettier": {
+		"experimentalTernaries": true,
+		"tabWidth": 4,
+		"semi": false,
+		"singleQuote": true,
+		"bracketSpacing": true,
+		"arrowParens": "avoid"
+	},
+	"scripts": {
+		"dev": "vite",
+		"test": "vitest --disable-console-intercept",
+		"coverage": "vitest run --coverage"
+	},
+	"devDependencies": {
+		"@types/node": "^16.18.106",
+		"@vitest/coverage-c8": "latest",
+		"jsdom": "^20.0.3",
+		"prettier": "latest",
+		"typescript": "^5.5.4",
+		"vite": "^3.2.10",
+		"vitest": "latest",
+		"@vitest/coverage-v8": "^2.0.5"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/smlsvnssn/ouml.git"
+	},
+	"keywords": [
+		"ö"
+	],
+	"author": "smlsvnssn",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/smlsvnssn/ouml/issues"
+	},
+	"homepage": "https://github.com/smlsvnssn/ouml#readme"
 }

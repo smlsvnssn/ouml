@@ -13,6 +13,14 @@ const addAsCurrent = observer => {
 
 const removeAsCurrent = () => (currentObserver = currentObservers.pop())
 
+const notifyObservers = (observers, key) => {
+    // check and notify observers
+    observers.forEach(o => {
+        if (o.stopped) observers.delete(o)
+        else if (!o.paused) o.update(key)
+    })
+}
+
 const makeObservable = (v, isPrimitive) => {
     let observers = new Set()
     let p = new Proxy(v, {
@@ -33,13 +41,16 @@ const makeObservable = (v, isPrimitive) => {
 
                 Reflect.set(obj, key, value)
 
-                // check and notify observers
-                observers.forEach(o => {
-                    if (o.stopped) observers.delete(o)
-                    else if (!o.paused) o.update(key)
-                })
+                notifyObservers(observers, key)
             }
 
+            return true // to avoid a type error
+        },
+        deleteProperty: (obj, key) => {
+            if (Object.hasOwn(obj, key)) {
+                Reflect.deleteProperty(obj, key)
+                notifyObservers(observers, key)
+            }
             return true // to avoid a type error
         },
     })

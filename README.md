@@ -874,21 +874,36 @@ If the getter is a raw primitive observable, the value is unwrapped before the c
 
 ```js
 let o = observable(0)
-observe(o, v => ö.log(`The value is ${v}`))
-// logs 'The value is 0'
+observe(o, v => ö.log(`The value is ${v}`)) // logs 'The value is 0'
+```
+or 
+```js
+let o = observable(0)
+o.observe(v => ö.log(`The value is ${v}`)) // logs 'The value is 0'
 ```
 
 If the getter is a function, you need to access the `value` prop, like so:
 
 ```js
 let o = observable(0)
-observe(() => `The value is ${o.value}`, ö.log)
-// logs 'The value is 0'
+observe(() => `The value is ${o.value}`, ö.log) // logs 'The value is 0'
 ```
 
 It's a matter of taste, really.
 
-However, when working with larger data structures, try to be as specific as possible in the `getter`, since returned values get copied from the observable (to avoid recursion among other things). As a rule of thumb, get the values you output in the callback, nothing more. Maybe something like this:
+When working with deep data structures, you can observe an entire object structure, and receive updates when properties on child objects change, like so:
+
+```js
+let deep = observable({
+    a: { b: { c: { d: "What's the purpose of it all?" } } },
+})
+observe(deep, ö.log)
+deep.a.b.c.d = 'Deep stuff' 
+```
+
+The drawback with this, however, is that the entire object returned from the getter gets deep cloned every time the observer is triggered (to avoid recursion among other things). This is fairly untested with regards to performance, so try to keep the data structure fairly small. There are possible optimisations to be done here, maybe in the future...
+
+When working with larger data structures, try to be as specific as possible in the getter. As a rule of thumb, get the values you output in the callback, nothing more. Maybe something like this:
 
 ```js
 let bigAssObservable = observable(bigAssObject)
@@ -903,17 +918,7 @@ observe(() => {
 }, renderSmallPartOfBigAssObject)
 ```
 
-When working with deep data structures, you can observe an entire object structure, and receive updates when properties on child objects change, like so:
 
-```js
-let deep = observable({
-    a: { b: { c: { d: "What's the purpose of it all?" } } },
-})
-observe(deep, ö.log, true)
-deep.a.b.c.d = 'Deep stuff' // Triggers observer when deep option is true
-```
-
-The drawback with this, however, is that the entire data structure gets deep cloned every time the observer is triggered. This is fairly untested with regards to performance, so use with caution, and try to keep the data structure small. There are possible optimisations to be done here, maybe in the future...
 
 #### isObservable( value ) → Boolean
 
@@ -952,7 +957,7 @@ Stops the observer from receiving updates, and unsubscribes the observer from ob
 
 #### o.update()
 
-Updates current value an calls callback if the value has changed. Called internally by the observable.
+Updates current value and calls callback if the value has changed. Called internally by the observable.
 
 #### o.value
 
