@@ -130,6 +130,7 @@ describe('observe', () => {
         expect(result.value.really).toBe('Yes, really')
     })
 
+	// Broken? Weird? Delete deep options, default to deep?
     it('should trigger on deep changes when deep = true', () => {
         let deep = observable(
             {
@@ -153,15 +154,17 @@ describe('observe', () => {
         expect(result.value.a.b.c.d).toBe('Deep stuff')
     })
 
-    it.todo('should not trigger on deep changes when deep = false', () => {
+    it('should not trigger on deep changes when deep = false', () => {
         let deep = observable({
             a: { b: { c: { d: "What's the purpose of it all?" } } },
-        })
+        }, false)
         observe(deep, setResult, false)
 
-        let bypass = deep.a.b.c.d
+        let bypass = deep.a.b.c
 
-        bypass = 'Deep stuff'
+		bypass.d = 'Deep stuff'
+		
+		//deep.a.b.c.d = 'Deep stuff'
 
         expect(result.a.b.c.d).toBe('Deep stuff')
     })
