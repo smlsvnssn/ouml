@@ -1,20 +1,19 @@
 import { isnt, isFunc, clone, isEqual } from '../ö.mjs'
 
 const isobservable = Symbol('observable')
-const extendable = Symbol('extendable')
 const primitive = Symbol('primitive') // a little like a vue ref
 const currentObservers = []
 
 let currentObserver = null
 
-const addAsCurrent = (observer) => {
+const addAsCurrent = observer => {
     if (currentObserver) currentObservers.push(currentObserver)
     currentObserver = observer
 }
 
 const removeAsCurrent = () => (currentObserver = currentObservers.pop())
 
-const makeObservable = (v, isExtendable, isPrimitive) => {
+const makeObservable = (v, isPrimitive) => {
     let observers = new Set()
     let p = new Proxy(v, {
         get: (obj, key, receiver) => {
@@ -23,21 +22,19 @@ const makeObservable = (v, isExtendable, isPrimitive) => {
 
             // Intercept key 'observe' and assume function call. Relay to observe()
             if (key === 'observe')
-                return (callback, deep = false) =>
-                    observe(receiver, callback, deep)
+                return callback => observe(receiver, callback)
 
             return Reflect.get(obj, key)
         },
         set: (obj, key, value) => {
             if (obj[key] !== value) {
-                // if new prop, and extendable, make observable
-                if (isnt(obj[key]) && isExtendable)
-                    value = observable(value, true, isExtendable, false)
+                // if new prop, make observable
+                if (isnt(obj[key])) value = observable(value, false)
 
                 Reflect.set(obj, key, value)
 
                 // check and notify observers
-                observers.forEach((o) => {
+                observers.forEach(o => {
                     if (o.stopped) observers.delete(o)
                     else if (!o.paused) o.update(key)
                 })
@@ -48,7 +45,6 @@ const makeObservable = (v, isExtendable, isPrimitive) => {
     })
 
     if (isPrimitive) p[primitive] = true
-    if (isExtendable) p[extendable] = true
     p[isobservable] = true
 
     return p
@@ -64,29 +60,21 @@ const makeObservable = (v, isExtendable, isPrimitive) => {
 /**
  * observable
  * @param {*} v
- * @param {boolean} [deep]
- * @param {boolean} [extendable]
  * @param {boolean} [wrapPrimitive]
  * @returns {Observable}
  */
 
-export const observable = (
-    v,
-    deep = true,
-    extendable = true,
-    wrapPrimitive = true,
-) => {
+export const observable = (v, wrapPrimitive = true) => {
     // if object, make observables recursively
     if (v !== null && typeof v === 'object') {
-        if (deep)
-            for (const [key, val] of Object.entries(v))
-                v[key] = observable(val, deep, extendable, false)
+        for (const [key, val] of Object.entries(v))
+            v[key] = observable(val, false)
 
-        return makeObservable(v, extendable)
+        return makeObservable(v)
     }
 
     // Handle primitive values only if top level call, wrap in object for proxy to work
-    if (wrapPrimitive) return makeObservable({ value: v }, false, true)
+    if (wrapPrimitive) return makeObservable({ value: v }, true)
 
     // returns value if primitive in recursive call
     return v
@@ -98,13 +86,12 @@ export const observable = (
  * @returns {boolean}
  */
 
-export const isObservable = (obj) => !!obj[isobservable]
+export const isObservable = obj => !!obj[isobservable]
 
 /**
  * observe
  * @param {(function | Observable)} getter
  * @param {function} callback
- * @param {boolean} [deep]
  * @returns {{
  *	update: Function,
  *	pause: Function,
@@ -113,12 +100,12 @@ export const isObservable = (obj) => !!obj[isobservable]
  *}}
  */
 
-export const observe = (getter, callback, deep = false) => {
+export const observe = (getter, callback) => {
     const getValue = () => {
         addAsCurrent(o)
         let v = isFunc(getter) ? getter() : getter
         // If primitive, unwrap, else copy value to touch the getter in proxy and strip the proxy
-        v = v[primitive] ? v.value : clone(v, deep)
+        v = v[primitive] ? v.value : clone(v)
         removeAsCurrent()
 
         return v

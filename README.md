@@ -842,9 +842,10 @@ When called as a method, the getter argument to `observe` is omitted.
 
 öbservable exports three methods:
 
-#### observable( value, deep? = true, extendable? = true ) → observable object
+#### observable( value ) → observable object
 
-Takes a `value`, and returns it wrapped in an observable `Proxy`. By default, it recursively wraps nested objects as well. Set `deep` to `false` if you only want the top level to be observable (For example for observing changes in an `Array` of complex `Object`s, where the changes in individual objects are irrelevant). By default, if you add a new property to an observable, the new property is made observable as well (if it's not a primitive value). Set `extendable` to `false` to disable this behaviour.
+Takes a `value`, and returns it wrapped in an observable `Proxy`, recursively wrapping nested objects as well. If you add a new property to an observable, the new property is made observable as well (if it's not a primitive value). 
+
 If `value` is a primitive (`String`, `Number`, `Boolean` etc), the value is wrapped in an object with a single property: `value`. You cannot assign to a primitive observable value directly, you need to use the `value` prop instead, or else you'd overwite the proxy.
 
 ```js
@@ -859,12 +860,14 @@ observe(x, ö.log)
 x.value = 'bar' // Assign to value instead.
 ```
 
-#### observe( getter, callback, deep? = false ) → observer object
+#### observe( getter, callback ) → observer object
 
 Takes a `getter`, responsible for reading an observable and producing a value, and a `callback` that acts on the value.
 The `getter` can be either a raw observable, or a function returning the processed value of an observable.
 The `callback` receives `value`, `prevValue`, `updatedKey` and `observer` as arguments. The values passed to `callback` are copied from the observable, so you can't mutate the observable value in the callback (that would create an infinite loop anyways, so don't try it 🤯).
-If you're observing an object, `updatedKey` can be useful in order to retrieve and act on only the property that changed. However, if you're destructuring multiple properties from a nested object, `updatedKey` refers to the key local to the updated object, so in this case make sure not to use the same property name on different levels.
+
+If you're observing an object, `updatedKey` can be useful in order to retrieve and act on only the property that changed. However, if you're destructuring multiple properties from a nested object, `updatedKey` refers to the key local to the updated object, so in this case make sure not to use the same property name on different levels
+.
 `observer` is a reference to the observer object, giving access to primarily the `stop()` method.
 
 If the getter is a raw primitive observable, the value is unwrapped before the callback is called, like so:
@@ -900,7 +903,7 @@ observe(() => {
 }, renderSmallPartOfBigAssObject)
 ```
 
-When working with deep data structures, like a global state object with a reducer function, you may want to enable the `deep` option. This lets you observe an entire object structure, and receive updates when properties on child objects change, like so:
+When working with deep data structures, you can observe an entire object structure, and receive updates when properties on child objects change, like so:
 
 ```js
 let deep = observable({
@@ -910,7 +913,7 @@ observe(deep, ö.log, true)
 deep.a.b.c.d = 'Deep stuff' // Triggers observer when deep option is true
 ```
 
-The drawback with this option, however, is that the entire data structure gets deep cloned every time the observer is triggered. This is fairly untested with regards to performance, so use with caution, and try to keep the data structure small. There are possible optimisations to be done here, maybe in the future...
+The drawback with this, however, is that the entire data structure gets deep cloned every time the observer is triggered. This is fairly untested with regards to performance, so use with caution, and try to keep the data structure small. There are possible optimisations to be done here, maybe in the future...
 
 #### isObservable( value ) → Boolean
 
@@ -920,7 +923,7 @@ Checks whether a value is observable or not, just in case you'd forgotten.
 
 `observable()` returns observables, responsible for notifying observers when their value changes. When an observable is read by an observer, the observer is added to an internal `Set` of observers. These get updated when values change.
 If the observable holds a primitive value, it has a `value` property, otherwise values are accessed just like a regular object or array.
-The observable also holds `Symbol`s for `observable`, `extendable` and `primitive`, used internally, and for easier debugging.
+The observable also holds `Symbol`s for `observable` and `primitive`, used internally, and for easier debugging.
 
 You can also call `observe` directly on an observable object (`observe` is not a proper property on the object though, this is handled by the getter in the `Proxy`).
 

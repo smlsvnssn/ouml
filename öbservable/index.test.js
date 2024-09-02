@@ -28,26 +28,12 @@ describe('observable', () => {
         expect(o.a).toSatisfy(isObservable)
     })
 
-    it('should not create observables for nested objects when deep = false', () => {
-        const o = observable({ a: { b: 1 } }, false)
-
-        expect(o.a).not.toSatisfy(isObservable)
-    })
-
     it('should create observables for new properties', () => {
         const o = observable({ a: { b: 1 } })
 
         o.c = {}
 
         expect(o.c).toSatisfy(isObservable)
-    })
-
-    it('should not create observables for new properties when extendable = false', () => {
-        const o = observable({ a: { b: 1 } }, true, false)
-
-        o.c = {}
-
-        expect(o.c).not.toSatisfy(isObservable)
     })
 })
 
@@ -130,8 +116,7 @@ describe('observe', () => {
         expect(result.value.really).toBe('Yes, really')
     })
 
-	// Broken? Weird? Delete deep options, default to deep?
-    it('should trigger on deep changes when deep = true', () => {
+    it('should trigger on deep changes', () => {
         let deep = observable(
             {
                 a: { b: { c: { d: "What's the purpose of it all?" } } },
@@ -140,33 +125,14 @@ describe('observe', () => {
         observe(
             deep,
             (value, prevValue, updatedKey, observer) =>
-                (result = { value, prevValue, updatedKey, observer }),true
+                (result = { value, prevValue, updatedKey, observer })
         )
 
-        let bypass = deep.a.b.c
-
-		bypass.d = 'Deep stuff'
+        deep.a.b.c.d = 'Deep stuff'
 		
-		//deep.a.b.c.d = 'test'
-
         expect(deep.a.b.c).toSatisfy(isObservable)
         expect(result.updatedKey).toBe('d')
         expect(result.value.a.b.c.d).toBe('Deep stuff')
-    })
-
-    it('should not trigger on deep changes when deep = false', () => {
-        let deep = observable({
-            a: { b: { c: { d: "What's the purpose of it all?" } } },
-        }, false)
-        observe(deep, setResult, false)
-
-        let bypass = deep.a.b.c
-
-		bypass.d = 'Deep stuff'
-		
-		//deep.a.b.c.d = 'Deep stuff'
-
-        expect(result.a.b.c.d).toBe('Deep stuff')
     })
 })
 
@@ -181,18 +147,6 @@ describe('isObservable', () => {
     })
 })
 
-// ///
-
-// let primitive = observable(0)
-// const array = observable(['test'])
-// const object = observable({ test: 'Yes, test' })
-
-// // ö.log(primitive)
-// ö.log(array)
-// // ö.log(object)
-// ö.log(`...
-
-// ...`)
 
 // const cb = (...v) => ö.log('callback: ', ...v)
 // primitive.observe(cb)
