@@ -720,13 +720,26 @@ let processedValue = chain('AnyValueOfAnyType')
     .return()
 ```
 
+Or like so, saving the chain for later, providing the value last:
+
+```js
+import { chain } from 'ouml/chain'
+
+const doStuffAndThings = chain()
+    .coolStuff()
+    .wonderfulThings()
+    .end()
+
+let processedValue = doStuffAndThings('anyValue')
+```
+
 A quick note on performance: `chain` does string matching, proxying and other fun stuff that adds some overhead. It adds a small hit performance-wise, and might not be the best option in a game loop 😇. It's mainly a proof of concept, but since it produces some really nice, terse and readable code, it might come in handy in some situations!
 
 ### Methods
 
 Chain exports two methods:
 
-#### chain( value, isThrowing? = false, isAsync? = false ) → Proxy
+#### chain( value?, isThrowing? = false, isAsync? = false ) → Proxy
 
 Chain wraps a value, and creates a `Proxy` that handles the chaining. `chain` evaluates lazily, so nothing is calculated until `.return()` or `.value` is called. Errors are skipped by default, set `isThrowing` to true to throw errors instead. Optionally, set `isAsync` to `true` to handle async values, or use:
 
@@ -749,6 +762,10 @@ Same as `.return()`, executes call chain, and returns computed value.
 #### () → value
 
 A method call with no arguments has the same effect as `.return()` or `.value`, executes call chain, and returns computed value.
+
+#### .end() → function( value ) → value
+
+Ends the chain, and returns a function that takes a value and executes the chain on it, allowing you to save a chain as a function.
 
 #### .returnIf( function ) → value | Proxy
 
@@ -844,7 +861,7 @@ When called as a method, the getter argument to `observe` is omitted.
 
 #### observable( value ) → observable object
 
-Takes a `value`, and returns it wrapped in an observable `Proxy`, recursively wrapping nested objects as well. If you add a new property to an observable, the new property is made observable as well (if it's not a primitive value). 
+Takes a `value`, and returns it wrapped in an observable `Proxy`, recursively wrapping nested objects as well. If you add a new property to an observable, the value of the new property is made observable as well (if it's not a primitive). 
 
 If `value` is a primitive (`String`, `Number`, `Boolean` etc), the value is wrapped in an object with a single property: `value`. You cannot assign to a primitive observable value directly, you need to use the `value` prop instead, or else you'd overwite the proxy.
 

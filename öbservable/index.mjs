@@ -2,8 +2,8 @@ import { isnt, isFunc, clone, isEqual } from '../ö.mjs'
 
 const isobservable = Symbol('observable')
 const primitive = Symbol('primitive') // a little like a vue ref
-const currentObservers = []
 
+let currentObservers = []
 let currentObserver = null
 
 const addAsCurrent = observer => {
@@ -14,7 +14,6 @@ const addAsCurrent = observer => {
 const removeAsCurrent = () => (currentObserver = currentObservers.pop())
 
 const notifyObservers = (observers, key) => {
-    // check and notify observers
     observers.forEach(o => {
         if (o.stopped) observers.delete(o)
         else if (!o.paused) o.update(key)
@@ -40,16 +39,14 @@ const makeObservable = (v, isPrimitive) => {
                 if (isnt(obj[key])) value = observable(value, false)
 
                 Reflect.set(obj, key, value)
-
                 notifyObservers(observers, key)
             }
-
             return true // to avoid a type error
         },
         deleteProperty: (obj, key) => {
             if (Object.hasOwn(obj, key)) {
                 Reflect.deleteProperty(obj, key)
-                notifyObservers(observers, key)
+                notifyObservers(observers, key) 
             }
             return true // to avoid a type error
         },

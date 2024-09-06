@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, afterEach } from 'vitest'
 import * as ö from '../ö.mjs'
-import { chain, chainAsync } from './index.mjs'
+import { chain, chainAsync, chained } from './index.mjs'
 
 const log = vi.spyOn(console, 'log')
 const warn = vi.spyOn(console, 'warn')
@@ -33,6 +33,20 @@ describe('chain', () => {
 
         expect(result).toBeInstanceOf(Function)
         expect(result.return()).toBe(11)
+    })
+
+    it('should support key .end(), returning a function taking a value at the end of the chain (data last) ', () => {
+        const getIt = chain()
+            .f(v => [...Array(v).keys()])
+            .map(v => v ** v)
+            .sum()
+            .toString()
+            .peek()
+            .length()
+            .end()
+
+        expect(getIt).toBeInstanceOf(Function)
+        expect(getIt(11)).toBe(11)
     })
 
     it('should support peeking', () => {
@@ -70,18 +84,18 @@ Type:  String
             chain(11, true)
                 .f(v => [...Array(v).keys()])
                 .map(v => v ** v)
-                .testFail()
-                .value
+                .testFail().value
 
         expect(() => result()).toThrow('Chain failed')
     })
-    
+
     it('should optionally throw on failure in chained method', () => {
-        let result = ()=> chain(Math.PI, true)
-            .f(() => {
-                throw 'err'
-            })
-            .return()
+        let result = () =>
+            chain(Math.PI, true)
+                .f(() => {
+                    throw 'err'
+                })
+                .return()
 
         expect(() => result()).toThrow('Chain failed')
     })
@@ -92,10 +106,10 @@ Type:  String
         expect(result).toBe(11)
     })
 
-    it('should support optional syntax', () => {
-        let result = chain('-11')(Number)(Math.abs)()
+    it('should support alternate syntax', () => {
+        let result = chain('-11')(Number)(Math.abs)(v => Math.pow(v, 2))()
 
-        expect(result).toBe(11)
+        expect(result).toBe(121)
     })
 })
 
@@ -103,15 +117,26 @@ describe('chainAsync', () => {
     it('should produce expected values', async () => {
         let result = await chainAsync('abc')
             .toUpperCase()
-            .testFail()
             .split('')
             .map(v => `# ${v} #`)
-            .peek()
             .join('')
             .f(v => v.split('').reverse())
             .join('').value
 
         expect(result).toBe('# C ## B ## A #')
+    })
+
+    it('should support key .end()', async () => {
+        let doIt = chainAsync()
+            .toUpperCase()
+            .split('')
+            .map(v => `# ${v} #`)
+            .join('')
+            .f(v => v.split('').reverse())
+            .join('')
+            .end()
+
+        expect(await doIt('abc')).toBe('# C ## B ## A #')
     })
 
     it('should handle an escape clause', async () => {

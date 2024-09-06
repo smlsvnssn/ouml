@@ -31,7 +31,7 @@ const lookup = (key, v, isThrowing) => {
 
     if (isThrowing) throw new Error(errorMsg)
 
-    ö.warn(`${errorMsg} Skipping.`)
+    ö.warn(`${errorMsg} Skipping.`) // todo: Change skipping behaviour? Stoopid? Better to throw by default?
 
     // on warn, just return value
     return () => v
@@ -119,6 +119,11 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
 
     const caseInternal = key => f => queue(key, f)
 
+    const caseEnd = () => initial => {
+        v = ö.clone(initial)
+        return caseRunQueue()
+    }
+
     const caseFunction = f => queue(f.name || 'anonymous', f)
 
     const caseDefault =
@@ -128,10 +133,12 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
 
     let p = new Proxy(() => {}, {
         // prettier-ignore
+        // todo: add try and catch keys?
         get: (_, key) =>
              key === "returnIf" || key === "peek" ? caseInternal(key)
            : key === "value" ?                      caseRunQueue()
            : key === "return" ?                     caseRunQueue
+           : key === "end" ?                        caseEnd
            : key === "f" ?                          caseFunction
            :                                        caseDefault(key),
 
