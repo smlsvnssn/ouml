@@ -66,8 +66,8 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
     let v = ö.clone(initial)
     let q = []
 
-    const queue = (key, f) => {
-        q.push({ key, f })
+    const queue = (key, f, catcher) => {
+        q.push({ key, f, catcher })
 
         return p
     }
@@ -75,7 +75,7 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
     const caseRunQueue =
         isAsync ?
             async () => {
-                for (let [i, { key, f }] of q.entries()) {
+                for (let [i, { key, f, catcher }] of q.entries()) {
                     try {
                         if (key === 'returnIf') {
                             if (await f(v)) break
@@ -89,14 +89,15 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
 
                         v = await f(v)
                     } catch (error) {
-                        warn(i, key, error, isThrowing)
+                        if (key === 'try') v = await catcher(v, error)
+                        else warn(i, key, error, isThrowing)
                     }
                 }
 
                 return v
             }
         :   () => {
-                for (let [i, { key, f }] of q.entries()) {
+                for (let [i, { key, f, catcher }] of q.entries()) {
                     try {
                         if (key === 'returnIf') {
                             if (f(v)) break
@@ -110,14 +111,18 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
 
                         v = f(v)
                     } catch (error) {
-                        warn(i, key, error, isThrowing)
+                        if (key === 'try') v = catcher(v, error)
+                        else warn(i, key, error, isThrowing)
                     }
                 }
 
                 return v
             }
 
-    const caseInternal = key => f => queue(key, f)
+    const caseInternal =
+        key =>
+        (f, catcher = v => v) =>
+            queue(key, f, catcher)
 
     const caseEnd = () => initial => {
         v = ö.clone(initial)
@@ -135,7 +140,7 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
         // prettier-ignore
         // todo: add try and catch keys?
         get: (_, key) =>
-             key === "returnIf" || key === "peek" ? caseInternal(key)
+             key.match(/returnIf|try|peek/) ?       caseInternal(key)
            : key === "value" ?                      caseRunQueue()
            : key === "return" ?                     caseRunQueue
            : key === "end" ?                        caseEnd

@@ -702,7 +702,7 @@ It takes a url, loads it as json using an `ö` method, handles the error case, g
 
 ### Usage
 
-`chain` chains method calls, but with some quirks and gotchas. For example, properties on objects can be retrieved by calling the property name as a function. Methods on objects in the global scope can be accessed by an underscore, for example `Object_groupBy()`. Also, if a method in the chain creates an error, the step is skipped by default (and the error is logged), guaranteeing a return value. You can override this by setting `isThrowing` to true.
+`chain` chains method calls, but with some quirks and gotchas. For example, properties on objects can be retrieved by calling the property name as a function. Methods on objects in the global scope can be accessed by an underscore, for example `Object_groupBy()`. Also, if a method in the chain creates an error, the step is skipped by default (and the error is logged), prioritising a return value. You can override this by setting `isThrowing` to true, or handle the error with a `.try()`.
 Use like so:
 
 ```js
@@ -717,6 +717,7 @@ let processedValue = chain('AnyValueOfAnyType')
     .f(anyFunction)
     .peek() // Logs current value and type
     .returnIf(anyFunctionReturningABoolean)
+    .try(tryFunction, catchFunction)
     .return()
 ```
 
@@ -770,6 +771,10 @@ Ends the chain, and returns a function that takes a value and executes the chain
 #### .returnIf( function ) → value | Proxy
 
 Guard clause, lets you exit the call chain early. The function receives the current value as argument, and is expected to return a boolean. Returns current value on truthy values, otherwise continues call chain.
+
+#### .try( tryFunction, catchFunction? ) → Proxy
+
+Error handler, lets you try a function, and run `catchFunction` if it throws. `tryFunction` receives the current value as argument, `catchFunction` receives the current value and the thrown error. `catchFunction` defaults to `v => v`, simply passing the previous value along.
 
 #### .peek() → Proxy
 

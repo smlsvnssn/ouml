@@ -79,6 +79,17 @@ Type:  String
 `)
     })
 
+    it('should handle a try/catch clause', () => {
+        let result = chain(11).try(
+            () => {
+                throw 'err'
+            },
+            (val, error) => [val * 2, error],
+        ).value
+
+        expect(result).toEqual([22, 'err'])
+    })
+
     it('should optionally throw on failure to find method', () => {
         let result = () =>
             chain(11, true)
