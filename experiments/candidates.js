@@ -1,7 +1,9 @@
 import * as ö from 'ouml'
-import { isFunc, mapToTree } from 'ouml'
+import { isFunc, mapToTree, clone } from 'ouml'
 /* 
 TODO:
+Try!
+
 Environment methods, ie isMobile, isTouchscreen, isHiResScreen, isDesktop, isServer etc
 Extend lerp to accept any-dimensional numbers, and optional easing functions (https://github.com/AndrewRayCode/easing-utils)
 db? Server part for secrets and relay?
@@ -18,6 +20,52 @@ Cubic, Quadratic
 Rework colour functions to include oklch and new css features (browser only? Use create element hack?)
 
 */
+
+const attempt = (f, handle, ...args) => {
+    try {
+        return f(...args)
+    } catch (e) {
+        return ö.isFunc(handle) ? handle(e) : handle
+    }
+}
+
+const tryCatch = tryer => {
+    try {
+        const result = tryer()
+        return [result, null]
+    } catch (error) {
+        return [null, error]
+    }
+}
+
+// Lens - pure setter for deep objects. Useful?
+
+const lens = (...path) => {
+    const getDeep = (o, path) => path.reduce((acc, prop) => acc[prop], o)
+
+    const setDeep = (o, v, path) => {
+        let newO = clone(o)
+
+        path.reduce(
+            (acc, prop, i) => {
+                acc.new[prop] = i == path.length - 1 ? v : clone(acc.old[prop])
+                return { new: acc.new[prop], old: acc.old[prop] }
+            },
+            { new: newO, old: o },
+        )
+
+        return newO
+    }
+
+    return {
+        get: o => getDeep(o, path),
+        set: (o, v) => setDeep(o, v, path),
+    }
+}
+
+const obj = { level1: { level2: 'value' } }
+const level2lens = lens('level1', 'level2')
+const newObj = level2lens(obj)
 
 // based on https://gist.github.com/jlevy/c246006675becc446360a798e2b2d781
 const hash = (str, seed = 0) => {
@@ -63,7 +111,6 @@ const bubblePipe = val =>
     })
 }) */
 
-
 const loop = (f, until, i = 0, increment = i => i + 1) =>
     !until(i) ? null : (f(i), loop(f, until, increment(i)))
 
@@ -93,7 +140,6 @@ const map2 = (a, f, acc = [], i = 0) =>
 //     -2,
 //     (i) => ++i,
 // )
-
 
 ö.log(ö.isPlainObj(a[0]), ö.isPlainObj(new Date()))
 

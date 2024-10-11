@@ -76,14 +76,16 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
         isAsync ?
             async () => {
                 for (let [i, { key, f, catcher }] of q.entries()) {
-                    if (key === 'peek') {
-                        peek(i, q[i - 1].key, v)
-                        continue
-                    }
                     try {
-                        if (key === 'returnIf')
+                        if (key === 'returnIf') {
                             if (await f(v)) break
                             else continue
+                        }
+
+                        if (key === 'peek') {
+                            peek(i, q[i - 1].key, v)
+                            continue
+                        }
 
                         v = await f(v)
                     } catch (error) {
@@ -96,14 +98,16 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
             }
         :   () => {
                 for (let [i, { key, f, catcher }] of q.entries()) {
-                    if (key === 'peek') {
-                        peek(i, q[i - 1].key, v)
-                        continue
-                    }
                     try {
-                        if (key === 'returnIf')
+                        if (key === 'returnIf') {
                             if (f(v)) break
                             else continue
+                        }
+
+                        if (key === 'peek') {
+                            peek(i, q[i - 1].key, v)
+                            continue
+                        }
 
                         v = f(v)
                     } catch (error) {

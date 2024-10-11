@@ -15,6 +15,78 @@ afterEach(() => {
     timeEnd.mockReset()
 })
 
+describe('ö.attempt', () => {
+    it('should try and fail with a default value', () => {
+        let result = ö.attempt(() => {
+            throw new Error()
+        }, 'Caught it')
+
+        expect(result).toBe('Caught it')
+    })
+
+    it('should try and fail with the handler receiving the error', () => {
+        let result = ö.attempt(
+            () => {
+                throw new Error('err')
+            },
+            e => e.message,
+        )
+
+        expect(result).toBe('err')
+    })
+
+    it('should try and return result of f if no error', () => {
+        let result = ö.attempt(() => 1, 0)
+
+        expect(result).toBe(1)
+    })
+
+    it('should read rest arguments as args for f', () => {
+        let result = ö.attempt((v, v2, v3) => v + v2 + v3, 'handler', 1, 2, 3)
+
+        expect(result).toBe(6)
+    })
+})
+
+describe('ö.attemptAsync', () => {
+    it('should try and fail with a default value', async () => {
+        let result = await ö.attemptAsync(() => {
+            throw new Error()
+        }, 'Caught it')
+
+        expect(result).toBe('Caught it')
+    })
+
+    it('should try and fail with the handler receiving the error', async () => {
+        let result = await ö.attemptAsync(
+            () => {
+                throw new Error('err')
+            },
+            e => e.message,
+        )
+
+        expect(result).toBe('err')
+    })
+
+    it('should try and return result of f if no error', async () => {
+        let result = await ö.attemptAsync(() => 1, 0)
+
+        expect(result).toBe(1)
+    })
+
+    it('should read rest arguments as args for f', async () => {
+        let result = await ö.attemptAsync(
+            (v, v2, v3) => v + v2 + v3,
+            'handler',
+            1,
+            2,
+            3,
+        )
+
+        expect(result).toBe(6)
+    })
+})
+
 describe('ö.verbose', () => {
     it('should get/set isVerbose & isThrowing', () => {
         expect(ö.verbose()).toMatchObject({

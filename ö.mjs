@@ -964,8 +964,7 @@ export const prettyNumber = (n, locale = 'sv-SE', precision = 2) => {
         : isInt(n) ? n.toLocaleString(locale)
         : n.toLocaleString(locale, {
                 minimumFractionDigits: precision,
-            })
-    )
+            })).replace(' ', ' ') //no-break
 }
 
 /**
@@ -1357,8 +1356,9 @@ export const getLocal = item => {
 
 /**
  * SetLocal - Sets `item` in local storage to `v`, and returns `v`.
- * @template {string} v
- * @param {v} item
+ * @template {any} v
+ * @param {string} item
+ * @param {v} v
  * @returns {v}
  */
 
@@ -1394,6 +1394,38 @@ export const setCss = (prop, v, selector = ':root') =>
 /**
  * Errors and logging
  */
+
+/**
+ * Attempt - Tries a function and returns result, or result of handler.
+ * @param {function} f
+ * @param {(e: Error) => * | *} [handle]
+ * @param {...args: *} [args]
+ * @returns {*}
+ */
+
+export const attempt = (f, handler, ...args) => {
+    try {
+        return f(...args)
+    } catch (e) {
+        return isFunc(handler) ? handler(e) : handler
+    }
+}
+
+/**
+ * Attempt - Tries a function and returns result, or result of handler.
+ * @param {function} f
+ * @param {(e: Error) => * | *} [handle]
+ * @param {...args: *} [args]
+ * @returns {*}
+ */
+
+export const attemptAsync = async (f, handler, ...args) => {
+    try {
+        return await f(...args)
+    } catch (e) {
+        return isFunc(handler) ? await handler(e) : handler
+    }
+}
 
 // verbose errors
 let isVerbose = true,

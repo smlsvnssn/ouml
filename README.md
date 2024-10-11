@@ -140,7 +140,7 @@ Returns largest value in `arr`.
 
 Returns smallest value in `arr`.
 
-#### ö.groupBy( arr, prop | f, asObject? = false) → Map
+#### ö.groupBy( arr, prop | f, asObject? = false) → Map | Object
 
 Returns a `Map` with keys corresponding to `prop` values, holding grouped values as arrays. Optionally returns an `object` if `asObject` is set to true.
 
@@ -169,9 +169,9 @@ let flat = [
     { id: '2.2', parent: '2' },
 ]
 
-let tree = mapToTree(flat, 'id', 'parent')
+let tree = ö.mapToTree(flat, 'id', 'parent')
 // or
-let sameTree = mapToTree(flat, item => [
+let sameTree = ö.mapToTree(flat, item => [
     item.id,
     item.id.split('.').slice(0, -1).join('.'),
 ])
@@ -533,6 +533,22 @@ Debounces execution of `f` until no calls are made within `t` milliseconds. If c
 
 All logging methods can be silenced globally by calling `ö.verbose(false)`.
 
+#### ö.attempt( f, handler, ...args) → result | handled error
+
+Wrapper around a try statement. It attempts to call `f` with `...args`, and returns the result. If `f` throws, it returns `handler`, or the return value of `handler` if `handler` is a function. `handler` gets the error as argument.
+
+```js
+const tried = ö.attempt(tryThis, 'It failed', 1, 2, 3)
+// or
+const again = ö.attempt(() => tryThis(1, 2, 3), 'It failed')
+// or
+const tried = ö.attempt(tryThis, e => ö.log(e.message), 1, 2, 3)
+```
+#### ö.attemptAsync( f, handler, ...args) → result | handled error
+
+Same, but awaits `f` and `handler`.
+
+
 #### ö.verbose( isVerbose?, isThrowing? ) → { isVerbose, isThrowing }
 
 Set `isVerbose`, turns off error/message logging when set to `false`. Defaults to `true`. Optionally set `isThrowing` to `true`, in order to throw errors instead of logging them.
@@ -726,10 +742,7 @@ Or like so, saving the chain for later, providing the value last:
 ```js
 import { chain } from 'ouml/chain'
 
-const doStuffAndThings = chain()
-    .coolStuff()
-    .wonderfulThings()
-    .end()
+const doStuffAndThings = chain().f(coolStuff).f(wonderfulThings).end()
 
 let processedValue = doStuffAndThings('anyValue')
 ```
@@ -774,7 +787,7 @@ Guard clause, lets you exit the call chain early. The function receives the curr
 
 #### .try( tryFunction, catchFunction? ) → Proxy
 
-Error handler, lets you try a function, and run `catchFunction` if it throws. `tryFunction` receives the current value as argument, `catchFunction` receives the current value and the thrown error. `catchFunction` defaults to `v => v`, simply passing the previous value along.
+Error handler, lets you try a function, and run `catchFunction` if it throws. `tryFunction` receives the current value as argument, `catchFunction` receives `value, error` as arguments. `catchFunction` defaults to `v => v`, simply passing the previous value along.
 
 #### .peek() → Proxy
 
@@ -866,7 +879,7 @@ When called as a method, the getter argument to `observe` is omitted.
 
 #### observable( value ) → observable object
 
-Takes a `value`, and returns it wrapped in an observable `Proxy`, recursively wrapping nested objects as well. If you add a new property to an observable, the value of the new property is made observable as well (if it's not a primitive). 
+Takes a `value`, and returns it wrapped in an observable `Proxy`, recursively wrapping nested objects as well. If you add a new property to an observable, the value of the new property is made observable as well (if it's not a primitive).
 
 If `value` is a primitive (`String`, `Number`, `Boolean` etc), the value is wrapped in an object with a single property: `value`. You cannot assign to a primitive observable value directly, you need to use the `value` prop instead, or else you'd overwite the proxy.
 
@@ -898,7 +911,9 @@ If the getter is a raw primitive observable, the value is unwrapped before the c
 let o = observable(0)
 observe(o, v => ö.log(`The value is ${v}`)) // logs 'The value is 0'
 ```
-or 
+
+or
+
 ```js
 let o = observable(0)
 o.observe(v => ö.log(`The value is ${v}`)) // logs 'The value is 0'
@@ -920,7 +935,7 @@ let deep = observable({
     a: { b: { c: { d: "What's the purpose of it all?" } } },
 })
 observe(deep, ö.log)
-deep.a.b.c.d = 'Deep stuff' 
+deep.a.b.c.d = 'Deep stuff'
 ```
 
 The drawback with this, however, is that the entire object returned from the getter gets deep cloned every time the observer is triggered (to avoid recursion among other things). This is fairly untested with regards to performance, so try to keep the data structure fairly small. There are possible optimisations to be done here, maybe in the future...
@@ -939,8 +954,6 @@ observe(() => {
     return { stuff, that, we, really, need }
 }, renderSmallPartOfBigAssObject)
 ```
-
-
 
 #### isObservable( value ) → Boolean
 
