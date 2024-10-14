@@ -50,7 +50,7 @@ Helper methods for iterations, less verbose than regular loops.
 
 #### ö.range( start, end?, step? = 1 ) yields Number
 
-Yields `Number`s within specified range. Parameters `end` and `step` are optional. If `end` is not provided, range starts with `0`, and ends with `start`. Handles negative values. Useful in `for of` loops, for example
+Yields `Number`s within specified range. Parameters `end` and `step` are optional. If `end` is not provided, range starts with `0`, and ends with `start`. Handles negative values. Useful in `for of` loops, for example:
 
 ```js
 for (let i of ö.range(100)) doStuff(i)
@@ -281,7 +281,7 @@ Returns `true` if `a` and `b` share no members.
 
 Checks equality by value rather than reference. Compares prototypes, and uses `Reflect.ownKeys` to compare all own keys, including symbols. Works for all basic types and most built in classes, but may produce unexpected results in edge cases. Equality is tricky, and depends on what you personally beleive to be equal 😇. Does deep comparison by default, and may be slow for large data structures. If `deep == false`, does flat comparison instead.
 
-#### ö.clone( v, deep? = true, immutable? = false, preservePrototype? = true ) → cloned value
+#### ö.clone( v, deep? = true, immutable? = false ) → cloned value
 
 Performs cloning of most common types, including `Array` and typed arrays, `Map`, `Set`, `Date` and objects. Defaults to deep cloning, set `deep` to `false` for shallow cloning. Tries to preserve `prototype` when cloning objects, but may fail in untested edge cases. Set `preservePrototype` to false to disable this (this is somewhat faster). Does not clone functions, and doesn't handle circular references. Use with some caution 🤫.
 
@@ -357,9 +357,9 @@ const SIZES = ö.createEnum('small', 'medium', 'large')
 const SIZES = ö.createEnum(['small', 'medium', 'large'])
 // or:
 const SIZES = ö.createEnum({
-    small: Symbol(),
-    medium: Symbol(),
-    large: Symbol(),
+    small: Symbol('small'),
+    medium: Symbol('medium'),
+    large: Symbol('large'),
 })
 giveMeIcecream(SIZES.large)
 ```
@@ -466,7 +466,7 @@ Returns `numChars` random characters. Max for `numChars` is 100. Useful for prod
 
 Returns a string without html tags.
 
-#### ö.when( bool, whenTrue, whenFalse? = false ) → value | empty string;
+#### ö.when( bool, whenTrue, whenFalse? ) → value | empty string;
 
 A slightly more readable wrapper around a ternary expression. Returns `whenTrue` if `bool` is true, otherwise returns the empty string. Optionally returns `whenFalse` if specified. Useful primarily in template strings.
 
@@ -533,21 +533,21 @@ Debounces execution of `f` until no calls are made within `t` milliseconds. If c
 
 All logging methods can be silenced globally by calling `ö.verbose(false)`.
 
-#### ö.attempt( f, handler, ...args) → result | handled error
+#### ö.attempt( f, handler?, ...args) → result | handled error
 
-Wrapper around a try statement. It attempts to call `f` with `...args`, and returns the result. If `f` throws, it returns `handler`, or the return value of `handler` if `handler` is a function. `handler` gets the error as argument.
+Wrapper around a try statement. It attempts to call `f` with `...args`, and returns the result. If `f` throws, it returns `handler`, or the return value of `handler` if `handler` is a function. `handler` gets the error as argument. `handler` defaults to a function returning the caught error.
 
 ```js
 const tried = ö.attempt(tryThis, 'It failed', 1, 2, 3)
 // or
-const again = ö.attempt(() => tryThis(1, 2, 3), 'It failed')
+const tried = ö.attempt(() => tryThis(1, 2, 3), 'It failed')
 // or
 const tried = ö.attempt(tryThis, e => ö.log(e.message), 1, 2, 3)
 ```
-#### ö.attemptAsync( f, handler, ...args) → result | handled error
+
+#### ö.attemptAsync( f, handler?, ...args) → result | handled error
 
 Same, but awaits `f` and `handler`.
-
 
 #### ö.verbose( isVerbose?, isThrowing? ) → { isVerbose, isThrowing }
 

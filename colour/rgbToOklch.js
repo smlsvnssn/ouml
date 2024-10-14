@@ -17,20 +17,20 @@ export const oklab2oklch = ([l, a, b]) => [
     :   ((((Math.atan2(b, a) * 180) / Math.PI) % 360) + 360) % 360,
 ]
 
-export const rgb2srgbLinear = (rgb) =>
-    rgb.map((c) =>
+export const rgb2srgbLinear = rgb =>
+    rgb.map(c =>
         Math.abs(c) <= 0.04045 ?
             c / 12.92
         :   (c < 0 ? -1 : 1) * ((Math.abs(c) + 0.055) / 1.055) ** 2.4,
     )
-export const srgbLinear2rgb = (rgb) =>
-    rgb.map((c) =>
+export const srgbLinear2rgb = rgb =>
+    rgb.map(c =>
         Math.abs(c) > 0.0031308 ?
             (c < 0 ? -1 : 1) * (1.055 * Math.abs(c) ** (1 / 2.4) - 0.055)
         :   12.92 * c,
     )
 
-export const oklab2xyz = (lab) => {
+export const oklab2xyz = lab => {
     const LMSg = multiplyMatrices(
         [
             1, 0.3963377773761749, 0.2158037573099136, 1, -0.1055613458156586,
@@ -38,7 +38,7 @@ export const oklab2xyz = (lab) => {
         ],
         lab,
     )
-    const LMS = LMSg.map((val) => val ** 3)
+    const LMS = LMSg.map(val => val ** 3)
     return multiplyMatrices(
         [
             1.2268798758459243, -0.5578149944602171, 0.2813910456659647,
@@ -48,7 +48,7 @@ export const oklab2xyz = (lab) => {
         LMS,
     )
 }
-export const xyz2oklab = (xyz) => {
+export const xyz2oklab = xyz => {
     const LMS = multiplyMatrices(
         [
             0.819022437996703, 0.3619062600528904, -0.1288737815209879,
@@ -57,7 +57,7 @@ export const xyz2oklab = (xyz) => {
         ],
         xyz,
     )
-    const LMSg = LMS.map((val) => Math.cbrt(val))
+    const LMSg = LMS.map(val => Math.cbrt(val))
     return multiplyMatrices(
         [
             0.210454268309314, 0.7936177747023054, -0.0040720430116193,
@@ -67,7 +67,7 @@ export const xyz2oklab = (xyz) => {
         LMSg,
     )
 }
-export const xyz2rgbLinear = (xyz) => {
+export const xyz2rgbLinear = xyz => {
     return multiplyMatrices(
         [
             3.2409699419045226, -1.537383177570094, -0.4986107602930034,
@@ -77,7 +77,7 @@ export const xyz2rgbLinear = (xyz) => {
         xyz,
     )
 }
-export const rgbLinear2xyz = (rgb) => {
+export const rgbLinear2xyz = rgb => {
     return multiplyMatrices(
         [
             0.41239079926595934, 0.357584339383878, 0.1804807884018343,
@@ -90,86 +90,9 @@ export const rgbLinear2xyz = (rgb) => {
 
 //export const oklch2rgb = (lch) =>
 //   srgbLinear2rgb(xyz2rgbLinear(oklab2xyz(oklch2oklab(lch))))
-export const rgb2oklch = (rgb) =>
+export const rgb2oklch = rgb =>
     oklab2oklch(xyz2oklab(rgbLinear2xyz(rgb2srgbLinear(rgb))))
 
 // taken from https://github.com/color-js/color.js/blob/main/src/spaces/oklch.js
 // be aware, that oklch2rgb might return values out of bounds. I believe you should clamp them?
 // also for gray colors, hue would be NaN
-
-console.log(rgb2oklch([255, 255, 254]))
-
-import { createElement, toHsla, hsla } from '../ö.mjs'
-
-// from https://codepen.io/smlsvnssn/pen/dyQaQvp?editors=0011
-let clrEl
-
-const colorspaces = {
-    oklch: ['l', 'c', 'h', 'a'],
-    lch: ['l', 'c', 'h', 'a'],
-    oklab: ['l', 'a', 'b', 'a'],
-    lab: ['l', 'a', 'b', 'a'],
-}
-
-const mountClrEl = () => {
-    const e = createElement('<span id=ö_color-mix>')
-    e.style.display = 'none'
-    document.body.appendChild(e)
-    return e
-}
-
-const clrToObj = (clr) => {
-    const clrArr = clr.match(/([a-z0-9\.\-])+/g)
-
-    // Throw all srgb variants into hsl conversion
-    if (clrArr[0] === 'color')
-        return {
-            type: 'hsl',
-            ...toHsla(
-                `rgb(${clrArr[2] * 255} ${clrArr[3] * 255} ${clrArr[4] * 255} / ${
-                    clrArr[5] || 1
-                })`,
-            ),
-        }
-
-    const clrObj = clrArr.reduce((acc, v, i, a) => {
-        if (i === 0) {
-            acc.type = v
-            return acc
-        }
-        acc[colorspaces[a[0]][i - 1]] = +v
-        return acc
-    }, {})
-
-    // Add default alpha
-    clrObj.a ??= 1
-
-    return clrObj
-}
-
-const objToClr = (clrObj) => {
-    const v = Object.values(clrObj)
-    if (v[0] === 'hsl')
-        return `${v[0]}(${v[1]} ${v[2]}% ${v[3]}% / ${v[4] || 1})`
-    return `${v[0]}(${v[1]} ${v[2]} ${v[3]} / ${v[4] || 1})`
-}
-
-const colorMix = (
-    clr1,
-    clr2,
-    percent1 = 50,
-    percent2 = 50,
-    colorspace = 'oklab',
-    asString = false,
-) => {
-    clrEl ??= mountClrEl()
-    clrEl.style.color = `color-mix(in ${colorspace}, ${clr1} ${percent1}%, ${clr2} ${percent2}%)`
-    return asString ?
-            getComputedStyle(clrEl).color
-        :   clrToObj(getComputedStyle(clrEl).color)
-}
-
-const toOklch = (clr) => colorMix(clr, clr, 100, 100, 'oklch')
-const toOklab = (clr) => colorMix(clr, clr, 100, 100, 'oklab')
-
-toOklch()

@@ -1,9 +1,11 @@
 import { describe, expect, it, vi, afterEach, beforeEach } from 'vitest'
 import * as ö from '../ö.mjs'
 
-beforeEach(() => {
-    vi.useFakeTimers()
-})
+beforeEach(() => vi.useFakeTimers())
+
+const error = vi.spyOn(console, 'error')
+
+afterEach(() => error.mockReset())
 
 describe('ö.pipeAsync', () => {
     it('should produce a promise producing a value', async () => {
@@ -37,6 +39,17 @@ describe('ö.wait', () => {
 
         time = Date.now() - time
         expect(time).toBeGreaterThan(0).toBeLessThan(10)
+    })
+
+    it('should call error if f errors', async () => {
+        let promise = ö.wait(2, () => {
+            throw new Error('testy')
+        })
+        await vi.advanceTimersByTimeAsync(2)
+        let resolved = await promise
+        //expect(error).toHaveBeenCalledOnce()
+        expect(resolved).toBeInstanceOf(Error)
+        expect(resolved.message).toBe('testy')
     })
 
     it('should reset previous call globally if resetPrevCall = true', async () => {
@@ -112,7 +125,6 @@ describe('ö.waitFor', () => {
     })
 
     it('should await specified event', async () => {
-
         let promise = ö.waitFor('html', 'test')
 
         document.querySelector('html').dispatchEvent(new Event('test'))

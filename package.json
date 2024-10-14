@@ -1,12 +1,13 @@
 {
 	"name": "ouml",
-	"version": "0.2.1",
+	"version": "0.3.0",
 	"description": "smlsvnssn",
 	"main": "ö.mjs",
 	"module": "ö.mjs",
 	"type": "module",
 	"exports": {
 		".": "./ö.mjs",
+		"./colour": "./colour/index.mjs",
 		"./övents": "./övents/index.mjs",
 		"./öbservable": "./öbservable/index.mjs",
 		"./chain": "./chain/index.mjs"
@@ -26,12 +27,12 @@
 	},
 	"devDependencies": {
 		"@types/node": "^16.18.106",
-		"@vitest/coverage-c8": "latest",
 		"jsdom": "^20.0.3",
 		"prettier": "latest",
 		"typescript": "^5.5.4",
 		"vite": "^3.2.10",
 		"vitest": "latest",
+		"@vitest/coverage-c8": "latest",
 		"@vitest/coverage-v8": "^2.0.5"
 	},
 	"repository": {

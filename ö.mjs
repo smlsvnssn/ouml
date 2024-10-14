@@ -1,7 +1,5 @@
 // @ts-check
 
-import { it } from 'node:test'
-
 /**
  * Generators
  */
@@ -485,13 +483,8 @@ export const createElement = (html, isSvg = false) => {
 export const parseDOMStringMap = obj => {
     // convert from DOMStringMap to object
     let o = { ...obj }
-
     // parse what's parseable
-    for (let key in o)
-        try {
-            // @ts-ignore
-            o[key] = JSON.parse(o[key])
-        } catch (e) {}
+    for (let key in o) attempt(() => (o[key] = JSON.parse(o[key])))
 
     return o
 }
@@ -581,16 +574,10 @@ export const equals = isEqual
  * @param {*} v
  * @param {boolean} [deep]
  * @param {boolean} [immutable]
- * @param {boolean} [preservePrototype]
  * @returns {*}
  */
 
-export const clone = (
-    v,
-    deep = true,
-    immutable = false,
-    preservePrototype = true,
-) => {
+export const clone = (v, deep = true, immutable = false) => {
     const doClone = v => (deep ? clone(v, deep, immutable) : v)
     const doFreeze = v => (immutable ? Object.freeze(v) : v)
 
@@ -721,6 +708,8 @@ export const createEnum = (v, ...rest) => {
 
     return Object.freeze(enu)
 }
+
+export const Enum = createEnum
 
 /**
  * Mathy
@@ -1061,13 +1050,7 @@ export const stripTags = s => s.replace(/(<([^>]+)>)/gi, '')
  * @returns {(* | string)}
  */
 
-export const when = (bool, v, f = false) => (bool ? v : f || '')
-
-/**
- * Colours
- */
-
-export * from './colour/hsla.js'
+export const when = (bool, v, f) => (bool ? v : f ?? '')
 
 /**
  * Async
@@ -1092,14 +1075,17 @@ export const wait = async (t = 1, f, resetPrevCall = false) => {
         rejectPrev()
     }
 
-    try {
-        await new Promise((resolve, reject) => {
-            timeout = setTimeout(resolve, t)
-            rejectPrev = reject
-        })
+    return attemptAsync(
+        async () => {
+            await new Promise((resolve, reject) => {
+                timeout = setTimeout(resolve, t)
+                rejectPrev = reject
+            })
 
-        if (isFunc(f)) return await f()
-    } catch (e) {}
+            if (isFunc(f)) return await f()
+        },
+        e => (is(e) ? error(e) : e),
+    )
 }
 
 /**
@@ -1168,15 +1154,14 @@ export const load = async (
     isJSON = true,
     errorMessage = null,
     settings = {},
-) => {
-    try {
-        let response = await fetch(url, settings)
-        return (await isJSON) ? response.json() : response.text()
-    } catch (e) {
-        error(e)
-        return errorMessage ?? e
-    }
-}
+) =>
+    attemptAsync(
+        async () => {
+            let response = await fetch(url, settings)
+            return (await isJSON) ? response.json() : response.text()
+        },
+        e => (error(e), errorMessage ?? e),
+    )
 
 /**
  * Basic type checking
@@ -1403,7 +1388,7 @@ export const setCss = (prop, v, selector = ':root') =>
  * @returns {*}
  */
 
-export const attempt = (f, handler, ...args) => {
+export const attempt = (f, handler = e => e, ...args) => {
     try {
         return f(...args)
     } catch (e) {
@@ -1412,14 +1397,14 @@ export const attempt = (f, handler, ...args) => {
 }
 
 /**
- * Attempt - Tries a function and returns result, or result of handler.
+ * AttemptAsync - Tries a function and returns result, or result of handler.
  * @param {function} f
  * @param {(e: Error) => * | *} [handle]
  * @param {...args: *} [args]
  * @returns {*}
  */
 
-export const attemptAsync = async (f, handler, ...args) => {
+export const attemptAsync = async (f, handler = e => e, ...args) => {
     try {
         return await f(...args)
     } catch (e) {

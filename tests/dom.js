@@ -44,7 +44,7 @@ describe('ö.createElement', () => {
 
 describe('ö.parseDOMStringMap', () => {
     it('parses a parseDOMStringMap to an object', () => {
-        let element = ö.createElement('<div data-test="test">')
+        let element = ö.createElement('<div data-test="test" >')
         let data = ö.parseDOMStringMap(element.dataset)
 
         expect(data).toBeInstanceOf(Object)

@@ -35,6 +35,17 @@ describe('ö.attempt', () => {
         expect(result).toBe('err')
     })
 
+    it('should return caught error if handler is not provided', () => {
+        let result = ö.attempt(
+            () => {
+                throw new Error('err')
+            },
+        )
+
+        expect(result).toBeInstanceOf(Error)
+        expect(result.message).toBe('err')
+    })
+
     it('should try and return result of f if no error', () => {
         let result = ö.attempt(() => 1, 0)
 

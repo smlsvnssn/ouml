@@ -248,28 +248,3 @@ describe('isObservable', () => {
         expect([]).not.toSatisfy(isObservable)
     })
 })
-
-// const cb = (...v) => ö.log('callback: ', ...v)
-// primitive.observe(cb)
-// array.observe(cb)
-// object.observe(cb)
-
-// primitive.value = 2
-
-// primitive.value = 3
-
-// array.push(5)
-
-// object.test2 = 'Also test'
-
-// ö.log(isObservable(array))
-
-// const thisGuy = observable({ name: 'Guy', surname: 'This' })
-
-// observe(thisGuy, (val, oldVal, changedProp) =>
-//     ö.log(`${changedProp} has changed`),
-// )
-
-// thisGuy.observe(v => ö.log(`Name: ${v.name}  Surname: ${v.surname}`))
-
-// thisGuy.surname = 'Fawkes'
