@@ -31,7 +31,7 @@ const lookup = (key, v, isThrowing) => {
 
     if (isThrowing) throw new Error(errorMsg)
 
-    ö.warn(`${errorMsg} Skipping.`) // todo: Change skipping behaviour? Stoopid? Better to throw by default?
+    ö.warn(`${errorMsg} Skipping.`) 
 
     // on warn, just return value
     return () => v
@@ -121,7 +121,7 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
 
     const caseInternal =
         key =>
-        (f, catcher = v => v) =>
+        (f, catcher = ö.id) =>
             queue(key, f, catcher)
 
     const caseEnd = () => initial => {

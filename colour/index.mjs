@@ -1,220 +1,182 @@
 import {
-    createElement,
-    toHsla,
-    isNull,
-    warn,
+    clamp,
+    id,
     isStr,
-    isObj,
+    isArr,
+    lerp,
+    log,
+    pipe,
     round,
+    times,
+    easeOut,
+    isFunc,
+    isNum,
 } from '../ö.mjs'
-
-// from https://codepen.io/smlsvnssn/pen/dyQaQvp?editors=0011
-
-let clrEl
-
-const mountClrEl = () => {
-    const e = createElement('<span id=ö_color-mix>')
-    e.style.display = 'none'
-    globalThis.document.body.appendChild(e)
-    return e
-}
-
-const colourspaces = {
-    oklch: ['l', 'c', 'h', 'alpha'],
-    lch: ['l', 'c', 'h', 'alpha'],
-    oklab: ['l', 'a', 'b', 'alpha'],
-    lab: ['l', 'a', 'b', 'alpha'],
-}
+import {
+    parseToRgb,
+    rgbToOklch,
+    oklchToOklab,
+    oklabToOklch,
+} from './colourConversion.mjs'
 
 /**
- * @typedef { {type:string, l:number, c:number, h:number, alpha:number}
- * | {type:string, l:number, c:number, h:number, alpha:number}
- * | {type:string, h:number, s:number, l:number, alpha:number} } Colour
+ * @typedef {Object} Colour
+ * @prop {(l:number|undefined) => Colour} lightness - get/set lightness
+ * @prop {(c:number|undefined) => Colour} chroma - get/set chroma
+ * @prop {(h:number|undefined) => Colour} hue - get/set hue
+ * @prop {(a:number|undefined) => Colour} alpha - get/set alpha
+ * @prop {() => {lightness:number, chroma:number, hue:number, alpha:number}} valueOf
+ *  - returns an object with l, c, h, a values
+ * @prop {() => string} toString
+ *  - returns a css colour string in oklch()
+ * @prop {() => Colour} complement
+ * @prop {() => Colour} invert
+ * @prop {(amount:number) => Colour} darken - Amount is a percentage between 0 and 1.
+ * @prop {(amount:number) => Colour} lighten - Amount is a percentage between 0 and 1.
+ * @prop {(todo) => Colour[]} palette
+ * @prop {(clr:Colour|string, steps?:number, colourspace?:string, interpolator?:function) => Colour[]} steps
+ * @prop {(clr:Colour|string, percent?:number, colourspace?:string, interpolator?:function) => Colour} mix
+ * @prop {(clr:Colour|string, colourspace?:string, interpolator?:function) => function} getInterpolator
  */
+
+export function Colour() {}
+
+export const isColour = v => v instanceof Colour
 
 /**
- * ColourToObj - converts a valid css colour to a Colour object.
- * @param { string } clrStr
- * @returns { null | Colour }
+ * Returns a Colour in oklch.
+ * @param { number | string | Colour } lightness
+ * - A lightness value between 0 and 1, or a string representing a colour in hex/rgb/rgba/hsl/hsla format, or a Colour.
+ * @param {number} [chroma] - value between 0 and 0.3ish
+ * @param {number} [hue] - value between 0 and 360
+ * @param {number} [alpha] - value between 0 and 1
+ * @returns {Colour}
  */
 
-export const colourToObj = clrStr => {
-    // if toHsla can do it first try, let it
-    let c = toHsla(clrStr, false, false)
-    if (!isNull(c)) return c
+const colour = (lightness = 0.7, chroma = 0.15, hue = 30, alpha = 1) => {
+    let l, c, h, a
 
-    let clrArr = clrStr.match(/([a-z0-9\.\-])+/g)
+    const set = (_l, _c, _h, _a) => {
+        l = clamp(_l, 0, 1)
+        c = clamp(_c, 0, 0.4)
+        h = clamp(_h, 0, 360)
+        a = clamp(_a, 0, 1)
+    }
 
-    // Throw all srgb variants into hsl conversion
-    if (clrArr[0] === 'color')
-        return {
-            type: 'hsl',
-            ...toHsla(
-                `rgb(${clrArr[2] * 255} ${clrArr[3] * 255} ${clrArr[4] * 255} / ${
-                    clrArr[5] || 1
-                })`,
-            ),
-        }
+    const throughSpace = (clr, type, f, toOklab = type == 'oklab') => {
+        let [c1, c2] =
+            isArr(clr) ? [[...clr[0]], [...clr[1]]] : [[l, c, h, a], [...clr]]
 
-    // Warn and return null if unsupported
-    if (!colourspaces[clrArr[0]])
-        return warn("Sorry, can't parse " + clrStr), null
+        ;[c1, c2] = [c1, c2].map(toOklab ? oklchToOklab : id)
 
-    // Convert to appropriate colorspace
-    const clrObj = clrArr.reduce((acc, v, i, a) => {
-        if (i === 0) {
-            acc.type = v
-            return acc
-        }
-        acc[colourspaces[a[0]][i - 1]] = +v
-        return acc
-    }, {})
+        let out = f(c1, c2).map(c =>
+            toOklab ? colour(...oklabToOklch(c)) : colour(...c),
+        )
 
-    // Add default alpha
-    clrObj.alpha ??= 1
+        return out.length == 1 ? out[0] : out
+    }
 
-    return clrObj
-}
+    if (isStr(lightness)) {
+        // todo: support oklch strings
+        pipe(
+            lightness,
+            parseToRgb,
+            ([r, g, b, a]) => rgbToOklch([r / 255, g / 255, b / 255, a ?? 1]),
+            v => set(...v),
+        )
+    } else if (lightness instanceof Colour) set(...lightness)
+    else set(lightness, chroma, hue, alpha)
 
-/**
- * ObjToColour - converts a a Colour object to a valid css string.
- * @param { Colour } clrObj
- * @returns { string }
- */
+    let o = {
+        lightness: _l =>
+            isFunc(_l) ? colour(_l(l), c, h, a)
+            : isNum(_l) ? colour(_l, c, h, a)
+            : l,
 
-export const objToColour = clrObj => {
-    let v = Object.values(clrObj)
-    return v[0] === 'hsl' ?
-            `${v[0]}(${v[1]} ${v[2]}% ${v[3]}% / ${v[4] ?? 1})`
-        :   `${v[0]}(${v[1]} ${v[2]} ${v[3]} / ${v[4] ?? 1})`
-}
+        chroma: _c =>
+            isFunc(_c) ? colour(l, _c(c), h, a)
+            : isNum(_c) ? colour(l, _c, h, a)
+            : c,
 
-/**
- * ColourMix - mixes valid css colours or Colour objects.
- * @param { string | Colour } clr1
- * @param { string | Colour } clr2
- * @param { number } [percent]
- * @param { string } [colourspace]
- * @param { boolean } [asString]
- * @returns { string | Colour }
- */
+        hue: _h =>
+            isFunc(_h) ? colour(l, c, _h(h), a)
+            : isNum(_h) ? colour(l, c, _h, a)
+            : h,
 
-export const colourMix = (
-    clr1,
-    clr2,
-    percent = 50,
-    colourspace = 'oklab',
-    asString = false,
-) => {
-    const toStr = c => (isStr(c) ? c : objToColour(c))
-    ;[clr1, clr2] = [toStr(clr1), toStr(clr2)]
+        alpha: _a =>
+            isFunc(_a) ? colour(l, c, h, _a(a))
+            : isNum(_a) ? colour(l, c, h, _a)
+            : a,
 
-    clrEl ??= mountClrEl()
-    clrEl.style.color = `color-mix(in ${colourspace}, ${clr1} ${percent}%, ${clr2} ${100 - percent}%)`
+        [Symbol.iterator]: function* () {
+            for (const v of [l, c, h, a]) yield v
+        },
 
-    return asString ?
-            globalThis.getComputedStyle(clrEl).color
-        :   colourToObj(globalThis.getComputedStyle(clrEl).color)
-}
+        valueOf: () => ({
+            lightness: l,
+            chroma: c,
+            hue: h,
+            alpha: a,
+        }),
 
-export const toOklch = clr => colourMix(clr, clr, 100, 'oklch')
+        toString: () =>
+            `oklch(${round(l * 100, 4)}% ${round(c, 4)} ${round(h, 4)} / ${round(a, 4)})`,
 
-export const toOklab = clr => colourMix(clr, clr, 100, 'oklab')
+        complement: () => colour(l, c, (h + 180) % 360, a),
 
-export const darken = (clr, percent) => colourMix('#000', clr, percent, 'oklab')
+        invert: () => colour(1 - l, c, h, a).complement(),
 
-export const lighten = (clr, percent) =>
-    colourMix('#fff', clr, percent, 'oklab')
+        darken: (amount = 0.1) => colour(l - (1 - l) * amount, c, h, a),
 
-export const transparency = (clr, percent) =>
-    colourMix('transparent', clr, percent, 'oklab')
+        lighten: (amount = 0.1) => colour(l + (1 - l) * amount, c, h, a),
 
-/**
- * ToHsla - converts a css colour to hsla
- * @param {string} c
- * @param {boolean} [asString]
- * @returns {(string | { type:string, h: number, s: number, l: number, a: number})}
- */
+        palette: (colourspace = 'oklab', interpolator = lerp) => {
+            /* TODO: Returns basic colour palettes, with a few options.
+           Triad, monochrome, analogous, complementary, shades ( 50, 100, 200... 900, 950 )
+        */
+            log(c, h, a)
 
-export const toHsla = (c, asString = false, warn = true) => {
-    let rgba, h, s, l, r, g, b, alpha
-
-    c = c.trim()
-
-    // Parse
-    if (/^#/.test(c)) {
-        // is hex
-        rgba = Array.from(c)
-            .slice(1) // remove #
-            .flatMap(
-                (v, i, a) =>
-                    a.length <= 4 ? [Number('0x' + v + v)]
-                    : i % 2 ?
-                        [] // omitted by flatmap
-                    :   [Number('0x' + v + a[i + 1])], // current + next
+            return throughSpace(
+                [colour(0.97, c / 3, h, a), colour(0.03, c, h, a)],
+                colourspace,
+                (c1, c2) =>
+                    times(11, i =>
+                        c1.map((v, ii) =>
+                            ii == 1 ?
+                                easeOut(v, c2[ii], (1 / 10) * i)
+                            :   lerp(v, c2[ii], (1 / 10) * i),
+                        ),
+                    ),
             )
+        },
 
-        // fix alpha
-        if (rgba.length === 4) rgba[3] / 255
-    } else if (/^rgb\(|^rgba\(/.test(c)) {
-        // is rgb/rgba
-        rgba = c.match(/([0-9\.])+/g).map(v => Number(v)) // Pluck the numbers
+        steps: (clr, steps = 1, colourspace = 'oklab', interpolator = lerp) =>
+            throughSpace(
+                isStr(clr) ? colour(clr) : clr,
+                colourspace,
+                (c1, c2) =>
+                    times(steps + 2, i =>
+                        c1.map((v, ii) =>
+                            interpolator(v, c2[ii], (1 / (steps + 1)) * i),
+                        ),
+                    ),
+            ),
 
-        if (/%/.test(c))
-            // fix percent
-            rgba = rgba.map((v, i) => (i < 3 ? Math.round((v / 100) * 255) : v))
-    } else if (/^hsl\(|^hsla\(/.test(c)) {
-        // is hsl/hsla
-        ;[h, s, l, alpha] = c.match(/([0-9\.])+/g).map(v => Number(v)) // Pluck the numbers
+        mix: (clr, percent = 0.5, colourspace = 'oklab', interpolator = lerp) =>
+            throughSpace(
+                isStr(clr) ? colour(clr) : clr,
+                colourspace,
+                (c1, c2) => [c1.map((v, i) => interpolator(v, c2[i], percent))],
+            ),
 
-        alpha ??= 1
-    } else {
-        return warn ? (warn("Sorry, can't parse " + c), null) : null
+        getInterpolator:
+            (clr, colourspace = 'oklab', interpolator = lerp) =>
+            t =>
+                colour(l, c, h, a).mix(clr, t, colourspace, interpolator),
     }
 
-    // Convert
-    if (rgba) {
-        // add default alpha if needed
-        if (rgba.length === 3) rgba.push(1)
-        ;[r, g, b, alpha] = rgba.map((v, i) => (i < 3 ? v / 255 : v))
-
-        // Adapted from https://css-tricks.com/converting-color-spaces-in-javascript/
-        let cmin = Math.min(r, g, b),
-            cmax = Math.max(r, g, b),
-            delta = cmax - cmin
-
-        // prettier-ignore
-        h = (round(
-                (delta === 0 ? 0
-                : cmax === r ? ((g - b) / delta) % 6
-                : cmax === g ? (b - r) / delta + 2
-                : /*cmax  === b*/ (r - g) / delta + 4) * 60,
-            ) + 360) % 360 // prevent negatives
-
-        l = (cmax + cmin) / 2
-        s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1))
-
-        // sanitize
-        s = round(s * 100, 2)
-        l = round(l * 100, 2)
-        alpha = round(alpha, 2)
-    }
-
-    // todo: use objToColour instead.
-    return asString ? hsla(h, s, l, alpha) : { type: 'hsl', h, s, l, alpha }
+    Object.setPrototypeOf(o, new Colour())
+    return Object.freeze(Object.create(o))
 }
 
-/**
- * Hsla - Deprecated Converts a hsla colour object to a valid css string.
- * @deprecated use objToColour instead.
- * @param {(number | { h: number; s: number; l: number; a: number })} h
- * @param {number} [s]
- * @param {number} [l]
- * @param {number} [a]
- * @returns string
- */
-
-export const hsla = (h, s = 70, l = 50, a = 1) => {
-    if (isObj(h)) ({ h, s = s, l = l, a = a } = h)
-    return `hsla(${h % 360}, ${s}%, ${l}%, ${a})`
-}
+export default colour

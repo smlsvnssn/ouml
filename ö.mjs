@@ -543,7 +543,6 @@ export const deepest = (element, selector = '*') => {
 /**
  * IsEqual - Checks equality by value rather than reference.
  * Based on https://www.30secondsofcode.org/js/s/equals
- * TODO: Use Reflect.ownKeys? Testcase?
  * @param {*} a
  * @param {*} b
  * @param {boolean} deep
@@ -608,6 +607,15 @@ export const clone = (v, deep = true, immutable = false) => {
  */
 
 export const immutable = (v, deep = true) => clone(v, deep, true)
+
+/**
+ * Identity
+ * @template T
+ * @param {T} v
+ * @returns {T}
+ */
+
+export const id = v => v
 
 /**
  * Pipe - Pipes function calls for a value.
@@ -893,11 +901,6 @@ export const easeIn = (a, b, t) => lerp(a, b, t ** 2)
 
 export const easeOut = (a, b, t) => lerp(a, b, t * (2 - t))
 
-// https://lisyarus.github.io/blog/posts/exponential-smoothing.html
-//export const spring = (a, b, t, speed = 5) =>
-//    lerp(a, b, 1 - Math.exp(-speed * t))
-// todo: test
-
 /**
  * ToPolar - Converts cartesian coordinates to polar.
  * @param {number} x
@@ -1050,7 +1053,7 @@ export const stripTags = s => s.replace(/(<([^>]+)>)/gi, '')
  * @returns {(* | string)}
  */
 
-export const when = (bool, v, f) => (bool ? v : f ?? '')
+export const when = (bool, v, f) => (bool ? v : (f ?? ''))
 
 /**
  * Async

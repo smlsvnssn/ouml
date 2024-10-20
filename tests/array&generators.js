@@ -353,7 +353,7 @@ describe('ö.mapDeep', () => {
     })
 
     it('should preserve structure of tree if given an arr of objects with flatten == true (identity)', () => {
-        const mapper = v => v
+        const mapper = ö.id
 
         expect(ö.mapDeep(deepArr, mapper, 'b')).toMatchObject(deepArr)
     })

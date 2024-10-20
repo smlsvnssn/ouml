@@ -24,7 +24,7 @@ Most methods are runnable within node/deno. Some methods require browser API:s, 
 
 ## Modules
 
-Includes modules [chain](#Chain), a method for chaining calls on any type, [öbservable](#%C3%B6bservable), a basic implementation of reactive values, and [övents](#%C3%B6vents), a collection of useful custom browser events.
+Includes modules [chain](#Chain), a method for chaining calls on any type, [öbservable](#%C3%B6bservable), a basic implementation of reactive values, [övents](#%C3%B6vents), a collection of useful custom browser events, and [colour](#%Colour), a simple way to work with oklch colours.
 
 Import them from
 
@@ -40,6 +40,7 @@ import {
     swipe,
     clickoutside,
 } from 'ouml/övents'
+import colour, { Colour } from 'ouml/colour'
 ```
 
 ## Methods
@@ -287,9 +288,13 @@ Performs cloning of most common types, including `Array` and typed arrays, `Map`
 
 The native `structuredClone` is probably slower (by alot!) in most cases, errors on functions, and doesn't preserve prototype, but it handles circular references. Choose wisely!
 
-#### ö.immutable(v, deep? = true) → immutable value
+#### ö.immutable( v, deep? = true ) → immutable value
 
 Returns a freezed clone of `v`. Set `deep` to `false` to make only top level immutable.
+
+#### ö.id( v ) → v
+
+Identity, takes and returns `v`.
 
 #### ö.pipe( v, ...funcs ) → value
 
@@ -469,23 +474,6 @@ Returns a string without html tags.
 #### ö.when( bool, whenTrue, whenFalse? ) → value | empty string;
 
 A slightly more readable wrapper around a ternary expression. Returns `whenTrue` if `bool` is true, otherwise returns the empty string. Optionally returns `whenFalse` if specified. Useful primarily in template strings.
-
-### Colours
-
-<a href=https://css-tricks.com/yay-for-hsla/ target=_blank>Hsla</a> lets you use colour in an understandable way. `hsla` is great! Use `hsla`!
-
-#### ö.toHsla( colour, asString? = false) → { h, s, l, a } | String
-
-Returns `colour` converted to an object with `hsla` values. Optionally returns a colour string in `hsla` format. Takes hex values, as well as all valid forms of rgb/rgba strings.
-Hsla is really easy to work with compared to rgb. For example, a `darken` method could look like this, given a `hsla` object as input:
-
-```js
-const darken = (c, amount) => ({ ...c, l: c.l - amount })
-```
-
-#### ö.hsla( h, s? = 70, l? = 50, a? = 1 ) → String
-
-Returns colour string in `hsla` format, for css input. Takes separate values, or a single object with properties `{ h, s, l, a }`.
 
 ### Async
 
@@ -1053,3 +1041,141 @@ Emits `swipeleft`, `swiperight`, `swipeup`, `swipedown` when user swipes on a to
 #### clickoutside
 
 Emits on click or tap outside `Element`.
+
+## Colour
+
+<a href=https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl target=_blank>Oklch</a> lets you use colour in an understandable way. `oklch` is great! Use `oklch`!
+
+Hsla used to be great, but ever since <a href=https://developer.mozilla.org/en-US/blog/css-color-module-level-4/ target=_blank>Css colour level 4</a> became the norm, there have been much better options for working with colour, so `hsla` and `toHsla` have been removed as of version 0.3.0.
+
+And since oklch and its sibling oklab are great, there's really no need to support any other colour space for day-to-day use.
+
+The `colour` module provides simple functions for working with immutable oklch colours in js. It exports the default function `colour()`, that creates `Colour` objects. It also exports `isColour()`.
+
+Use like so:
+
+```js
+import colour, { isColour } from 'ouml/colour'
+
+let red = colour('#f00')
+let blue = colour('hsl(239.96 100% 50%)')
+let purple = red.mix(blue)
+
+ö.log(`${purple}`)
+// logs oklch(53.9985% 0.1337 316.0189 / 1)
+
+ö.log(isColour(purple), isColour(purple.valueOf()))
+// logs true, false
+```
+
+Or without intermediaries:
+
+```js
+ö.log(`${colour('#f00').mix(colour('hsl(239.96 100% 50%)'))}`)
+// logs oklch(53.9985% 0.1337 316.0189 / 1)
+```
+
+### colour constructor
+
+#### colour( lightness | cssString | Colour, chroma, hue, alpha ) → Colour
+
+The `colour` function creates `Colour`s from either css strings in hex/rgb/rgba/hsl/hsla/oklch format, or a `Colour`, or numeric values for the colour channels.
+
+Inputs are clamped to valid values. `lightness` takes values between 0 and 1, `chroma` takes values between 0 and 0.4, `hue` takes values between 0 and 360, and `alpha` takes values between 0 and 1.
+
+### Colour methods
+
+The methods that return `Colour` are chainable, and the methods that return an array of `Colour`s are chainable via `.map()`.
+
+#### Colour.lightness( v? ) → Colour
+
+Getter/setter for the lightness value. Gets the value when used without argument. Sets the value if `number` is provided, or sets the value by calling `v` if a `function` is provided. The function gets the current lightness value as argument.
+
+#### Colour.chroma( v? ) → Colour
+
+Getter/setter for the chroma value. Works the same as `.lightness()`. For example, a `saturate` method might be implemented like this:
+
+```js
+const saturate = (clr, amount = 0.01) => clr.chroma(v => v + amount)
+```
+
+#### Colour.hue( v? ) → Colour
+
+Getter/setter for the hue value.
+
+#### Colour.alpha( v? ) → Colour
+
+Getter/setter for the alpha value.
+
+#### ...Colour
+
+`Colour` objects spread nicely into arrays, in `[l, c, h, a]` order.
+
+#### Colour.valueOf() → { lightness, chroma, hue, alpha }
+
+Returns an object with values. Useful for `console.log` or to get all values out.
+
+#### Colour.toString() → css string
+
+Returns a css string. Useful for all sorts of colour related things. Called implicitly on string concatenation and in template strings, so this works nicely:
+
+```js
+let red = colour('#e11')
+let myDarkRedElement = `<div style="background:${red.darken()}; color:${red.lighten(0.8)}; width:5rem; height:5rem; display:grid; place-items:center; ">Hello</div>`
+```
+
+<div style="background:oklch(56.0054% 0.2405 28.7147 / 1);  color:oklch(92.001% 0.2405 28.7147 / 1); width:5rem; height:5rem; display:grid; place-items:center; ">Hello</div>
+
+#### Colour.complement() → Colour
+
+Inverts the hue value. Nothing fancy.
+
+#### Colour.invert() → Colour
+
+Inverts lightness and hue.
+
+#### Colour.darken( amount = 0.1 ) → Colour
+
+Darkens `Colour` by a percentage of `amount`.
+
+#### Colour.lighten( amount = 0.1 ) → Colour
+
+Lightens `Colour` by a percentage of `amount`.
+
+#### Colour.palette( todo ) → Colour
+
+Todo
+
+#### Colour.steps( colour, steps? = 1, colourspace? = 'oklab', interpolator? = ö.lerp ) → Array of Colours
+
+Interpolates between current colour and `colour`, in `steps`, and returns an array of `Colour`s. The start and end values are included in the array, so if `steps` is 1, the resulting array has three colours. Interpolates through `oklab` by default, since oklab is more true to saturation values when interpolating. If you want a poppier feel, go for `oklch` instead. [Try out different colour spaces here](https://codepen.io/smlsvnssn/full/dyQaQvp).
+
+Lets you do for example:
+
+```js
+let html = `<div style="display:flex">${colour('hsl(42.41 100% 56%)')
+    .steps('rgb(255, 33, 74)', 10)
+    .map(v => `<div style="height:5rem; flex:1 0; background:${v}"></div>`)
+    .join('')}</div>`
+```
+
+<div style="display:flex"><div style="height:5rem; flex:1 0; background:oklch(83.712% 0.1668 82.0784 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(81.9379% 0.1632 75.1476 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(80.1638% 0.1621 68.0142 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(78.3897% 0.1635 60.8932 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(76.6156% 0.1674 53.9974 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(74.8415% 0.1735 47.5018 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(73.0674% 0.1817 41.5223 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(71.2933% 0.1918 36.1136 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(69.5192% 0.2033 31.2803 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(67.7451% 0.2162 26.9935 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(65.971% 0.2301 23.206 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(64.1969% 0.2449 19.8632 / 1)"></div></div>
+
+#### Colour.mix( colour, percent? = 0.5, colourspace? = 'oklab', interpolator? = ö.lerp ) → Colour
+
+Blends two colours together, basically. Use it like this, for example, to create <span style="color: oklch(0 0 40.536)">t</span><span style="color: oklch(0.0378991 0.0117176 40.536)">h</span><span style="color: oklch(0.0757983 0.0234351 40.536)">i</span><span style="color: oklch(0.113697 0.0351527 40.536)">s</span><span style="color: oklch(0.151597 0.0468702 40.536)"> </span><span style="color: oklch(0.189496 0.0585878 40.536)">f</span><span style="color: oklch(0.227395 0.0703053 40.536)">a</span><span style="color: oklch(0.265294 0.0820229 40.536)">n</span><span style="color: oklch(0.303193 0.0937404 40.536)">c</span><span style="color: oklch(0.341092 0.105458 40.536)">y</span><span style="color: oklch(0.378991 0.117176 40.536)"> </span><span style="color: oklch(0.416891 0.128893 40.536)">e</span><span style="color: oklch(0.45479 0.140611 40.536)">f</span><span style="color: oklch(0.492689 0.152328 40.536)">f</span><span style="color: oklch(0.530588 0.164046 40.536)">e</span><span style="color: oklch(0.568487 0.175763 40.536)">c</span><span style="color: oklch(0.606386 0.187481 40.536)">t</span><span style="color: oklch(0.644285 0.199198 40.536)">:</span>
+
+```js
+let html = ö.map(
+    'this fancy effect:',
+    (v, i, a) =>
+        `<span style="color: ${colour('#000').mix(
+            colour('#FE5C03'),
+            100 - (100 / a.length) * i,
+        )}">${v}</span>`,
+)
+```
+
+#### Colour.getInterpolator( colour, colourspace? = 'oklab', interpolator? = ö.lerp ) → function( t ) → Colour
+
+Creates an interpolator function that takes a `t` value between 0 and 1, and returns the `Colour` at `t` between current colour and `colour`.
