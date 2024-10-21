@@ -8,15 +8,18 @@ import {
     pipe,
     round,
     times,
+    time,
     easeOut,
     isFunc,
     isNum,
 } from '../ö.mjs'
 import {
     parseToRgb,
+    normaliseRgba,
     rgbToOklch,
     oklchToOklab,
     oklabToOklch,
+    getNumbers,
 } from './colourConversion.mjs'
 
 /**
@@ -41,6 +44,8 @@ import {
 
 export function Colour() {}
 
+const proto = new Colour()
+
 export const isColour = v => v instanceof Colour
 
 /**
@@ -56,7 +61,7 @@ export const isColour = v => v instanceof Colour
 const colour = (lightness = 0.7, chroma = 0.15, hue = 30, alpha = 1) => {
     let l, c, h, a
 
-    const set = (_l, _c, _h, _a) => {
+    const set = ([_l, _c, _h, _a = 1]) => {
         l = clamp(_l, 0, 1)
         c = clamp(_c, 0, 0.4)
         h = clamp(_h, 0, 360)
@@ -76,16 +81,21 @@ const colour = (lightness = 0.7, chroma = 0.15, hue = 30, alpha = 1) => {
         return out.length == 1 ? out[0] : out
     }
 
-    if (isStr(lightness)) {
-        // todo: support oklch strings
-        pipe(
-            lightness,
-            parseToRgb,
-            ([r, g, b, a]) => rgbToOklch([r / 255, g / 255, b / 255, a ?? 1]),
-            v => set(...v),
-        )
-    } else if (lightness instanceof Colour) set(...lightness)
-    else set(lightness, chroma, hue, alpha)
+    // if (isStr(lightness)) {
+    //     if (/^oklch\(/.test(lightness))
+    //         set(getNumbers(lightness).map((v, i) => (i == 0 ? v / 100 : v)))
+    //     else pipe(lightness, parseToRgb, normaliseRgba, rgbToOklch, set)
+    // } else if (isColour(lightness)) set(lightness)
+    // else set([lightness, chroma, hue, alpha])
+
+    set(
+        isStr(lightness) ?
+            /^oklch\(/.test(lightness) ?
+                getNumbers(lightness).map((v, i) => (i == 0 ? v / 100 : v))
+            :   pipe(lightness, parseToRgb, normaliseRgba, rgbToOklch)
+        : isColour(lightness) ? lightness
+        : [lightness, chroma, hue, alpha],
+    )
 
     let o = {
         lightness: _l =>
@@ -109,7 +119,7 @@ const colour = (lightness = 0.7, chroma = 0.15, hue = 30, alpha = 1) => {
             : a,
 
         [Symbol.iterator]: function* () {
-            for (const v of [l, c, h, a]) yield v
+            for (let v of [l, c, h, a]) yield v
         },
 
         valueOf: () => ({
@@ -169,14 +179,16 @@ const colour = (lightness = 0.7, chroma = 0.15, hue = 30, alpha = 1) => {
                 (c1, c2) => [c1.map((v, i) => interpolator(v, c2[i], percent))],
             ),
 
-        getInterpolator:
-            (clr, colourspace = 'oklab', interpolator = lerp) =>
-            t =>
-                colour(l, c, h, a).mix(clr, t, colourspace, interpolator),
+        getInterpolator: (clr, colourspace = 'oklab', interpolator = lerp) => {
+            let c1 = colour(l, c, h, a)
+            return t => c1.mix(clr, t, colourspace, interpolator)
+        },
     }
 
-    Object.setPrototypeOf(o, new Colour())
-    return Object.freeze(Object.create(o))
+    Object.setPrototypeOf(o, proto)
+    return Object.freeze(o)
 }
 
 export default colour
+
+//time(() => times(10000, () => colour()))

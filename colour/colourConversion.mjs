@@ -1,8 +1,8 @@
-import { pipe, warn } from '../ö.mjs'
+import { normalise, pipe, warn } from '../ö.mjs'
+
+export const getNumbers = s => s.match(/([0-9\.])+/g).map(v => Number(v))
 
 export const parseToRgb = c => {
-    const getNumbers = s => s.match(/([0-9\.])+/g).map(v => Number(v))
-
     c = c.trim()
 
     // is hex
@@ -35,13 +35,18 @@ export const parseToRgb = c => {
     if (/^hsl\(|^hsla\(/.test(c)) {
         let [h, s, l, alpha] = getNumbers(c)
 
-        alpha ??= 1
-
         return [...hslToRgb([h, s, l]), alpha]
     }
 
     return warn("Colour says: Sorry, can't parse " + c), [0, 0, 0]
 }
+
+export const normaliseRgba = ([r, g, b, a]) => [
+    r / 255,
+    g / 255,
+    b / 255,
+    a ?? 1,
+]
 
 // taken from https://github.com/color-js/color.js/blob/main/src/spaces/oklch.js
 

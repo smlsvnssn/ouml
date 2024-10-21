@@ -17,6 +17,15 @@ describe('colour', () => {
 
         c = colour('#ffffff00')
         expect(c.toString()).toBe('oklch(100% 0 180 / 0)')
+
+        c = colour('rgb(203, 96, 157)')
+        expect(c.toString()).toBe('oklch(63.6978% 0.1524 346.9864 / 1)')
+
+        c = colour('hsl(325.79 51% 59%)')
+        expect(c.toString()).toBe('oklch(64.0086% 0.1523 346.9539 / 1)')
+
+        c = colour('oklch(63.68% 0.1529 347)')
+        expect(c.toString()).toBe('oklch(63.68% 0.1529 347 / 1)')
     })
 
     it('should create a new Colour from a Colour', () => {
@@ -185,6 +194,18 @@ describe('Colour.steps', () => {
         expect(c[1].toString()).toBe('oklch(50% 0 180 / 1)')
 
         c = colour('#fff').steps(colour('#000'), 9)
+
+        expect(c.length).toBe(11)
+        expect(c[5].toString()).toBe('oklch(50% 0 180 / 1)')
+    })
+
+    it('should be able to take a cssString as first argument', () => {
+        let c = colour('#fff').steps('#000')
+
+        expect(c.length).toBe(3)
+        expect(c[1].toString()).toBe('oklch(50% 0 180 / 1)')
+
+        c = colour('#fff').steps('#000', 9)
 
         expect(c.length).toBe(11)
         expect(c[5].toString()).toBe('oklch(50% 0 180 / 1)')

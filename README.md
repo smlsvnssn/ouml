@@ -1046,7 +1046,7 @@ Emits on click or tap outside `Element`.
 
 <a href=https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl target=_blank>Oklch</a> lets you use colour in an understandable way. `oklch` is great! Use `oklch`!
 
-Hsla used to be great, but ever since <a href=https://developer.mozilla.org/en-US/blog/css-color-module-level-4/ target=_blank>Css colour level 4</a> became the norm, there have been much better options for working with colour, so `hsla` and `toHsla` have been removed as of version 0.3.0.
+Hsla used to be great, but ever since <a href=https://developer.mozilla.org/en-US/blog/css-color-module-level-4/ target=_blank>Css colour level 4</a> became the norm, there have been much better options for working with colour, so `ö.hsla` and `ö.toHsla` have been removed as of version 0.3.0.
 
 And since oklch and its sibling oklab are great, there's really no need to support any other colour space for day-to-day use.
 
@@ -1071,7 +1071,7 @@ let purple = red.mix(blue)
 Or without intermediaries:
 
 ```js
-ö.log(`${colour('#f00').mix(colour('hsl(239.96 100% 50%)'))}`)
+ö.log(`${colour('#f00').mix('hsl(239.96 100% 50%)')}`)
 // logs oklch(53.9985% 0.1337 316.0189 / 1)
 ```
 
@@ -1093,7 +1093,7 @@ Getter/setter for the lightness value. Gets the value when used without argument
 
 #### Colour.chroma( v? ) → Colour
 
-Getter/setter for the chroma value. Works the same as `.lightness()`. For example, a `saturate` method might be implemented like this:
+Getter/setter for the chroma value. Works the same as `.lightness()`. For example, a `saturate` method might look like this:
 
 ```js
 const saturate = (clr, amount = 0.01) => clr.chroma(v => v + amount)
@@ -1121,10 +1121,8 @@ Returns a css string. Useful for all sorts of colour related things. Called impl
 
 ```js
 let red = colour('#e11')
-let myDarkRedElement = `<div style="background:${red.darken()}; color:${red.lighten(0.8)}; width:5rem; height:5rem; display:grid; place-items:center; ">Hello</div>`
+let myDarkRedElement = `<div style="background:${red.darken()}; color:${red.lighten(0.8)}">Hello</div>`
 ```
-
-<div style="background:oklch(56.0054% 0.2405 28.7147 / 1);  color:oklch(92.001% 0.2405 28.7147 / 1); width:5rem; height:5rem; display:grid; place-items:center; ">Hello</div>
 
 #### Colour.complement() → Colour
 
@@ -1146,9 +1144,9 @@ Lightens `Colour` by a percentage of `amount`.
 
 Todo
 
-#### Colour.steps( colour, steps? = 1, colourspace? = 'oklab', interpolator? = ö.lerp ) → Array of Colours
+#### Colour.steps( Colour | cssString, steps? = 1, colourspace? = 'oklab', interpolator? = ö.lerp ) → Array of Colours
 
-Interpolates between current colour and `colour`, in `steps`, and returns an array of `Colour`s. The start and end values are included in the array, so if `steps` is 1, the resulting array has three colours. Interpolates through `oklab` by default, since oklab is more true to saturation values when interpolating. If you want a poppier feel, go for `oklch` instead. [Try out different colour spaces here](https://codepen.io/smlsvnssn/full/dyQaQvp).
+Interpolates between current colour and `colour`, in `steps`, and returns an array of `Colour`s. The start and end values are included in the array, so if `steps` is 1, the resulting array has three colours. Interpolates through `oklab` by default, since oklab is more true to saturation  when interpolating. If you want a poppier feel, go for `oklch` instead. [Try out interpolation through different colour spaces here](https://codepen.io/smlsvnssn/full/dyQaQvp).
 
 Lets you do for example:
 
@@ -1159,23 +1157,21 @@ let html = `<div style="display:flex">${colour('hsl(42.41 100% 56%)')
     .join('')}</div>`
 ```
 
-<div style="display:flex"><div style="height:5rem; flex:1 0; background:oklch(83.712% 0.1668 82.0784 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(81.9379% 0.1632 75.1476 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(80.1638% 0.1621 68.0142 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(78.3897% 0.1635 60.8932 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(76.6156% 0.1674 53.9974 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(74.8415% 0.1735 47.5018 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(73.0674% 0.1817 41.5223 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(71.2933% 0.1918 36.1136 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(69.5192% 0.2033 31.2803 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(67.7451% 0.2162 26.9935 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(65.971% 0.2301 23.206 / 1)"></div><div style="height:5rem; flex:1 0; background:oklch(64.1969% 0.2449 19.8632 / 1)"></div></div>
+#### Colour.mix( Colour | cssString, percent? = 0.5, colourspace? = 'oklab', interpolator? = ö.lerp ) → Colour
 
-#### Colour.mix( colour, percent? = 0.5, colourspace? = 'oklab', interpolator? = ö.lerp ) → Colour
-
-Blends two colours together, basically. Use it like this, for example, to create <span style="color: oklch(0 0 40.536)">t</span><span style="color: oklch(0.0378991 0.0117176 40.536)">h</span><span style="color: oklch(0.0757983 0.0234351 40.536)">i</span><span style="color: oklch(0.113697 0.0351527 40.536)">s</span><span style="color: oklch(0.151597 0.0468702 40.536)"> </span><span style="color: oklch(0.189496 0.0585878 40.536)">f</span><span style="color: oklch(0.227395 0.0703053 40.536)">a</span><span style="color: oklch(0.265294 0.0820229 40.536)">n</span><span style="color: oklch(0.303193 0.0937404 40.536)">c</span><span style="color: oklch(0.341092 0.105458 40.536)">y</span><span style="color: oklch(0.378991 0.117176 40.536)"> </span><span style="color: oklch(0.416891 0.128893 40.536)">e</span><span style="color: oklch(0.45479 0.140611 40.536)">f</span><span style="color: oklch(0.492689 0.152328 40.536)">f</span><span style="color: oklch(0.530588 0.164046 40.536)">e</span><span style="color: oklch(0.568487 0.175763 40.536)">c</span><span style="color: oklch(0.606386 0.187481 40.536)">t</span><span style="color: oklch(0.644285 0.199198 40.536)">:</span>
+Blends two colours together, basically. Use it like this, for example:
 
 ```js
 let html = ö.map(
-    'this fancy effect:',
+    'Fancy effect:',
     (v, i, a) =>
         `<span style="color: ${colour('#000').mix(
-            colour('#FE5C03'),
+            '#FE5C03',
             100 - (100 / a.length) * i,
         )}">${v}</span>`,
 )
 ```
 
-#### Colour.getInterpolator( colour, colourspace? = 'oklab', interpolator? = ö.lerp ) → function( t ) → Colour
+#### Colour.getInterpolator( Colour | cssString, colourspace? = 'oklab', interpolator? = ö.lerp ) → function( t ) → Colour
 
 Creates an interpolator function that takes a `t` value between 0 and 1, and returns the `Colour` at `t` between current colour and `colour`.
