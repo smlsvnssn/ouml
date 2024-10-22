@@ -9,7 +9,6 @@ import {
     round,
     times,
     time,
-    easeOut,
     isFunc,
     isNum,
 } from '../ö.mjs'
@@ -42,7 +41,155 @@ import {
  * @prop {(clr:Colour|string, colourspace?:string, interpolator?:function) => function} getInterpolator
  */
 
-export function Colour() {}
+export class Colour {
+    constructor(l, c, h, a) {
+        this.#l = l
+        this.#c = c
+        this.#h = h
+        this.#a = a
+    }
+
+    #l
+    #c
+    #h
+    #a
+
+    lightness(l) {
+        return (
+            isFunc(l) ? colour(l(this.#l), this.#c, this.#h, this.#a)
+            : isNum(l) ? colour(l, this.#c, this.#h, this.#a)
+            : this.#l
+        )
+    }
+    chroma(c) {
+        return (
+            isFunc(c) ? colour(this.#l, c(this.#c), this.#h, this.#a)
+            : isNum(c) ? colour(this.#l, c, this.#h, this.#a)
+            : this.#c
+        )
+    }
+    hue(h) {
+        return (
+            isFunc(h) ? colour(this.#l, this.#c, h(this.#h), this.#a)
+            : isNum(h) ? colour(this.#l, this.#c, h, this.#a)
+            : this.#h
+        )
+    }
+    alpha(a) {
+        return (
+            isFunc(a) ? colour(this.#l, this.#c, this.#h, a(this.#a))
+            : isNum(a) ? colour(this.#l, this.#c, this.#h, a)
+            : this.#a
+        )
+    }
+
+    *[Symbol.iterator]() {
+        for (let v of [this.#l, this.#c, this.#h, this.#a]) yield v
+    }
+
+    valueOf() {
+        return {
+            lightness: this.#l,
+            chroma: this.#c,
+            hue: this.#h,
+            alpha: this.#a,
+        }
+    }
+
+    toString() {
+        return `oklch(${round(this.#l * 100, 4)}% ${round(this.#c, 4)} ${round(this.#h, 4)} / ${round(this.#a, 4)})`
+    }
+
+    complement() {
+        let [l, c, h, a] = this
+        return colour(l, c, (h + 180) % 360, a)
+    }
+
+    invert() {
+        let [l, c, h, a] = this
+        return colour(1 - l, c, h, a).complement()
+    }
+
+    darken(amount = 0.1) {
+        let [l, c, h, a] = this
+        return colour(l - (1 - l) * amount, c, h, a)
+    }
+
+    lighten(amount = 0.1) {
+        let [l, c, h, a] = this
+        return colour(l + (1 - l) * amount, c, h, a)
+    }
+
+    palette(colourspace = 'oklab') {
+        /* TODO: Returns basic colour palettes, with a few options.
+           Triad, monochrome, analogous, complementary, shades ( 50, 100, 200... 900, 950 )
+        */
+        const STEPS = 11,
+            half = (STEPS - 1) / 2
+
+        return this.#throughSpace(
+            [
+                colour(0.97, this.#c / 3, this.#h, this.#a),
+                colour(0.5, this.#c, this.#h, this.#a),
+                colour(0.03, this.#c / 3, this.#h, this.#a),
+            ],
+            colourspace,
+            (start, mid, end) => [
+                ...times(half, i =>
+                    start.map((v, channel) =>
+                        lerp(v, mid[channel], (1 / half) * i),
+                    ),
+                ),
+                mid,
+                ...times(half, i =>
+                    mid.map((v, channel) =>
+                        lerp(v, end[channel], (1 / half) * (i + 1)),
+                    ),
+                ),
+            ],
+        )
+    }
+
+    #throughSpace(clr, space, f, toOklab = space == 'oklab') {
+        let input = isArr(clr) ? clr.map(v => [...v]) : [[...this], [...clr]]
+
+        let out = f(...input.map(toOklab ? oklchToOklab : id)).map(c =>
+            toOklab ? colour(...oklabToOklch(c)) : colour(...c),
+        )
+
+        return out.length == 1 ? out[0] : out
+    }
+
+    steps(clr, steps = 1, colourspace = 'oklab', interpolator = lerp) {
+        return this.#throughSpace(
+            isStr(clr) ? colour(clr) : clr,
+            colourspace,
+            (start, end) =>
+                times(steps + 2, i =>
+                    start.map((v, channel) =>
+                        interpolator(v, end[channel], (1 / (steps + 1)) * i),
+                    ),
+                ),
+        )
+    }
+
+    getInterpolator(clr, colourspace = 'oklab', interpolator = lerp) {
+        let c1 = colour(...this)
+        return t => c1.mix(clr, t, colourspace, interpolator)
+    }
+
+    mix(clr, percent = 0.5, colourspace = 'oklab', interpolator = lerp) {
+        return this.#throughSpace(
+            isStr(clr) ? colour(clr) : clr,
+            colourspace,
+            (start, end) => [
+                start.map((v, channel) =>
+                    interpolator(v, end[channel], percent),
+                ),
+            ],
+        )
+    }
+}
 
 const proto = new Colour()
 
@@ -68,16 +215,6 @@ const colour = (lightness = 0.7, chroma = 0.15, hue = 30, alpha = 1) => {
         a = clamp(_a, 0, 1)
     }
 
-    const throughSpace = (clr, space, f, toOklab = space == 'oklab') => {
-        let input = isArr(clr) ? clr.map(v => [...v]) : [[l, c, h, a], [...clr]]
-
-        let out = f(...input.map(toOklab ? oklchToOklab : id)).map(c =>
-            toOklab ? colour(...oklabToOklch(c)) : colour(...c),
-        )
-
-        return out.length == 1 ? out[0] : out
-    }
-
     set(
         isStr(lightness) ?
             /^oklch\(/.test(lightness) ?
@@ -87,123 +224,12 @@ const colour = (lightness = 0.7, chroma = 0.15, hue = 30, alpha = 1) => {
         : [lightness, chroma, hue, alpha],
     )
 
-    let o = {
-        lightness: _l =>
-            isFunc(_l) ? colour(_l(l), c, h, a)
-            : isNum(_l) ? colour(_l, c, h, a)
-            : l,
-
-        chroma: _c =>
-            isFunc(_c) ? colour(l, _c(c), h, a)
-            : isNum(_c) ? colour(l, _c, h, a)
-            : c,
-
-        hue: _h =>
-            isFunc(_h) ? colour(l, c, _h(h), a)
-            : isNum(_h) ? colour(l, c, _h, a)
-            : h,
-
-        alpha: _a =>
-            isFunc(_a) ? colour(l, c, h, _a(a))
-            : isNum(_a) ? colour(l, c, h, _a)
-            : a,
-
-        [Symbol.iterator]: function* () {
-            for (let v of [l, c, h, a]) yield v
-        },
-
-        valueOf: () => ({
-            lightness: l,
-            chroma: c,
-            hue: h,
-            alpha: a,
-        }),
-
-        toString: () =>
-            `oklch(${round(l * 100, 4)}% ${round(c, 4)} ${round(h, 4)} / ${round(a, 4)})`,
-
-        complement: () => colour(l, c, (h + 180) % 360, a),
-
-        invert: () => colour(1 - l, c, h, a).complement(),
-
-        darken: (amount = 0.1) => colour(l - (1 - l) * amount, c, h, a),
-
-        lighten: (amount = 0.1) => colour(l + (1 - l) * amount, c, h, a),
-
-        // todo: gradient.
-
-        palette: (colourspace = 'oklab', interpolator = lerp) => {
-            /* TODO: Returns basic colour palettes, with a few options.
-           Triad, monochrome, analogous, complementary, shades ( 50, 100, 200... 900, 950 )
-        */
-            log(c, h, a)
-            const STEPS = 11,
-                half = (STEPS - 1) / 2
-
-            return throughSpace(
-                [
-                    colour(0.97, c / 3, h, a),
-                    colour(0.5, c, h, a),
-                    colour(0.03, c / 3, h, a),
-                ],
-                colourspace,
-                (start, mid, end) => [
-                    ...times(half, i =>
-                        start.map((v, channel) =>
-                            lerp(v, mid[channel], (1 / half) * i),
-                        ),
-                    ),
-                    mid,
-                    ...times(half, i =>
-                        mid.map((v, channel) =>
-                            lerp(v, end[channel], (1 / half) * (i + 1)),
-                        ),
-                    ),
-                ],
-            )
-        },
-
-        steps: (clr, steps = 1, colourspace = 'oklab', interpolator = lerp) =>
-            throughSpace(
-                isStr(clr) ? colour(clr) : clr,
-                colourspace,
-                (start, end) =>
-                    times(steps + 2, i =>
-                        start.map((v, channel) =>
-                            interpolator(
-                                v,
-                                end[channel],
-                                (1 / (steps + 1)) * i,
-                            ),
-                        ),
-                    ),
-            ),
-
-        mix: (clr, percent = 0.5, colourspace = 'oklab', interpolator = lerp) =>
-            throughSpace(
-                isStr(clr) ? colour(clr) : clr,
-                colourspace,
-                (start, end) => [
-                    start.map((v, channel) =>
-                        interpolator(v, end[channel], percent),
-                    ),
-                ],
-            ),
-
-        getInterpolator: (clr, colourspace = 'oklab', interpolator = lerp) => {
-            let c1 = colour(l, c, h, a)
-            return t => c1.mix(clr, t, colourspace, interpolator)
-        },
-    }
-
-    Object.setPrototypeOf(o, proto)
-    //return Object.freeze(o)
-    return Object.freeze(Object.create(o))
+    return Object.freeze(new Colour(l, c, h, a))
 }
 
 export default colour
 
 // snabbare om o definieras utanför. Skriva om till klass?
-//time(() => times(10000, () => colour()))
+time(() => times(10000, () => colour()))
 
-log(colour('#ff0').palette().map(v => v.toString()))
+log(colour('#ff0').toString())

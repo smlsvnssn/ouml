@@ -83,10 +83,6 @@ export default class Colour {
         }
     }
 
-    /**
-     * @returns {string} a css colour string in oklch()
-     */
-
     toString() {
         return `oklch(${round(this.#l * 100, 4)}% ${round(this.#c, 4)} ${round(this.#h, 4)} / ${round(this.#a, 4)})`
     }
@@ -101,17 +97,11 @@ export default class Colour {
         return Colour.of(1 - l, c, h, a)
     }
 
-    /**
-     * @param {number} amount - percentage between 0 and 1.
-     */
     darken(amount) {
         let [l, c, h, a] = this
         return Colour.of(l * amount, c, h, a)
     }
 
-    /**
-     * @param {number} amount - percentage between 0 and 1.
-     */
     lighten(amount) {
         let [l, c, h, a] = this
         return Colour.of(l + (1 - l) * amount, c, h, a)
@@ -133,14 +123,6 @@ export default class Colour {
         return out.length == 1 ? out[0] : out
     }
 
-    /**
-     * @param {Colour} colour - the color to interpolate to
-     * @param {int} [steps]
-     * @param {string} [colourspace] - 'oklab' converts to oklab space for interpolation
-     * @param {function} [interpolator] - a function accepting a, b, t as parameters
-     * @returns {Colour[]}
-     */
-
     steps(colour, steps = 1, colourspace = 'oklab', interpolator = lerp) {
         return this.#convertColourspace(colour, colourspace, (c1, c2) =>
             times(steps + 2, i =>
@@ -151,13 +133,6 @@ export default class Colour {
         )
     }
 
-    /**
-     * @param {Colour} colour - the color to interpolate to
-     * @param {string} [colourspace] - 'oklab' converts to oklab space for interpolation
-     * @param {function} [interpolator] - a function accepting a, b, t as parameters
-     * @returns {function} an interpolator taking a 't' value
-     */
-
     getInterpolator(colour, colourspace = 'oklab', interpolator = lerp) {
         return t =>
             this.#convertColourspace(colour, colourspace, (c1, c2) => [
@@ -165,24 +140,12 @@ export default class Colour {
             ])
     }
 
-    /**
-     * @param {Colour} colour - the color to mix with
-     * @param {number} [percent] - value between 0 and 1
-     * @param {string} [colourspace] - 'oklab' converts to oklab space for interpolation
-     * @param {function} [interpolator] - a function accepting a, b, t as parameters
-     * @returns {Colour[]}
-     */
-
     mix(colour, percent = 0.5, colourspace = 'oklab', interpolator = lerp) {
         return this.#convertColourspace(colour, colourspace, (c1, c2) => [
             c1.map((v, i) => interpolator(v, c2[i], percent)),
         ])
     }
 
-    /**
-     * @param  {...any} args - same signature as Colour constructor
-     * @returns {Colour}
-     */
 
     static of(...args) {
         return new Colour(...args)
