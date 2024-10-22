@@ -68,25 +68,15 @@ const colour = (lightness = 0.7, chroma = 0.15, hue = 30, alpha = 1) => {
         a = clamp(_a, 0, 1)
     }
 
-    const throughSpace = (clr, type, f, toOklab = type == 'oklab') => {
-        let [c1, c2] =
-            isArr(clr) ? [[...clr[0]], [...clr[1]]] : [[l, c, h, a], [...clr]]
+    const throughSpace = (clr, space, f, toOklab = space == 'oklab') => {
+        let input = isArr(clr) ? clr.map(v => [...v]) : [[l, c, h, a], [...clr]]
 
-        ;[c1, c2] = [c1, c2].map(toOklab ? oklchToOklab : id)
-
-        let out = f(c1, c2).map(c =>
+        let out = f(...input.map(toOklab ? oklchToOklab : id)).map(c =>
             toOklab ? colour(...oklabToOklch(c)) : colour(...c),
         )
 
         return out.length == 1 ? out[0] : out
     }
-
-    // if (isStr(lightness)) {
-    //     if (/^oklch\(/.test(lightness))
-    //         set(getNumbers(lightness).map((v, i) => (i == 0 ? v / 100 : v)))
-    //     else pipe(lightness, parseToRgb, normaliseRgba, rgbToOklch, set)
-    // } else if (isColour(lightness)) set(lightness)
-    // else set([lightness, chroma, hue, alpha])
 
     set(
         isStr(lightness) ?
@@ -140,23 +130,36 @@ const colour = (lightness = 0.7, chroma = 0.15, hue = 30, alpha = 1) => {
 
         lighten: (amount = 0.1) => colour(l + (1 - l) * amount, c, h, a),
 
+        // todo: gradient.
+
         palette: (colourspace = 'oklab', interpolator = lerp) => {
             /* TODO: Returns basic colour palettes, with a few options.
            Triad, monochrome, analogous, complementary, shades ( 50, 100, 200... 900, 950 )
         */
             log(c, h, a)
+            const STEPS = 11,
+                half = (STEPS - 1) / 2
 
             return throughSpace(
-                [colour(0.97, c / 3, h, a), colour(0.03, c, h, a)],
+                [
+                    colour(0.97, c / 3, h, a),
+                    colour(0.5, c, h, a),
+                    colour(0.03, c / 3, h, a),
+                ],
                 colourspace,
-                (c1, c2) =>
-                    times(11, i =>
-                        c1.map((v, ii) =>
-                            ii == 1 ?
-                                easeOut(v, c2[ii], (1 / 10) * i)
-                            :   lerp(v, c2[ii], (1 / 10) * i),
+                (start, mid, end) => [
+                    ...times(half, i =>
+                        start.map((v, channel) =>
+                            lerp(v, mid[channel], (1 / half) * i),
                         ),
                     ),
+                    mid,
+                    ...times(half, i =>
+                        mid.map((v, channel) =>
+                            lerp(v, end[channel], (1 / half) * (i + 1)),
+                        ),
+                    ),
+                ],
             )
         },
 
@@ -164,10 +167,14 @@ const colour = (lightness = 0.7, chroma = 0.15, hue = 30, alpha = 1) => {
             throughSpace(
                 isStr(clr) ? colour(clr) : clr,
                 colourspace,
-                (c1, c2) =>
+                (start, end) =>
                     times(steps + 2, i =>
-                        c1.map((v, ii) =>
-                            interpolator(v, c2[ii], (1 / (steps + 1)) * i),
+                        start.map((v, channel) =>
+                            interpolator(
+                                v,
+                                end[channel],
+                                (1 / (steps + 1)) * i,
+                            ),
                         ),
                     ),
             ),
@@ -176,7 +183,11 @@ const colour = (lightness = 0.7, chroma = 0.15, hue = 30, alpha = 1) => {
             throughSpace(
                 isStr(clr) ? colour(clr) : clr,
                 colourspace,
-                (c1, c2) => [c1.map((v, i) => interpolator(v, c2[i], percent))],
+                (start, end) => [
+                    start.map((v, channel) =>
+                        interpolator(v, end[channel], percent),
+                    ),
+                ],
             ),
 
         getInterpolator: (clr, colourspace = 'oklab', interpolator = lerp) => {
@@ -186,9 +197,13 @@ const colour = (lightness = 0.7, chroma = 0.15, hue = 30, alpha = 1) => {
     }
 
     Object.setPrototypeOf(o, proto)
-    return Object.freeze(o)
+    //return Object.freeze(o)
+    return Object.freeze(Object.create(o))
 }
 
 export default colour
 
+// snabbare om o definieras utanför. Skriva om till klass?
 //time(() => times(10000, () => colour()))
+
+log(colour('#ff0').palette().map(v => v.toString()))
