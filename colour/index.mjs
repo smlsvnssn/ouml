@@ -22,8 +22,11 @@ import {
 } from './colourConversion.mjs'
 
 export class Colour {
-    constructor(...args) {
-        ;[this.#l, this.#c, this.#h, this.#a] = args
+    constructor(l, c, h, a) {
+        this.#l = l
+        this.#c = c
+        this.#h = h
+        this.#a = a
     }
 
     #l
@@ -160,8 +163,8 @@ export class Colour {
     ) {
         let clrs =
             isArr(clr) ?
-                [colour(this), ...clr.map(v => colour(v))]
-            :   [colour(this), colour(clr)]
+                [this, ...clr.map(v => colour(v))]
+            :   [this, colour(clr)]
 
         clrs = clrs.join(', ')
 
@@ -172,7 +175,7 @@ export class Colour {
                 `radial-gradient(in ${colourspace} farthest-corner at ${position[0] * 100}% ${position[1] * 100}%, ${clrs})`
             : type == 'conic' ?
                 `conic-gradient(in ${colourspace} from ${rotation}deg at ${position[0] * 100}% ${position[1] * 100}%, ${clrs})`
-            :   `${colour(this)}`
+            :   `${this}`
         )
     }
 
@@ -276,8 +279,7 @@ export class Colour {
      */
 
     getInterpolator(clr, colourspace = 'oklab', interpolator = lerp) {
-        let c1 = colour(...this)
-        return t => c1.mix(clr, t, colourspace, interpolator)
+        return t => this.mix(clr, t, colourspace, interpolator)
     }
 }
 

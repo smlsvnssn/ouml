@@ -641,7 +641,7 @@ Any iterable except strings work, but produce arraylike objects without a `lengt
 
 #### ö.getCss( prop, selector? = ':root') → css property value
 
-[browser] Gets `prop` on selected element, or from `document.documentElement` if `selector` is unset. and returns `v`. Mainly used for getting global `--props`, using css as master for global variables.
+[browser] Gets `prop` on selected element, or from `document.documentElement` if `selector` is unset, and returns `v`. Mainly used for getting global `--props`, using css as master for global variables.
 
 #### ö.setCss( prop, v, selector? = ':root') → v
 
@@ -1144,13 +1144,17 @@ Darkens `Colour` by a percentage of `amount`.
 
 Lightens `Colour` by a percentage of `amount`.
 
-#### Colour.gradient( clr, type? = 'linear', rotation? = 0, position? = [0.5, 0.5], colourspace? = 'oklab' ) → css gradient string
+#### Colour.palette( colourspace? = 'oklab' ) → [Colours]
+
+Returns a palette of 11 colours from light to dark, based on the current colour. Both chroma and lightness get adjusted to create a harmonious scale, so the exact original colour might not exist in the list.
+
+#### Colour.gradient( clr: Colour | cssString | Colour[], type? = 'linear', rotation? = 0, position? = [0.5, 0.5], colourspace? = 'oklab' ) → css gradient string
 
 A simple wrapper around css gradient strings, letting you create dynamic gradients easily.
 
 `clr` can be either a css string, a `Colour`, or an array of `Colour`s. The current color is included at the start of the gradient.
 
-Supports a subset of gradient options. Works for `'linear'`, `'radial'` and `'conic'` gradients. `position` has no effect on linear gradients, and `rotation` has no effect on radial gradients. There's no support for positonal values for colours, all colours are added linearly. For fancier gradients, [roll your own](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_images/Using_CSS_gradients)!
+Supports a subset of gradient options. Works for `'linear'`, `'radial'` and `'conic'` gradients. `position` has no effect on linear gradients, and `rotation` has no effect on radial gradients. There's no support for positional values for colours, all colours are added linearly. For fancier gradients, [roll your own](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_images/Using_CSS_gradients)!
 
 A simple gradient from blackish to whiteish:
 
@@ -1159,11 +1163,7 @@ let gradient = colour('#111').gradient('#eee')
 // returns 'linear-gradient(in oklab 0deg, oklch(17.7638% 0 180 / 1), oklch(94.9119% 0 180 / 1))'
 ```
 
-#### Colour.palette( colourspace? = 'oklab' ) → [Colours]
-
-Returns a palette of 11 colours from light to dark, based on the current colour. Both chroma and lightness get adjusted to create a harmonious scale, so the exact original colour might not exist in the list.
-
-#### Colour.steps( Colour | cssString, steps? = 1, colourspace? = 'oklab', interpolator? = ö.lerp ) → [Colours]
+#### Colour.steps( clr: Colour | cssString, steps? = 1, colourspace? = 'oklab', interpolator? = ö.lerp ) → [Colours]
 
 Interpolates between current colour and `colour`, in `steps`, and returns an array of `Colour`s. The start and end values are included in the array, so if `steps` is 1, the resulting array has three colours.
 
@@ -1176,7 +1176,7 @@ let html = `<div style="display:flex">${colour('hsl(42.41 100% 56%)')
     .join('')}</div>`
 ```
 
-#### Colour.mix( Colour | cssString, percent? = 0.5, colourspace? = 'oklab', interpolator? = ö.lerp ) → Colour
+#### Colour.mix( clr: Colour | cssString, percent? = 0.5, colourspace? = 'oklab', interpolator? = ö.lerp ) → Colour
 
 Blends two colours together, basically. Use it like this, for example:
 
@@ -1191,6 +1191,6 @@ let html = ö.map(
 )
 ```
 
-#### Colour.getInterpolator( Colour | cssString, colourspace? = 'oklab', interpolator? = ö.lerp ) → function( t ) → Colour
+#### Colour.getInterpolator( clr: Colour | cssString, colourspace? = 'oklab', interpolator? = ö.lerp ) → function( t ) → Colour
 
 Creates an interpolator function that takes a `t` value between 0 and 1, and returns the `Colour` at `t` between current colour and `colour`.
