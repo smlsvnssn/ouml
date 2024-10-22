@@ -35,7 +35,6 @@ describe('colour', () => {
         expect(c).toBeInstanceOf(Colour)
         expect(c.valueOf()).toStrictEqual(r.valueOf())
         expect(c).not.toBe(r)
-
     })
 
     it('should create a new Colour from numeric input', () => {
@@ -178,11 +177,36 @@ describe('Colour.lighten', () => {
     })
 })
 
-describe.todo('Colour.palette', () => {
-    it('should...', () => {
-        let c = colour(0.5, 0.1, 0, 1)
+describe('Colour.palette', () => {
+    it('should produce a palette from colour', () => {
+        let c = colour(0.5, 0.3, 0, 1).palette()
 
-        expect(c.toString()).toBe('oklch(50% 0.1 0 / 1)')
+        expect(c.length).toBe(11)
+
+        expect(c[0].lightness()).toBe(0.97)
+        expect(c[0].chroma()).toBeCloseTo(0.1)
+
+        expect(c[5].lightness()).toBe(0.5)
+        expect(c[5].chroma()).toBe(0.3)
+
+        expect(c[10].lightness()).toBe(0.03)
+        expect(c[10].chroma()).toBeCloseTo(0.1)
+    })
+})
+
+describe('Colour.gradient', () => {
+    it('should return valid css gradient strings', () => {
+        let c = colour('#333').gradient(['#666', '#888'])
+        
+        expect(c.toString()).toBe(
+            'linear-gradient(in oklab 0deg, oklch(32.1093% 0 180 / 1), oklch(51.0278% 0 188.1301 / 1), oklch(62.6754% 0 180 / 1))',
+        )
+
+        c = colour('#333').gradient(['#666', '#888'], 'radial')
+        
+        expect(c.toString()).toBe(
+            'radial-gradient(in oklab farthest-corner at 50% 50%, oklch(32.1093% 0 180 / 1), oklch(51.0278% 0 188.1301 / 1), oklch(62.6754% 0 180 / 1))',
+        )
     })
 })
 

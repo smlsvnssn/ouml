@@ -24,7 +24,7 @@ Most methods are runnable within node/deno. Some methods require browser API:s, 
 
 ## Modules
 
-Includes modules [chain](#Chain), a method for chaining calls on any type, [öbservable](#%C3%B6bservable), a basic implementation of reactive values, [övents](#%C3%B6vents), a collection of useful custom browser events, and [colour](#%Colour), a simple way to work with oklch colours.
+Includes modules [chain](#Chain), a method for chaining calls on any type, [öbservable](#%C3%B6bservable), a basic implementation of reactive values, [övents](#%C3%B6vents), a collection of useful custom browser events, and [colour](#Colour), a simple way to work with oklch colours.
 
 Import them from
 
@@ -1075,7 +1075,9 @@ Or without intermediaries:
 // logs oklch(53.9985% 0.1337 316.0189 / 1)
 ```
 
-### colour constructor
+Or have a look at a [small demo](https://codepen.io/smlsvnssn/full/ExqWeQG).
+
+### colour()
 
 #### colour( lightness | cssString | Colour, chroma, hue, alpha ) → Colour
 
@@ -1086,6 +1088,8 @@ Inputs are clamped to valid values. `lightness` takes values between 0 and 1, `c
 ### Colour methods
 
 The methods that return `Colour` are chainable, and the methods that return an array of `Colour`s are chainable via `.map()`.
+
+All methods that interpolate between colours, such as `.mix()` or `.palette()`, interpolate through `oklab` by default, since oklab is more true to saturation when interpolating. If you want a poppier feel, go for `oklch` instead. Oklch and oklab are the only colourspaces supported. [Try out interpolation through different colour spaces here to see why](https://codepen.io/smlsvnssn/full/dyQaQvp).
 
 #### Colour.lightness( v? ) → Colour
 
@@ -1140,13 +1144,28 @@ Darkens `Colour` by a percentage of `amount`.
 
 Lightens `Colour` by a percentage of `amount`.
 
-#### Colour.palette( todo ) → Colour
+#### Colour.gradient( clr, type? = 'linear', rotation? = 0, position? = [0.5, 0.5], colourspace? = 'oklab' ) → css gradient string
 
-Todo
+A simple wrapper around css gradient strings, letting you create dynamic gradients easily.
 
-#### Colour.steps( Colour | cssString, steps? = 1, colourspace? = 'oklab', interpolator? = ö.lerp ) → Array of Colours
+`clr` can be either a css string, a `Colour`, or an array of `Colour`s. The current color is included at the start of the gradient.
 
-Interpolates between current colour and `colour`, in `steps`, and returns an array of `Colour`s. The start and end values are included in the array, so if `steps` is 1, the resulting array has three colours. Interpolates through `oklab` by default, since oklab is more true to saturation  when interpolating. If you want a poppier feel, go for `oklch` instead. [Try out interpolation through different colour spaces here](https://codepen.io/smlsvnssn/full/dyQaQvp).
+Supports a subset of gradient options. Works for `'linear'`, `'radial'` and `'conic'` gradients. `position` has no effect on linear gradients, and `rotation` has no effect on radial gradients. There's no support for positonal values for colours, all colours are added linearly. For fancier gradients, [roll your own](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_images/Using_CSS_gradients)!
+
+A simple gradient from blackish to whiteish:
+
+```js
+let gradient = colour('#111').gradient('#eee')
+// returns 'linear-gradient(in oklab 0deg, oklch(17.7638% 0 180 / 1), oklch(94.9119% 0 180 / 1))'
+```
+
+#### Colour.palette( colourspace? = 'oklab' ) → [Colours]
+
+Returns a palette of 11 colours from light to dark, based on the current colour. Both chroma and lightness get adjusted to create a harmonious scale, so the exact original colour might not exist in the list.
+
+#### Colour.steps( Colour | cssString, steps? = 1, colourspace? = 'oklab', interpolator? = ö.lerp ) → [Colours]
+
+Interpolates between current colour and `colour`, in `steps`, and returns an array of `Colour`s. The start and end values are included in the array, so if `steps` is 1, the resulting array has three colours.
 
 Lets you do for example:
 

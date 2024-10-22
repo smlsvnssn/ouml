@@ -4,14 +4,14 @@ import {
     isStr,
     isArr,
     lerp,
-    log,
     pipe,
     round,
     times,
-    time,
     isFunc,
     isNum,
+    log,
 } from '../ö.mjs'
+
 import {
     parseToRgb,
     normaliseRgba,
@@ -21,38 +21,21 @@ import {
     getNumbers,
 } from './colourConversion.mjs'
 
-/**
- * @typedef {Object} Colour
- * @prop {(l:number|undefined) => Colour} lightness - get/set lightness
- * @prop {(c:number|undefined) => Colour} chroma - get/set chroma
- * @prop {(h:number|undefined) => Colour} hue - get/set hue
- * @prop {(a:number|undefined) => Colour} alpha - get/set alpha
- * @prop {() => {lightness:number, chroma:number, hue:number, alpha:number}} valueOf
- *  - returns an object with l, c, h, a values
- * @prop {() => string} toString
- *  - returns a css colour string in oklch()
- * @prop {() => Colour} complement
- * @prop {() => Colour} invert
- * @prop {(amount:number) => Colour} darken - Amount is a percentage between 0 and 1.
- * @prop {(amount:number) => Colour} lighten - Amount is a percentage between 0 and 1.
- * @prop {(todo) => Colour[]} palette
- * @prop {(clr:Colour|string, steps?:number, colourspace?:string, interpolator?:function) => Colour[]} steps
- * @prop {(clr:Colour|string, percent?:number, colourspace?:string, interpolator?:function) => Colour} mix
- * @prop {(clr:Colour|string, colourspace?:string, interpolator?:function) => function} getInterpolator
- */
-
 export class Colour {
-    constructor(l, c, h, a) {
-        this.#l = l
-        this.#c = c
-        this.#h = h
-        this.#a = a
+    constructor(...args) {
+        ;[this.#l, this.#c, this.#h, this.#a] = args
     }
 
     #l
     #c
     #h
     #a
+
+    /**
+     * get/set lightness
+     * @param {number | ((l:number) => number )| undefined} l
+     * @returns {Colour}
+     */
 
     lightness(l) {
         return (
@@ -61,6 +44,13 @@ export class Colour {
             : this.#l
         )
     }
+
+    /**
+     * get/set chroma
+     * @param {number | ((c:number) => number )| undefined} c
+     * @returns {Colour}
+     */
+
     chroma(c) {
         return (
             isFunc(c) ? colour(this.#l, c(this.#c), this.#h, this.#a)
@@ -68,6 +58,13 @@ export class Colour {
             : this.#c
         )
     }
+
+    /**
+     * get/set hue
+     * @param {number | ((h:number) => number )| undefined} h
+     * @returns {Colour}
+     */
+
     hue(h) {
         return (
             isFunc(h) ? colour(this.#l, this.#c, h(this.#h), this.#a)
@@ -75,6 +72,13 @@ export class Colour {
             : this.#h
         )
     }
+
+    /**
+     * get/set alpha
+     * @param {number | ((a:number) => number )| undefined} a
+     * @returns {Colour}
+     */
+
     alpha(a) {
         return (
             isFunc(a) ? colour(this.#l, this.#c, this.#h, a(this.#a))
@@ -87,6 +91,11 @@ export class Colour {
         for (let v of [this.#l, this.#c, this.#h, this.#a]) yield v
     }
 
+    /**
+     * returns an object with l, c, h, a values
+     * @returns {lightness:number, chroma:number, hue:number, alpha:number}}
+     */
+
     valueOf() {
         return {
             lightness: this.#l,
@@ -96,8 +105,13 @@ export class Colour {
         }
     }
 
+    /**
+     * @returns {string} a css colour string in oklch()
+     */
+
     toString() {
-        return `oklch(${round(this.#l * 100, 4)}% ${round(this.#c, 4)} ${round(this.#h, 4)} / ${round(this.#a, 4)})`
+        let [l, c, h, a] = this
+        return `oklch(${round(l * 100, 4)}% ${round(c, 4)} ${round(h, 4)} / ${round(a, 4)})`
     }
 
     complement() {
@@ -110,20 +124,83 @@ export class Colour {
         return colour(1 - l, c, h, a).complement()
     }
 
+    /**
+     * @param {number} amount - percentage between 0 and 1.
+     */
+
     darken(amount = 0.1) {
         let [l, c, h, a] = this
         return colour(l - (1 - l) * amount, c, h, a)
     }
+
+    /**
+     * @param {number} amount - percentage between 0 and 1.
+     */
 
     lighten(amount = 0.1) {
         let [l, c, h, a] = this
         return colour(l + (1 - l) * amount, c, h, a)
     }
 
+    /**
+     * @param {Colour | string | Colour[]} clr - the colour/s to build a gradient from
+     * @param {string} [type] - linear, radial or conic
+     * @param {number} [rotation] - in degrees
+     * @param {[number]} [position] - in an array like [0.5, 0.5]
+     * @param {string} [colourspace] - 'oklab' converts to oklab space for interpolation
+     * @returns {string}
+     */
+
+    gradient(
+        clr,
+        type = 'linear',
+        rotation = 0,
+        position = [0.5, 0.5],
+        colourspace = 'oklab',
+    ) {
+        let clrs =
+            isArr(clr) ?
+                [colour(this), ...clr.map(v => colour(v))]
+            :   [colour(this), colour(clr)]
+
+        clrs = clrs.join(', ')
+
+        return (
+            type == 'linear' ?
+                `linear-gradient(in ${colourspace} ${rotation}deg, ${clrs})`
+            : type == 'radial' ?
+                `radial-gradient(in ${colourspace} farthest-corner at ${position[0] * 100}% ${position[1] * 100}%, ${clrs})`
+            : type == 'conic' ?
+                `conic-gradient(in ${colourspace} from ${rotation}deg at ${position[0] * 100}% ${position[1] * 100}%, ${clrs})`
+            :   `${colour(this)}`
+        )
+    }
+
+    /**
+     *
+     * @param {[Colour] | Colour} clr
+     * @param {string} space 'oklab' or any for oklch
+     * @param {(v:[[l,c,h,a]]) => [[l,c,h,a]]} f
+     * @returns {[Colour] | Colour} if 1 item, returns unwrapped Colour
+     */
+
+    #throughSpace(clr, space, f, toOklab = space == 'oklab') {
+        let input = isArr(clr) ? clr.map(v => [...v]) : [[...this], [...clr]]
+
+        let out = f(...input.map(toOklab ? oklchToOklab : id)).map(c =>
+            toOklab ? colour(...oklabToOklch(c)) : colour(...c),
+        )
+
+        return out.length == 1 ? out[0] : out
+    }
+
+    /**
+     * Returns basic colour palettes
+     * @param {string} [colourspace] - 'oklab' converts to oklab space for interpolation
+     * @returns {Colour[]}
+     */
+
     palette(colourspace = 'oklab') {
-        /* TODO: Returns basic colour palettes, with a few options.
-           Triad, monochrome, analogous, complementary, shades ( 50, 100, 200... 900, 950 )
-        */
         const STEPS = 11,
             half = (STEPS - 1) / 2
 
@@ -150,15 +227,13 @@ export class Colour {
         )
     }
 
-    #throughSpace(clr, space, f, toOklab = space == 'oklab') {
-        let input = isArr(clr) ? clr.map(v => [...v]) : [[...this], [...clr]]
-
-        let out = f(...input.map(toOklab ? oklchToOklab : id)).map(c =>
-            toOklab ? colour(...oklabToOklch(c)) : colour(...c),
-        )
-
-        return out.length == 1 ? out[0] : out
-    }
+    /**
+     * @param {Colour|string} colour - the color to interpolate to
+     * @param {int} [steps]
+     * @param {string} [colourspace] - 'oklab' converts to oklab space for interpolation
+     * @param {function} [interpolator] - a function accepting a, b, t as parameters
+     * @returns {Colour[]}
+     */
 
     steps(clr, steps = 1, colourspace = 'oklab', interpolator = lerp) {
         return this.#throughSpace(
@@ -173,10 +248,13 @@ export class Colour {
         )
     }
 
-    getInterpolator(clr, colourspace = 'oklab', interpolator = lerp) {
-        let c1 = colour(...this)
-        return t => c1.mix(clr, t, colourspace, interpolator)
-    }
+    /**
+     * @param {Colour|string} colour - the color to mix with
+     * @param {number} [percent] - value between 0 and 1
+     * @param {string} [colourspace] - 'oklab' converts to oklab space for interpolation
+     * @param {function} [interpolator] - a function accepting a, b, t as parameters
+     * @returns {Colour[]}
+     */
 
     mix(clr, percent = 0.5, colourspace = 'oklab', interpolator = lerp) {
         return this.#throughSpace(
@@ -189,9 +267,19 @@ export class Colour {
             ],
         )
     }
-}
 
-const proto = new Colour()
+    /**
+     * @param {Colour|string} colour - the color to interpolate to
+     * @param {string} [colourspace] - 'oklab' converts to oklab space for interpolation
+     * @param {function} [interpolator] - a function accepting a, b, t as parameters
+     * @returns {(t:number) => Colour} an interpolator taking a 't' value
+     */
+
+    getInterpolator(clr, colourspace = 'oklab', interpolator = lerp) {
+        let c1 = colour(...this)
+        return t => c1.mix(clr, t, colourspace, interpolator)
+    }
+}
 
 export const isColour = v => v instanceof Colour
 
@@ -206,30 +294,27 @@ export const isColour = v => v instanceof Colour
  */
 
 const colour = (lightness = 0.7, chroma = 0.15, hue = 30, alpha = 1) => {
-    let l, c, h, a
+    const clampChannels = ([l, c, h, a = 1]) => [
+        clamp(l, 0, 1),
+        clamp(c, 0, 0.4),
+        clamp(h, 0, 360),
+        clamp(a, 0, 1),
+    ]
 
-    const set = ([_l, _c, _h, _a = 1]) => {
-        l = clamp(_l, 0, 1)
-        c = clamp(_c, 0, 0.4)
-        h = clamp(_h, 0, 360)
-        a = clamp(_a, 0, 1)
-    }
-
-    set(
-        isStr(lightness) ?
-            /^oklch\(/.test(lightness) ?
-                getNumbers(lightness).map((v, i) => (i == 0 ? v / 100 : v))
-            :   pipe(lightness, parseToRgb, normaliseRgba, rgbToOklch)
-        : isColour(lightness) ? lightness
-        : [lightness, chroma, hue, alpha],
+    return Object.freeze(
+        new Colour(
+            ...clampChannels(
+                isStr(lightness) ?
+                    /^oklch\(/.test(lightness) ?
+                        getNumbers(lightness).map((v, i) =>
+                            i == 0 ? v / 100 : v,
+                        )
+                    :   pipe(lightness, parseToRgb, normaliseRgba, rgbToOklch)
+                : isColour(lightness) ? lightness
+                : [lightness, chroma, hue, alpha],
+            ),
+        ),
     )
-
-    return Object.freeze(new Colour(l, c, h, a))
 }
 
 export default colour
-
-// snabbare om o definieras utanför. Skriva om till klass?
-time(() => times(10000, () => colour()))
-
-log(colour('#ff0').toString())
