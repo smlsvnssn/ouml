@@ -9,7 +9,6 @@ import {
     times,
     isFunc,
     isNum,
-    log,
 } from '../ö.mjs'
 
 import {
@@ -22,11 +21,8 @@ import {
 } from './colourConversion.mjs'
 
 export class Colour {
-    constructor(l, c, h, a) {
-        this.#l = l
-        this.#c = c
-        this.#h = h
-        this.#a = a
+    constructor(...args) {
+        ;[this.#l, this.#c, this.#h, this.#a] = args
     }
 
     #l
