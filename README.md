@@ -1,3 +1,5 @@
+[toc]
+
 # ö.js
 
 ö.js - a small collection of useful stuff.
@@ -22,7 +24,6 @@ let oneOrZero = ö.random()
 
 Most methods are runnable within node/deno. Some methods require browser API:s, those are marked with [browser].
 
-[toc]
 
 ## Modules
 
