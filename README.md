@@ -22,6 +22,8 @@ let oneOrZero = ö.random()
 
 Most methods are runnable within node/deno. Some methods require browser API:s, those are marked with [browser].
 
+[toc]
+
 ## Modules
 
 Includes modules [chain](#Chain), a method for chaining calls on any type, [öbservable](#%C3%B6bservable), a basic implementation of reactive values, [övents](#%C3%B6vents), a collection of useful custom browser events, and [colour](#Colour), a simple way to work with oklch colours.
@@ -665,7 +667,7 @@ Parses a `DOMStringMap` as `JSON`. Used internally when reading from `Element.da
 
 Converts string to Rövarspråket.
 
-## Chain
+# Chain
 
 Chain a.k.a TypelessScript lets you chain any method calls, on any type, kind of like a pipe on speed 🧙, or a jQuery for any object. It simply shoves the return value around, allowing you to think about more important stuff than intermediate variables.
 
@@ -817,7 +819,7 @@ Lets you pass any method on a global object into the chain. The current value is
 
 If you have defined any methods in the global scope that have underscores in their names, use `.f(v => my_global_method(v))` instead, since underscores get parsed out by the proxy.
 
-## Öbservable
+# Öbservable
 
 öbservable is loosely based on how vue.js handles reactivity, but it is much simpler, and, truthfully, not as good 🤪. It is, however, shockingly small, 1Kb minified.
 
@@ -998,9 +1000,9 @@ Set to `true` if paused, otherwise `undefined`.
 
 Set to `true` if stopped, otherwise `undefined`.
 
-## Övents
+# Övents
 
-**övents** is a collection of should've-been-in-the-browser-already custom events.
+övents is a collection of should've-been-in-the-browser-already custom events.
 
 ### Usage
 
@@ -1042,7 +1044,7 @@ Emits `swipeleft`, `swiperight`, `swipeup`, `swipedown` when user swipes on a to
 
 Emits on click or tap outside `Element`.
 
-## Colour
+# Colour
 
 <a href=https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl target=_blank>Oklch</a> lets you use colour in an understandable way. `oklch` is great! Use `oklch`!
 
