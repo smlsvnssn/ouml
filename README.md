@@ -1,4 +1,4 @@
-[toc]
+###### toc
 
 # ö.js
 
@@ -23,7 +23,6 @@ let oneOrZero = ö.random()
 ```
 
 Most methods are runnable within node/deno. Some methods require browser API:s, those are marked with [browser].
-
 
 ## Modules
 
@@ -529,11 +528,11 @@ All logging methods can be silenced globally by calling `ö.verbose(false)`.
 Wrapper around a try statement. It attempts to call `f` with `...args`, and returns the result. If `f` throws, it returns `handler`, or the return value of `handler` if `handler` is a function. `handler` gets the error as argument. `handler` defaults to a function returning the caught error.
 
 ```js
-const tried = ö.attempt(tryThis, 'It failed', 1, 2, 3)
+let tried = ö.attempt(tryThis, 'It failed', 1, 2, 3)
 // or
-const tried = ö.attempt(() => tryThis(1, 2, 3), 'It failed')
+let tried = ö.attempt(() => tryThis(1, 2, 3), 'It failed')
 // or
-const tried = ö.attempt(tryThis, e => ö.log(e.message), 1, 2, 3)
+let tried = ö.attempt(tryThis, e => ö.log(e.message), 1, 2, 3)
 ```
 
 #### ö.attemptAsync( f, handler?, ...args) → result | handled error
