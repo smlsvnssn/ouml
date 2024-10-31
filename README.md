@@ -1,5 +1,3 @@
-###### toc
-
 # ö.js
 
 ö.js - a small collection of useful stuff.
@@ -1190,3 +1188,5 @@ let html = ö.map(
 #### Colour.getInterpolator( clr: Colour | cssString, colourspace? = 'oklab', interpolator? = ö.lerp ) → function( t ) → Colour
 
 Creates an interpolator function that takes a `t` value between 0 and 1, and returns the `Colour` at `t` between current colour and `colour`.
+
+###### toc
