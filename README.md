@@ -331,7 +331,7 @@ Pipes function calls, and returns a function that takes the value to pipe. That 
 
 #### ö.curry( f ) → function
 
-Returns a [curried](https://en.wikipedia.org/wiki/Currying){:target="\_blank"} version of `f`, allowing partial application of arguments. If `f` takes three arguments, it can be called like so:
+Returns a [curried](https://en.wikipedia.org/wiki/Currying) version of `f`, allowing partial application of arguments. If `f` takes three arguments, it can be called like so:
 
 ```js
 const f = (a, b, c) => a + b + c
@@ -379,7 +379,7 @@ Shorthand for random integers between `min` and `max`-1. If `max` is omitted or 
 
 #### ö.randomNormal( mean? = 0, sigma? = 1 ) → Number
 
-Returns random number from reasonably approximated normal distribution, centered around `mean`, with [more or less 68.2% of the sample set](https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule){:target="\_blank"} within ± `sigma`. Values max out at a bit above ± 3 `sigma`, with extreme outliers up to about ± 4 `sigma`. There are [more mathematically accurate methods](https://observablehq.com/@d3/d3-random#normal){:target="\_blank"} to do this, but this method is fast, and good enough for most people. Use it for fun and visuals, not for statistical analysis 🤓.
+Returns random number from reasonably approximated normal distribution, centered around `mean`, with [more or less 68.2% of the sample set](https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule) within ± `sigma`. Values max out at a bit above ± 3 `sigma`, with extreme outliers up to about ± 4 `sigma`. There are [more mathematically accurate methods](https://observablehq.com/@d3/d3-random#normal) to do this, but this method is fast, and good enough for most people. Use it for fun and visuals, not for statistical analysis 🤓.
 
 #### ö.round( n, precision? = 0 ) → Number
 
@@ -1040,9 +1040,9 @@ Emits on click or tap outside `Element`.
 
 # Colour
 
-[Oklch](https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl){:target="\_blank"} lets you use colour in an understandable way. `oklch` is great! Use `oklch`!
+[Oklch](https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl) lets you use colour in an understandable way. `oklch` is great! Use `oklch`!
 
-Hsla used to be great, but ever since [Css colour level 4](https://developer.mozilla.org/en-US/blog/css-color-module-level-4/){:target="\_blank"} became the norm, there have been much better options for working with colour, so `ö.hsla` and `ö.toHsla` have been removed as of version 0.3.0.
+Hsla used to be great, but ever since [Css colour level 4](https://developer.mozilla.org/en-US/blog/css-color-module-level-4/) became the norm, there have been much better options for working with colour, so `ö.hsla` and `ö.toHsla` have been removed as of version 0.3.0.
 
 And since oklch and its sibling oklab are great, there's really no need to support any other colour space for day-to-day use.
 
