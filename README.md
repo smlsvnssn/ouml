@@ -1190,3 +1190,5 @@ let html = ö.map(
 Creates an interpolator function that takes a `t` value between 0 and 1, and returns the `Colour` at `t` between current colour and `colour`.
 
 ###### toc
+
+###### -
