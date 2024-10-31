@@ -1191,4 +1191,4 @@ Creates an interpolator function that takes a `t` value between 0 and 1, and ret
 
 ###### toc
 
-###### -
+###### ©lhli.net
