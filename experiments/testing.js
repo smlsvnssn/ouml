@@ -12,8 +12,7 @@ chain(10)
 
 ö.log(ö.times(10, v => v + 1))
 
-ö.log(
-    ö.rorövovarorsospoproråkoketot(
-        'kokororsosbobroredoddodkokororsosbobroredoddodkokororsosbobroredoddod',
-    ),
-)
+let a = [0]
+a[0] = a
+
+ö.clone_test(a, true, false, true)

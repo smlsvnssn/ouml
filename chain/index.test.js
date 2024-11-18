@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, afterEach } from 'vitest'
 import * as ö from '../ö.mjs'
-import { chain, chainAsync, chained } from './index.mjs'
+import chain, { chainAsync } from './index.mjs'
 
 const log = vi.spyOn(console, 'log')
 const warn = vi.spyOn(console, 'warn')

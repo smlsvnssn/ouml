@@ -20,7 +20,7 @@ import {
     getNumbers,
 } from './colourConversion.mjs'
 
-export class Colour {
+class Colour {
     constructor(...args) {
         ;[this.#l, this.#c, this.#h, this.#a] = args
     }
@@ -291,7 +291,7 @@ export const isColour = v => v instanceof Colour
  * @returns {Colour}
  */
 
-const colour = (lightness = 0.7, chroma = 0.15, hue = 30, alpha = 1) => {
+export const colour = (lightness = 0.7, chroma = 0.15, hue = 30, alpha = 1) => {
     const clampChannels = ([l, c, h, a = 1]) => [
         clamp(l, 0, 1),
         clamp(c, 0, 0.4),

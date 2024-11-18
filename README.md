@@ -31,7 +31,7 @@ Includes modules [chain](#Chain), a method for chaining calls on any type, [öbs
 Import them from
 
 ```js
-import { chain, chainAsync } from 'ouml/chain'
+import chain, { chainAsync } from 'ouml/chain'
 import { observable, isObservable, observe } from 'ouml/öbservable'
 import {
     resize,
@@ -42,7 +42,7 @@ import {
     swipe,
     clickoutside,
 } from 'ouml/övents'
-import colour, { Colour } from 'ouml/colour'
+import colour, { isColour } from 'ouml/colour'
 ```
 
 ## Methods
@@ -1085,7 +1085,7 @@ Inputs are clamped to valid values. `lightness` takes values between 0 and 1, `c
 
 The methods that return `Colour` are chainable, and the methods that return an array of `Colour`s are chainable via `.map()`.
 
-All methods that interpolate between colours, such as `.mix()` or `.palette()`, interpolate through `oklab` by default, since oklab is more true to saturation when interpolating. If you want a poppier feel, go for `oklch` instead. Oklch and oklab are the only colourspaces supported. [Try out interpolation through different colour spaces here to see why](https://codepen.io/smlsvnssn/full/dyQaQvp).
+All methods that interpolate between colours, such as `.mix()` or `.palette()`, interpolate through `oklab` by default, since oklab avoids hue variations when interpolating. If you want a poppier feel, go for `oklch` instead. Oklch and oklab are the only colourspaces supported. [Try out interpolation through different colour spaces here to see why](https://codepen.io/smlsvnssn/full/dyQaQvp).
 
 #### Colour.lightness( v? ) → Colour
 

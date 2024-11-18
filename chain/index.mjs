@@ -149,6 +149,8 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
     return p
 }
 
+export default chain
+
 /**
  * ChainAsync
  * @param {*} v

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import colour, { Colour, isColour } from './index.mjs'
+import colour, { isColour } from './index.mjs'
 import { log } from '../ö.mjs'
 
 describe('colour', () => {
@@ -32,7 +32,7 @@ describe('colour', () => {
         let r = colour('#fff')
         let c = colour(r)
 
-        expect(c).toBeInstanceOf(Colour)
+        expect(isColour(c)).toBe(true)
         expect(c.valueOf()).toStrictEqual(r.valueOf())
         expect(c).not.toBe(r)
     })
@@ -40,14 +40,14 @@ describe('colour', () => {
     it('should create a new Colour from numeric input', () => {
         let c = colour(0.5, 0.2, 180)
 
-        expect(c).toBeInstanceOf(Colour)
+        expect(isColour(c)).toBe(true)
         expect(c.toString()).toBe('oklch(50% 0.2 180 / 1)')
     })
 
     it('should create a new Colour with default values from no input', () => {
         let c = colour()
 
-        expect(c).toBeInstanceOf(Colour)
+        expect(isColour(c)).toBe(true)
         expect(c.toString()).toBe('oklch(70% 0.15 30 / 1)')
     })
 

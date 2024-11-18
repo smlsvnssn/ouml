@@ -576,6 +576,9 @@ export const equals = isEqual
  * @returns {*}
  */
 
+// todo - option to handle circular?
+// use memoise?
+
 export const clone = (v, deep = true, immutable = false) => {
     const doClone = v => (deep ? clone(v, deep, immutable) : v)
     const doFreeze = v => (immutable ? Object.freeze(v) : v)
