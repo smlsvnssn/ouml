@@ -109,6 +109,10 @@ Returns a new shuffled `Array`.
 
 Returns random sample from `arr`, or an array of samples if `samples` is larger than one.
 
+#### ö.sample( arr, steps? = 1 ) → Array
+
+Rotates `arr` `steps` steps to the left if `steps` is positive, and to the right if `steps` is negative.
+
 #### ö.sum( arr ) → Number
 
 Sums `arr`, with `Number` coercion.
@@ -174,9 +178,9 @@ let sameTree = ö.mapToTree(flat, item => [
 ])
 ```
 
-#### ö.reduceDeep( arr, f, subArrayProp, initial? ) → value
+#### ö.reduceDeep( arr, f, subArrayProp? = 'children', initial? ) → value
 
-Reduces arrays of nested objects to a single value. `subArrayProp` is a `string` matching the property containing nested arrays.
+Reduces arrays of nested objects to a single value. `subArrayProp` is a `string` matching the property containing nested arrays (defaults to `'children'`).
 
 The reducer function `f` receives `accumulator, value, index, array` as arguments. `initial` can be omitted, just like the native `reduce`, in that case the first item of `arr` is used as the initial value.
 
@@ -197,7 +201,7 @@ let arr = [
 ö.reduceDeep(arr, (acc, v) => acc + v.value, 'children', 0) // returns 0
 ```
 
-#### ö.mapDeep( arr, f | prop, subArrayProp, flatten? = false ) → Array
+#### ö.mapDeep( arr, f | prop, subArrayProp? = 'children', flatten? = false ) → Array
 
 Maps over arrays of nested objects. `subArrayProp` is a `string` matching the property containing nested arrays.
 
@@ -205,7 +209,7 @@ If `f` is a function, its return value is mapped to a new array. The function re
 
 If `f` is a `string`, the value of the property matching `f` is returned, in a flattened array.
 
-#### ö.filterDeep( arr, f | value, subArrayProp, prop? ) → Array
+#### ö.filterDeep( arr, f | value, subArrayProp? = 'children', prop? ) → Array
 
 Finds items that match `f` in arrays of nested objects. `subArrayProp` is a `string` matching the property containing nested arrays.
 
@@ -215,7 +219,7 @@ If `f` is not a function, the value of `f` is compared to the value of property 
 
 Returns a flat array with matching items, regardless of depth.
 
-#### ö.findDeep( arr, f | value, subArrayProp, prop? ) → Array item
+#### ö.findDeep( arr, f | value, subArrayProp? = 'children', prop? ) → Array item
 
 Same as `ö.filterDeep`, except it returns first match.
 
@@ -396,6 +400,10 @@ Checks if `n` is between `min` and up to, but not including, `max`.
 #### ö.normalise/ö.normalize( n, min, max, clamp? = true ) → Number
 
 Normalises `n` to a value between 0 and 1, within range given by `min` and `max`. If `clamp == true` and value of `n` is out of range, the value is clamped.
+
+#### ö.isPrime( n ) → Number
+
+Checks if `n` is prime.
 
 #### ö.lerp( a, b, t ) → Number
 
@@ -1032,7 +1040,7 @@ Event status is passed via a `sticky` prop on the `details` object.
 
 #### swipe
 
-Emits `swipeleft`, `swiperight`, `swipeup`, `swipedown` when user swipes on a touch device.
+Emits `swipeleft`, `swiperight`, `swipeup`, `swipedown` when user swipes on a touch device. The implematation is rather basic, emitting en event on `touchend`, which creates a noticeable delay. For finegrained control, it is recommended that you roll your own swipe events adapted to your particular usecase.
 
 #### clickoutside
 

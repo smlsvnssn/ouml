@@ -96,6 +96,19 @@ describe('ö.normalise', () => {
     })
 })
 
+describe('ö.isPrime', () => {
+    it('should return true for primes, and false for composites', () => {
+        let primesUnder100 = ö
+            .times(100, i => (ö.isPrime(i) ? i : null))
+            .filter(n => n != null)
+
+        expect(primesUnder100).toEqual([
+            2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
+            67, 71, 73, 79, 83, 89, 97,
+        ])
+    })
+})
+
 describe('ö.lerp', () => {
     it('should interpolate linearly', () => {
         expect(ö.lerp(0, 10, 0.5)).toBe(5)

@@ -221,6 +221,7 @@ export const clickoutside = (node) => {
 //
 // swipe, based on https://github.com/scriptex/touchsweep/blob/master/src/touchsweep.js
 //
+// TODO: Rewrite to not trigger on touchend, but whenever threshold is reached in whichever direction. Enable threshold as argument
 const swipeThreshold = 30
 
 const onTouchStart = (element) => (e) =>

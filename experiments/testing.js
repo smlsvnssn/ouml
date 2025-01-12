@@ -15,4 +15,4 @@ chain(10)
 let a = [0]
 a[0] = a
 
-ö.clone_test(a, true, false, true)
+ö.time(()=>ö.isPrime(999999999989))

@@ -5,19 +5,22 @@ TODO:
 zip/unzip?
 
 Environment methods, ie isMobile, isTouchscreen, isHiResScreen, isDesktop, isServer etc
+let mql = window.matchMedia("(max-width: 600px)");
+https://developer.mozilla.org/en-US/docs/Web/API/Window/matchMedia
+
+
 Extend lerp to accept any-dimensional numbers, and optional easing functions (https://github.com/AndrewRayCode/easing-utils)
 db? Server part for secrets and relay?
 
 multiply and convolve for arrays
 
-√ include .observable in ö?
-√ rewrite övents as svelte actions?
-(√ kinda) partition as separate modules?
-
 Beziers?
 Cubic, Quadratic
 
-Rework colour functions to include oklch and new css features (browser only? Use create element hack?)
+√ include .observable in ö?
+√ rewrite övents as svelte actions?
+(√ kinda) partition as separate modules?
+√ Rework colour functions to include oklch and new css features (browser only? Use create element hack?)
 
 */
 

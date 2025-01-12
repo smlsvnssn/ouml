@@ -176,6 +176,21 @@ export const sample = (iterable, samples = 1) => {
 }
 
 /**
+ * Rotate - Rotates an array n steps left or right
+ * @param {Iterable} iterable
+ * @param {number} [steps = 1]
+ * @returns {Array} */
+
+export const rotate = (iterable, steps = 1) => {
+    let arr = Array.from(iterable)
+
+    return [
+        ...arr.slice(steps % arr.length),
+        ...arr.slice(0, steps % arr.length),
+    ]
+}
+
+/**
  * Sum - Sums `arr`, with `Number` coercion.
  * @param {Iterable<number>} iterable
  * @returns {number}
@@ -255,9 +270,17 @@ export const groupBy = (arr, prop, asObject = false) =>
     )
 
 /**
+ * @callback idPropCB
+ * @param {*} value
+ * @param {number} index
+ * @param {Array} array
+ *  @returns {[*,*]}
+ */
+
+/**
  * MapToTree - Maps a flat array of objects to a tree structure.
  * @param {Array<Object>} arr
- * @param {(string | mapCB)} idProp
+ * @param {(string | idPropCB)} idProp
  * @param {string} [parentProp]
  * @returns {Array}
  */
@@ -295,13 +318,19 @@ export const mapToTree = (arr, idProp, parentProp) => {
  * ReduceDeep - Reduces arrays of nested objects to a single value.
  * @param {Array<Object>} arr
  * @param {reduceCB} f
- * @param {string} subArrayProp
+ * @param {string} [subArrayProp = 'children']
  * @param {*} [initial]
  * @param {boolean} [flatten = false]
  * @returns {*}
  */
 
-export const reduceDeep = (arr, f, subArrayProp, initial, flatten = false) => {
+export const reduceDeep = (
+    arr,
+    f,
+    subArrayProp = 'children',
+    initial,
+    flatten = false,
+) => {
     const traverse = (a, acc, firstRun = false) =>
         a.reduce((acc, v, i) => {
             acc = firstRun && isnt(acc) ? v : f(acc, v, i, a)
@@ -343,6 +372,7 @@ export const mapDeep = (arr, f, subArrayProp, flatten = false) =>
  * @param {Array<Object>} arr
  * @param {mapCB} f
  * @param {string} subArrayProp
+ * @param {string} [prop]
  * @returns {Array}
  */
 
@@ -352,7 +382,7 @@ export const filterDeep = (arr, f, subArrayProp, prop) =>
         (acc, v, i) => {
             if (isFunc(f)) {
                 if (f(v, i, arr)) acc.push(v)
-            } else if (v[prop] === f) acc.push(v)
+            } else if (prop && v[prop] === f) acc.push(v)
             return acc
         },
         subArrayProp,
@@ -363,15 +393,16 @@ export const filterDeep = (arr, f, subArrayProp, prop) =>
  * FindDeep - Same as `ö.filterDeep`, except it returns first match.
  * @param {Array<Object>} arr
  * @param {mapCB} f
- * @param {string} subArrayProp
+ * @param {string} [subArrayProp = 'children']
+ * @param {string} [prop]
  * @returns {(* | undefined)}
  */
 
-export const findDeep = (arr, f, subArrayProp, prop) => {
+export const findDeep = (arr, f, subArrayProp = 'children', prop) => {
     for (let [i, v] of arr.entries()) {
         if (isFunc(f)) {
             if (f(v, i, arr)) return v
-        } else if (v[prop] === f) return v
+        } else if (prop && v[prop] === f) return v
 
         if (v[subArrayProp]) {
             let result = findDeep(v[subArrayProp], f, subArrayProp, prop)
@@ -824,6 +855,27 @@ export const normalize = (n, min, max, doClamp = true) => {
 
 // for the britons
 export const normalise = normalize
+
+/**
+ * @param {number} n
+ * @returns {boolean}
+ */
+
+export const isPrime = n => {
+    if (n == 2 || n == 3) return true
+    if (n < 2 || !(n % 2)) return false
+    if (n < 9) return true
+    if (!(n % 3)) return false
+
+    let r = round(Math.sqrt(n)),
+        c = 5
+
+    while (c <= r) {
+        if (!(n % c) || !(n % (c + 2))) return false
+        c += 6
+    }
+    return true
+}
 
 /**
  * NthRoot - Returns nth root of positive number.

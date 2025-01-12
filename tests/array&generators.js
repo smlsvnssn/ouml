@@ -127,7 +127,7 @@ describe('ö.map', () => {
         expect(ö.map(null)).toBe(undefined)
         expect(ö.map(/0/)).toBe(undefined)
         expect(ö.map(1)).toBe(undefined)
-        expect(ö.map(v=>v)).toBe(undefined)
+        expect(ö.map(v => v)).toBe(undefined)
     })
 
     it('should map over Map', () => {
@@ -202,6 +202,39 @@ describe('ö.sample', () => {
         let result = ö.sample(arr, 3)
 
         expect(result).toHaveLength(3)
+    })
+})
+
+describe('ö.rotate', () => {
+    let arr = [0, 1, 2, 3, 4]
+    it('should rotate array one step to the left by default', () => {
+        let result = ö.rotate(arr)
+
+        expect(result).toEqual([1, 2, 3, 4, 0])
+    })
+
+    it('should rotate array n steps to the left', () => {
+        let result = ö.rotate(arr, 3)
+
+        expect(result).toEqual([3, 4, 0, 1, 2])
+    })
+
+    it('should handle a "steps" larger than arr.length', () => {
+        let result = ö.rotate(arr, 10)
+
+        expect(result).toEqual([0, 1, 2, 3, 4])
+    })
+
+    it('should handle a "steps" larger than arr.length', () => {
+        let result = ö.rotate(arr, 11)
+
+        expect(result).toEqual([1, 2, 3, 4, 0])
+    })
+
+    it('should handle negative "steps" as right rotation', () => {
+        let result = ö.rotate(arr, -1)
+
+        expect(result).toEqual([4, 0, 1, 2, 3])
     })
 })
 
