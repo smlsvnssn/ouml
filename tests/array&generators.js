@@ -85,6 +85,12 @@ describe('ö.times', () => {
 
         expect(result).toMatchObject([0, 2])
     })
+
+    it('should handle 0 as input gracefully', () => {
+        let result = ö.times(0, (i, factor) => i * factor, 2)
+
+        expect(result).toMatchObject([])
+    })
 })
 
 describe('ö.map', () => {
@@ -203,6 +209,12 @@ describe('ö.sample', () => {
 
         expect(result).toHaveLength(3)
     })
+
+    it('should handle an empty array', () => {
+        let result = ö.sample([], 1)
+
+        expect(result).toEqual(undefined)
+    })
 })
 
 describe('ö.rotate', () => {
@@ -235,6 +247,38 @@ describe('ö.rotate', () => {
         let result = ö.rotate(arr, -1)
 
         expect(result).toEqual([4, 0, 1, 2, 3])
+    })
+
+    it('should handle an empty array', () => {
+        let result = ö.rotate([], 1)
+
+        expect(result).toEqual([])
+    })
+})
+
+describe('ö.chunk', () => {
+    it('should return an array of length 4, with chunks of 3', () => {
+        let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+        let result = ö.chunk(arr, 3)
+        
+        expect(result.length).toBe(4)
+        expect(result).toEqual([[1, 2, 3], [4, 5, 6], [7, 8, 9], [0]])
+    })
+    
+    it('should handle a chunk size larger than the array length', () => {
+        let arr = [1, 2]
+        let result = ö.chunk(arr, 5)
+        
+        expect(result).toHaveLength(1)
+        expect(result).toEqual([[1, 2]])
+    })
+
+    it('should handle a an empty array', () => {
+        let arr = []
+        let result = ö.chunk(arr, 5)
+
+        expect(result).toHaveLength(0)
+        expect(result).toEqual([])
     })
 })
 

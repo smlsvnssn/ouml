@@ -191,6 +191,23 @@ export const rotate = (iterable, steps = 1) => {
 }
 
 /**
+ * Chunk - Partitions an array into chunks of n length
+ * @param {Iterable} iterable
+ * @param {number} [chunkSize = 1]
+ * @returns {Array} */
+
+export const chunk = (iterable, chunkSize = 1) => {
+    let arr = Array.from(iterable)
+    let s = clamp(Math.abs(chunkSize), 1, arr.length)
+
+    if (!arr.length) return [] // no 0 division
+    
+    return times(Math.ceil(arr.length / s), i =>
+        arr.slice(i * s, (i + 1) * s),
+    )
+}
+
+/**
  * Sum - Sums `arr`, with `Number` coercion.
  * @param {Iterable<number>} iterable
  * @returns {number}
@@ -583,10 +600,10 @@ export const deepest = (element, selector = '*') => {
 export const isEqual = (a, b, deep = true) =>
     a === b ? true
         // are same date?
-    : a instanceof Date && b instanceof Date ? a.getTime() === b.getTime()
+    : isDate(a) && isDate(b) ? a.getTime() === b.getTime()
         // are lexically same functions? (Closures not compared)
-    : a instanceof Function && b instanceof Function ? '' + a === '' + b
-        // are nullish?
+    : isFunc(a) && isFunc(b) ? '' + a === '' + b
+        // are nonobjects?
     : !a || !b || (typeof a !== 'object' && typeof b !== 'object') ? a === b
         // have same prototype?
     : Reflect.getPrototypeOf(a) !== Reflect.getPrototypeOf(b) ? false

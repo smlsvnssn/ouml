@@ -109,9 +109,13 @@ Returns a new shuffled `Array`.
 
 Returns random sample from `arr`, or an array of samples if `samples` is larger than one.
 
-#### ö.sample( arr, steps? = 1 ) → Array
+#### ö.rotate( arr, steps? = 1 ) → Array
 
-Rotates `arr` `steps` steps to the left if `steps` is positive, and to the right if `steps` is negative.
+Rotates an array to the left if `steps` is positive, and to the right if `steps` is negative.
+
+#### ö.chunk( arr, chunkSize? = 1 ) → Array
+
+Returns an array of arrays with `chunkSize` length.
 
 #### ö.sum( arr ) → Number
 

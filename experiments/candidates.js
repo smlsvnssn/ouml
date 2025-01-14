@@ -24,6 +24,8 @@ Cubic, Quadratic
 
 */
 
+
+
 const attempt = (f, handle, ...args) => {
     try {
         return f(...args)
@@ -44,25 +46,25 @@ const tryCatch = tryer => {
 // diagonal grid
 
 const diagonalGrid = (n, w = 10, h = w) => {
-	const min = Math.min(w, h);
-	const max = Math.max(w, h);
-	const row = (n) => Math.floor(n / w) + 1;
-	const col = (n) => Math.ceil((n + 0.999) % w);
-	const diagonal = (n) => row(n) + col(n) - 1;
-	const t = (n) => (n * (n + 1)) / 2;
-	const sumPrevDiagonals = (n) => {
-		const d = diagonal(n);
-		return d < min
-			? t(d - 1)
-			: d <= max
-			? t(min) + min * (d - 1 - min)
-			: t(min) + min * (d - 1 - min) - t(d - 1 - max);
-	};
+    const min = Math.min(w, h)
+    const max = Math.max(w, h)
+    const row = n => Math.floor(n / w) + 1
+    const col = n => Math.ceil((n + 0.999) % w)
+    const diagonal = n => row(n) + col(n) - 1
+    const t = n => (n * (n + 1)) / 2
+    const sumPrevDiagonals = n => {
+        const d = diagonal(n)
+        return (
+            d < min ? t(d - 1)
+            : d <= max ? t(min) + min * (d - 1 - min)
+            : t(min) + min * (d - 1 - min) - t(d - 1 - max)
+        )
+    }
 
-	return diagonal(n) <= h
-		? sumPrevDiagonals(n) + col(n)
-		: sumPrevDiagonals(n) + col(n) - (diagonal(n) - h);
-};
+    return diagonal(n) <= h ?
+            sumPrevDiagonals(n) + col(n)
+        :   sumPrevDiagonals(n) + col(n) - (diagonal(n) - h)
+}
 
 // Lens - pure setter for deep objects. Useful?
 
