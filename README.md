@@ -113,9 +113,44 @@ Returns random sample from `arr`, or an array of samples if `samples` is larger 
 
 Rotates an array to the left if `steps` is positive, and to the right if `steps` is negative.
 
-#### ö.chunk( arr, chunkSize? = 1 ) → Array
+#### ö.chunk( arr, chunkSize? = 1 ) → [ Array ]
 
 Returns an array of arrays with `chunkSize` length.
+
+#### ö.split( arr, index ) → [ Array, Array ]
+
+Splits `arr` into one part before `index` (excluding `index`), and one part after.
+
+Alternatively: Takes a function returning a boolean. The function receives `value, index, array` as arguments, and should return `false` on the array item where the split should be made.
+
+```js
+ö.split([1, 2, 3, 4], v => v <= 2) // returns [ [1, 2], [3, 4] ]
+```
+
+#### ö.take( arr, index ) → Array
+
+Same as `ö.split()`, but returns first part.
+
+```js
+ö.take([1, 2, 3, 4], v => v <= 2) // returns [1, 2]
+```
+
+#### ö.drop( arr, index ) → Array
+
+Same as `ö.split()`, but returns last part.
+
+```js
+ö.drop([1, 2, 3, 4], v => v <= 2) // returns [3, 4]
+```
+
+#### ö.partition( arr, f ) → [ Array, Array ]
+
+Returns an array partitioned into two arrays, the first where `f` returns `true`, the second where `f` returns `false`.
+The function receives `value, index, array` as arguments.
+
+```js
+ö.partition([1, 2, 3, 4], v => v % 2 == 0) // returns [ [2, 4], [1, 3] ]
+```
 
 #### ö.sum( arr ) → Number
 
@@ -470,6 +505,16 @@ Capitalises first letter. No fuss!
 #### ö.toKebabCase( str ) → String
 
 Returns regular sentence or camelCase string converted to kebab-case. Leaves `--customProperties` alone.
+
+#### ö.charRange( start, end? ) → String
+
+Returns a range of characters (including end). Takes either string in format "a-z", strings like "a", "z", or unicode codepoints as numbers. Use like so:
+
+```js
+ö.charRange('a-z') == 'abcdefghijklmnopqrstuvwxyz'
+// or
+ö.charRange(97, 97 + 25) == 'abcdefghijklmnopqrstuvwxyz'
+```
 
 #### ö.randomChars( numChars? = 10 ) → String
 

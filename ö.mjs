@@ -201,11 +201,66 @@ export const chunk = (iterable, chunkSize = 1) => {
     let s = clamp(Math.abs(chunkSize), 1, arr.length)
 
     if (!arr.length) return [] // no 0 division
-    
-    return times(Math.ceil(arr.length / s), i =>
-        arr.slice(i * s, (i + 1) * s),
-    )
+
+    return times(Math.ceil(arr.length / s), i => arr.slice(i * s, (i + 1) * s))
 }
+
+/**
+ * Split - Splits array into part before index/predicate returning false, and part after
+ * Takes an index, or a function returning a boolean
+ * @param {Iterable | string} iterable
+ * @param {number | string | ((v:any, i:number, a:array) => boolean)} index
+ * @returns {Array[any]} */
+
+export const split = (iterable, index) => {
+    // if strings, behaves as String.prototype.split, to not collide when using ö.chain
+    if (isStr(index) && isStr(iterable)) return iterable.split(index)
+
+    let arr = Array.from(iterable)
+
+    if (isFunc(index)) {
+        let f = index
+        index = arr.length // defaults to returning whole array
+        for (let [i, v] of arr.entries())
+            if (!f(v, i, arr)) {
+                index = i
+                break
+            }
+    }
+
+    return [arr.slice(0, index), arr.slice(index)]
+}
+
+/**
+ * Take - Returns array part before index/predicate returning false
+ * Takes an index, or a function returning a boolean
+ * @param {Iterable | string} iterable
+ * @param {number | string | ((v:any, i:number, a:array) => boolean)} index
+ * @returns {Array[any]} */
+
+export const take = (iterable, index) => split(iterable, index)[0]
+
+/**
+ * Drop - Returns array part after index/predicate returning false
+ * Takes an index, or a function returning a boolean
+ * @param {Iterable | string} iterable
+ * @param {number | string | ((v:any, i:number, a:array) => boolean)} index
+ * @returns {Array[any]} */
+
+export const drop = (iterable, index) => split(iterable, index)[1]
+
+/**
+ * Partition - Returns an array partitioned into two arrays, the first where predicate is true, the second where predicate is false
+ * Takes an index, or a function returning a boolean
+ * @param {Iterable} iterable
+ * @param {((v:any, i:number, a:array) => boolean)} f
+ * @returns {Array[any]} */
+
+export const partition = (iterable, f) =>
+    Array.from(iterable).reduce(
+        (acc, v, i, a) => (f(v, i, a) ? acc[0].push(v) : acc[1].push(v), acc),
+        [[], []],
+    )
 
 /**
  * Sum - Sums `arr`, with `Number` coercion.
@@ -531,6 +586,7 @@ export const createElement = (html, isSvg = false) => {
 export const parseDOMStringMap = obj => {
     // convert from DOMStringMap to object
     let o = { ...obj }
+    // @ts-ignore
     // parse what's parseable
     for (let key in o) attempt(() => (o[key] = JSON.parse(o[key])))
 
@@ -1097,6 +1153,33 @@ export const toKebabCase = s =>
 export const capitalise = s => s[0].toUpperCase() + s.slice(1)
 
 export const capitalize = capitalise
+
+/**
+ * CharRange - returns a range of characters (inclusive).
+ * Takes string in format "a-z", or "a", "z", or unicode codepoints.
+ * @param {string | number} start
+ * @param {string | number} [end]
+ * @returns {string}
+ */
+
+export const charRange = (start, end = 0) => {
+    if (isNum(start) && isNum(end))
+        return String.fromCharCode(
+            ...range(start, start < end ? end + 1 : end - 1),
+        )
+
+    if (isStr(start) && start.split('-').length == 2)
+        [start, end] = start.split('-')
+
+    return String.fromCharCode(
+        ...range(
+            start.codePointAt(),
+            start.codePointAt() < end.codePointAt() ?
+                end.codePointAt() + 1
+            :   end.codePointAt() - 1,
+        ),
+    )
+}
 
 /**
  * RandomChars - Returns `numChars` random characters.

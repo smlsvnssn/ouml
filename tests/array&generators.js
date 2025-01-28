@@ -260,15 +260,15 @@ describe('ö.chunk', () => {
     it('should return an array of length 4, with chunks of 3', () => {
         let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
         let result = ö.chunk(arr, 3)
-        
+
         expect(result.length).toBe(4)
         expect(result).toEqual([[1, 2, 3], [4, 5, 6], [7, 8, 9], [0]])
     })
-    
+
     it('should handle a chunk size larger than the array length', () => {
         let arr = [1, 2]
         let result = ö.chunk(arr, 5)
-        
+
         expect(result).toHaveLength(1)
         expect(result).toEqual([[1, 2]])
     })
@@ -279,6 +279,121 @@ describe('ö.chunk', () => {
 
         expect(result).toHaveLength(0)
         expect(result).toEqual([])
+    })
+})
+
+describe('ö.split, ö.take, ö.drop', () => {
+    it('should return an array of two arrays, split by index', () => {
+        let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+        let result = ö.split(arr, 5)
+
+        expect(result.length).toBe(2)
+        expect(result).toEqual([
+            [1, 2, 3, 4, 5],
+            [6, 7, 8, 9, 0],
+        ])
+    })
+
+    it('should return an array of two arrays, split by predicate', () => {
+        let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+        let result = ö.split(arr, v => v <= 5)
+
+        expect(result.length).toBe(2)
+        expect(result).toEqual([
+            [1, 2, 3, 4, 5],
+            [6, 7, 8, 9, 0],
+        ])
+    })
+
+    it('should take and drop as expected', () => {
+        let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+        let result = ö.split(arr, 5)
+
+        expect(result[0]).toEqual(ö.take(arr, 5))
+        expect(result[1]).toEqual(ö.drop(arr, 5))
+
+        let predicate = v => v <= 5
+        result = ö.split(arr, predicate)
+
+        expect(result[0]).toEqual(ö.take(arr, predicate))
+        expect(result[1]).toEqual(ö.drop(arr, predicate))
+    })
+
+    it('should return an array of two arrays, split by predicate', () => {
+        let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+        let result = ö.split(arr, v => v <= 5)
+
+        expect(result.length).toBe(2)
+        expect(result).toEqual([
+            [1, 2, 3, 4, 5],
+            [6, 7, 8, 9, 0],
+        ])
+    })
+
+    it('should handle a index larger than the array length', () => {
+        let arr = [1, 2]
+        let result = ö.split(arr, 5)
+
+        expect(result).toHaveLength(2)
+        expect(result).toEqual([[1, 2], []])
+    })
+
+    it('should handle an index of 0', () => {
+        let arr = [1, 2]
+        let result = ö.split(arr, 0)
+
+        expect(result).toHaveLength(2)
+        expect(result).toEqual([[], [1, 2]])
+    })
+
+    it('should handle a an empty array', () => {
+        let arr = []
+        let result = ö.split(arr, 5)
+
+        expect(result).toHaveLength(2)
+        expect(result).toEqual([[], []])
+    })
+})
+
+describe('ö.partition', () => {
+    it('should return apartitioned array', () => {
+        let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+        let predicate = v => v % 2 == 0
+        let result = ö.partition(arr, predicate)
+
+        expect(result.length).toBe(2)
+        expect(result).toEqual([
+            [2, 4, 6, 8, 0],
+            [1, 3, 5, 7, 9],
+        ])
+    })
+
+    it('should handle a predicate only returning true', () => {
+        let arr = [1, 2]
+        let predicate = v => v < 3
+
+        let result = ö.partition(arr, predicate)
+
+        expect(result).toHaveLength(2)
+        expect(result).toEqual([[1, 2], []])
+    })
+
+    it('should handle a predicate only returning false', () => {
+        let arr = [1, 2]
+        let predicate = v => v > 3
+
+        let result = ö.partition(arr, predicate)
+
+        expect(result).toHaveLength(2)
+        expect(result).toEqual([[], [1, 2]])
+    })
+
+    it('should handle a an empty array', () => {
+        let arr = []
+        let result = ö.partition(arr, v => !v)
+
+        expect(result).toHaveLength(2)
+        expect(result).toEqual([[], []])
     })
 })
 

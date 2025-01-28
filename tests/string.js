@@ -82,6 +82,30 @@ describe('ö.randomChars', () => {
     })
 })
 
+describe('ö.charRange', () => {
+    let alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    it('should return a range of characters given string input', () => {
+        expect(ö.charRange('a', 'z')).toHaveLength(26)
+        expect(ö.charRange('a', 'z')).toEqual(alphabet)
+        expect(ö.charRange('a-z')).toEqual(alphabet)
+        expect(ö.charRange('z-a')).toEqual(alphabet.split('').reverse().join(''))
+
+        expect(ö.charRange('0-9')).toEqual('0123456789')
+    })
+
+    it('should take numbers as well', () => {
+        expect(ö.charRange(0, 10)).toHaveLength(11)
+        expect(ö.charRange(97, 97 + 25)).toEqual(alphabet)
+    })
+
+    it.todo('both arguments must have same type', () => {
+        // Maybe fix this?
+        expect(() => ö.charRange('a')).toThrow(
+            'end.codePointAt is not a function',
+        )
+    })
+})
+
 describe('ö.stripTags', () => {
     it('should return a string without html', () => {
         let s = 'a <a href="#">link</a>'

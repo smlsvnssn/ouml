@@ -1,4 +1,5 @@
 import * as ö from '../ö.mjs'
+import { isFunc, isStr } from '../ö.mjs'
 import { chain, chainAsync } from '../chain/index.mjs'
 import jsdom from 'jsdom'
 
@@ -15,4 +16,5 @@ chain(10)
 let a = [0]
 a[0] = a
 
-ö.time(()=>ö.isPrime(999999999989))
+ö.time(() => ö.isPrime(999999999989))
+

@@ -1,8 +1,26 @@
 import * as ö from 'ouml'
-import { isFunc, mapToTree, clone } from 'ouml'
+import { isFunc, isStr, is, mapToTree, range, clone } from 'ouml'
 /* 
 TODO:
+
+Array:
 zip/unzip?
+
+√ partition
+
+√ charRange
+
+√ take
+√ takeWhile
+√ drop
+√ dropWhile
+√ split
+√ splitWhile
+
+maybe:
+combinations
+permutations
+multiply and convolve for arrays
 
 Environment methods, ie isMobile, isTouchscreen, isHiResScreen, isDesktop, isServer etc
 let mql = window.matchMedia("(max-width: 600px)");
@@ -12,7 +30,6 @@ https://developer.mozilla.org/en-US/docs/Web/API/Window/matchMedia
 Extend lerp to accept any-dimensional numbers, and optional easing functions (https://github.com/AndrewRayCode/easing-utils)
 db? Server part for secrets and relay?
 
-multiply and convolve for arrays
 
 Beziers?
 Cubic, Quadratic
@@ -23,8 +40,6 @@ Cubic, Quadratic
 √ Rework colour functions to include oklch and new css features (browser only? Use create element hack?)
 
 */
-
-
 
 const attempt = (f, handle, ...args) => {
     try {
@@ -66,7 +81,7 @@ const diagonalGrid = (n, w = 10, h = w) => {
         :   sumPrevDiagonals(n) + col(n) - (diagonal(n) - h)
 }
 
-// Lens - pure setter for deep objects. Useful?
+// Lens - pure setter for deep objects. Useful? Maybe when records/tuples are a thing?
 
 const lens = (...path) => {
     const getDeep = (o, path) => path.reduce((acc, prop) => acc[prop], o)
