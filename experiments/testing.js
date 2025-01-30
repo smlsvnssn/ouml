@@ -18,3 +18,13 @@ a[0] = a
 
 ö.time(() => ö.isPrime(999999999989))
 
+ö.time(() =>
+    (
+        BigInt(Math.random() * 2 ** 512) * BigInt(Math.random() * 2 ** 512)
+    ).toString(36),
+)
+
+ö.log(ö.rotate([1, 2, 3, 4], 1))
+ö.log(ö.rotate([1, 2, 3, 4], -1))
+ö.log(ö.chunk([1, 2, 3, 4, 5, 6, 7], 3))
+ö.log(ö.rangeArray( 0, -1, .05 ))

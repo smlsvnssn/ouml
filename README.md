@@ -113,9 +113,18 @@ Returns random sample from `arr`, or an array of samples if `samples` is larger 
 
 Rotates an array to the left if `steps` is positive, and to the right if `steps` is negative.
 
-#### ö.chunk( arr, chunkSize? = 1 ) → [ Array ]
+```js
+ö.log(ö.rotate([1, 2, 3, 4], 1)) // returns[ 2, 3, 4, 1 ]
+ö.log(ö.rotate([1, 2, 3, 4], -1)) // returns[ 4, 1, 2, 3 ]
+```
+
+#### ö.chunk( arr, chunkSize? = 1 ) → [ Arrays ]
 
 Returns an array of arrays with `chunkSize` length.
+
+```js
+ö.chunk([1, 2, 3, 4, 5, 6, 7], 3) // returns [ [1, 2, 3], [4, 5, 6], [7] ]
+```
 
 #### ö.split( arr, index ) → [ Array, Array ]
 
@@ -410,7 +419,7 @@ giveMeIcecream(SIZES.large)
 
 #### ö.data( obj, key?, value? ) → data | data.key
 
-Associates `obj` (Can be an `Object` or a `Symbol`) with data via a `WeakMap`. With only `key` set, acts as a getter for `key`. With `key` and `value` set, acts as a setter. Useful for associating data with DOM elements. If given an `Element`, it parses the `dataset` property and adds its properties to `data`.
+Associates `obj` (Can be an `Object` or a `Symbol`) with data via a `WeakMap`. With only `key` set, acts as a getter for `key`. With `key` and `value` set, acts as a setter. Useful for associating data with DOM elements, images, cached files, or the like. If given an `Element`, it parses the `dataset` property and adds its properties to `data`.
 
 If no `key`, returns `data` object.
 

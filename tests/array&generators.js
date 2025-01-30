@@ -411,16 +411,20 @@ describe('ö.mean', () => {
 describe('ö.product', () => {
     it('should return the product of an iterable', () =>
         expect(ö.product(iterableOfNumbers)).toBe(24))
+
+    it('should handle large numbers', () =>
+        expect(ö.product(ö.rangeArray(1, 25))).toBe(6.204484017332394e23))
+    expect(ö.product(ö.rangeArray(1, 171))).toBe(ö.factorial(170))
 })
 
 describe('ö.geometricMean', () => {
     it('should return the geometric mean of an iterable', () =>
         expect(ö.geometricMean(iterableOfNumbers)).toBe(2.2133638394006434))
 
-    it.todo('should handle large numbers', () => {
-        expect(ö.geometricMean(ö.rangeArray(171).map(v => v + 1))).not.toBe(
-            Infinity,
-        )
+    it('should handle large numbers', () => {
+        expect(ö.geometricMean(ö.rangeArray(1, 171))).not.toBe(Infinity)
+
+        expect(ö.geometricMean(ö.rangeArray(1, 171))).toBeCloseTo(63.835)
     })
 })
 
