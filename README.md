@@ -114,8 +114,8 @@ Returns random sample from `arr`, or an array of samples if `samples` is larger 
 Rotates an array to the left if `steps` is positive, and to the right if `steps` is negative.
 
 ```js
-ö.log(ö.rotate([1, 2, 3, 4], 1)) // returns[ 2, 3, 4, 1 ]
-ö.log(ö.rotate([1, 2, 3, 4], -1)) // returns[ 4, 1, 2, 3 ]
+ö.rotate([1, 2, 3, 4], 1) // returns[ 2, 3, 4, 1 ]
+ö.rotate([1, 2, 3, 4], -1) // returns[ 4, 1, 2, 3 ]
 ```
 
 #### ö.chunk( arr, chunkSize? = 1 ) → [ Arrays ]
