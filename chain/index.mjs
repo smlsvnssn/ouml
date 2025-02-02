@@ -135,12 +135,12 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
     let p = new Proxy(() => {}, {
         // prettier-ignore
         get: (_, key) =>
-             key.match(/returnIf|try|peek/) ?       caseInternal(key)
-           : key === "value" ?                      caseRunQueue()
-           : key === "return" ?                     caseRunQueue
-           : key === "end" ?                        caseEnd
-           : key === "f" ?                          caseFunction
-           :                                        caseDefault(key),
+             key.match(/returnIf|try|peek/) ?     caseInternal(key)
+           : key === "value" ?                    caseRunQueue()
+           : key === "return" ?                   caseRunQueue
+           : key === "end" ?                      caseEnd
+           : key === "f" ?                        caseFunction
+           :                                      caseDefault(key),
 
         apply: (_, __, args) =>
             args.length ? caseFunction(...args) : caseRunQueue(),

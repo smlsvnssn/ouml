@@ -328,7 +328,7 @@ Returns `true` if `a` and `b` share no members.
 
 #### ö.isEqual/ö.equals( a, b, deep? = true ) → Boolean
 
-Checks equality by value rather than reference. Compares prototypes, and uses `Reflect.ownKeys` to compare all own keys, including symbols. Works for all basic types and most built in classes, but may produce unexpected results in edge cases. Equality is tricky, and depends on what you personally beleive to be equal 😇. Does deep comparison by default, and may be slow for large data structures. If `deep == false`, does flat comparison instead.
+Checks equality by value rather than reference. Compares prototypes, and uses `Reflect.ownKeys` to compare all own keys, including symbols. Works for all basic types and most built in classes, but may produce unexpected results in edge cases. Equality is tricky, and depends on what you personally believe to be equal 😇. Does deep comparison by default, and may be slow for large data structures. If `deep == false`, does flat comparison instead.
 
 #### ö.clone( v, deep? = true, immutable? = false ) → cloned value
 

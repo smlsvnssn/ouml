@@ -3,15 +3,15 @@ import { isnt, isFunc, clone, isEqual } from '../ö.mjs'
 const isobservable = Symbol('observable')
 const primitive = Symbol('primitive') // a little like a vue ref
 
-let currentObservers = []
-let currentObserver = null
+let queue = []
+let current = null
 
-const addAsCurrent = observer => {
-    if (currentObserver) currentObservers.push(currentObserver)
-    currentObserver = observer
+const add = observer => {
+    if (current) queue.push(current)
+    current = observer
 }
 
-const removeAsCurrent = () => (currentObserver = currentObservers.pop())
+const remove = () => (current = queue.pop())
 
 const notifyObservers = (observers, key) => {
     observers.forEach(o => {
@@ -25,7 +25,7 @@ const makeObservable = (v, isPrimitive) => {
     let p = new Proxy(v, {
         get: (obj, key, receiver) => {
             // add current observer when getter is called
-            if (currentObserver) observers.add(currentObserver)
+            if (current) observers.add(current)
 
             // Intercept key 'observe' and assume function call. Relay to observe()
             if (key === 'observe')
@@ -110,11 +110,11 @@ export const isObservable = obj => !!obj[isobservable]
 
 export const observe = (getter, callback) => {
     const getValue = () => {
-        addAsCurrent(o)
+        add(o)
         let v = isFunc(getter) ? getter() : getter
         // If primitive, unwrap, else copy value to touch the getter in proxy and strip the proxy
         v = v[primitive] ? v.value : clone(v)
-        removeAsCurrent()
+        remove()
 
         return v
     }

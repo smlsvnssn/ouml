@@ -120,7 +120,6 @@ export const map = (iterable, f) => {
 
     if (isSet(iterable)) return new Set(getMap(iterable))
 
-    // @ts-ignore
     if (isFunc(iterable?.map)) return iterable.map(getMapper(f))
 
     if (isIterable(iterable)) return getMap(iterable) // Other iterables: Just convert to array
@@ -194,7 +193,7 @@ export const rotate = (iterable, steps = 1) => {
  * Chunk - Partitions an array into chunks of n length
  * @param {Iterable} iterable
  * @param {number} [chunkSize = 1]
- * @returns {Array} */
+ * @returns {any[][]} */
 
 export const chunk = (iterable, chunkSize = 1) => {
     let arr = Array.from(iterable)
@@ -206,55 +205,60 @@ export const chunk = (iterable, chunkSize = 1) => {
 }
 
 /**
+ * @param {Array} arr
+ * @param {number | ((v:any, i:number, a:array) => boolean)} index
+ * @returns {number} */
+
+const getSplitIndex = (arr, index) => {
+    if (!isFunc(index)) return index
+
+    for (let [i, v] of arr.entries()) if (!index(v, i, arr)) return i
+    return arr.length // defaults to returning whole array
+}
+
+/**
  * Split - Splits array into part before index/predicate returning false, and part after
  * Takes an index, or a function returning a boolean
- * @param {Iterable | string} iterable
- * @param {number | string | ((v:any, i:number, a:array) => boolean)} index
- * @returns {Array[any]} */
+ * @param {Iterable} iterable
+ * @param {number | ((v:any, i:number, a:array) => boolean)} index
+ * @returns {any[] | any[][]} */
 
 export const split = (iterable, index) => {
-    // if strings, behaves as String.prototype.split, to not collide when using ö.chain
-    if (isStr(index) && isStr(iterable)) return iterable.split(index)
-
     let arr = Array.from(iterable)
-
-    if (isFunc(index)) {
-        let f = index
-        index = arr.length // defaults to returning whole array
-        for (let [i, v] of arr.entries())
-            if (!f(v, i, arr)) {
-                index = i
-                break
-            }
-    }
-
+    index = getSplitIndex(arr, index)
     return [arr.slice(0, index), arr.slice(index)]
 }
 
 /**
  * Take - Returns array part before index/predicate returning false
  * Takes an index, or a function returning a boolean
- * @param {Iterable | string} iterable
- * @param {number | string | ((v:any, i:number, a:array) => boolean)} index
- * @returns {Array[any]} */
+ * @param {Iterable} iterable
+ * @param {number | ((v:any, i:number, a:array) => boolean)} index
+ * @returns {Array} */
 
-export const take = (iterable, index) => split(iterable, index)[0]
+export const take = (iterable, index) => {
+    let arr = Array.from(iterable)
+    return arr.slice(0, getSplitIndex(arr, index))
+}
 
 /**
  * Drop - Returns array part after index/predicate returning false
  * Takes an index, or a function returning a boolean
- * @param {Iterable | string} iterable
- * @param {number | string | ((v:any, i:number, a:array) => boolean)} index
- * @returns {Array[any]} */
+ * @param {Iterable} iterable
+ * @param {number | ((v:any, i:number, a:array) => boolean)} index
+ * @returns {Array} */
 
-export const drop = (iterable, index) => split(iterable, index)[1]
+export const drop = (iterable, index) => {
+    let arr = Array.from(iterable)
+    return arr.slice(getSplitIndex(arr, index))
+}
 
 /**
  * Partition - Returns an array partitioned into two arrays, the first where predicate is true, the second where predicate is false
  * Takes an index, or a function returning a boolean
  * @param {Iterable} iterable
  * @param {((v:any, i:number, a:array) => boolean)} f
- * @returns {Array[any]} */
+ * @returns {any[][]} */
 
 export const partition = (iterable, f) =>
     Array.from(iterable).reduce(
@@ -846,6 +850,7 @@ export const random = (min, max, float = false) => {
             // with no parameters, defaults to 0 or 1
             isnt(min) ? [0, 2]
             :   [0, +min]
+            // @ts-ignore
         :   [+min, +max]
 
     return float ?
@@ -1125,6 +1130,7 @@ export const wrapFirstWords = (
 export const toCamelCase = s =>
     s.match(/^\-\-/) ?
         s // is css var, so leave it alone
+        // @ts-ignore
     :   s.replace(/([-_\s])([a-zA-Z0-9])/g, (m, _, c, o) =>
             o ? c.toUpperCase() : c,
         )
@@ -1173,9 +1179,13 @@ export const charRange = (start, end = 0) => {
 
     return String.fromCharCode(
         ...range(
+            // @ts-ignore
             start.codePointAt(),
+            // @ts-ignore
             start.codePointAt() < end.codePointAt() ?
+                // @ts-ignore
                 end.codePointAt() + 1
+                // @ts-ignore
             :   end.codePointAt() - 1,
         ),
     )
@@ -1221,7 +1231,7 @@ let timeout, rejectPrev
  * @param {number} [t]
  * @param {function} [f]
  * @param {boolean} [resetPrevCall = false]
- * @returns {Promise<void>}
+ * @returns {Promise}
  */
 
 export const wait = async (t = 1, f, resetPrevCall = false) => {
@@ -1249,14 +1259,14 @@ export const wait = async (t = 1, f, resetPrevCall = false) => {
 /**
  * NextFrame - Waits one frame.
  * @param {function} [f]
- * @returns {Promise<void>}
+ * @returns {Promise}
  */
 
 export const nextFrame = async f => {
     return new Promise(resolve =>
         requestAnimationFrame(async () => {
             if (isFunc(f)) resolve(await f())
-            else resolve()
+            else resolve(undefined)
         }),
     )
 }
@@ -1266,20 +1276,19 @@ export const nextFrame = async f => {
  * @param {number} [n]
  * @param {function} [f]
  * @param {boolean} [everyFrame]
- * @returns {Promise<void>}
+ * @returns {Promise}
  */
 
 export const waitFrames = async (n = 1, f, everyFrame = false) => {
     while (n-- > 0) await nextFrame(everyFrame ? f : undefined)
     if (isFunc(f)) return await f()
 }
-
 /**
  * WaitFor - Waits for specified event.
  * @param {string} selector
  * @param {string} event
  * @param {function} [f]
- * @returns {Promise<void>}
+ * @returns {Promise}
  */
 
 export const waitFor = async (selector, event, f) => {
@@ -1290,7 +1299,7 @@ export const waitFor = async (selector, event, f) => {
                 event,
                 async e => {
                     if (isFunc(f)) resolve(await f(e))
-                    else resolve()
+                    else resolve(undefined)
                 },
                 { once: true },
             )
@@ -1541,8 +1550,8 @@ export const setCss = (prop, v, selector = ':root') =>
 /**
  * Attempt - Tries a function and returns result, or result of handler.
  * @param {function} f
- * @param {(e: Error) => * | *} [handle]
- * @param {...args: *} [args]
+ * @param {(e: Error) => * | *} [handler]
+ * @param {Array} args
  * @returns {*}
  */
 
@@ -1557,9 +1566,9 @@ export const attempt = (f, handler = e => e, ...args) => {
 /**
  * AttemptAsync - Tries a function and returns result, or result of handler.
  * @param {function} f
- * @param {(e: Error) => * | *} [handle]
- * @param {...args: *} [args]
- * @returns {*}
+ * @param {(e: Error) => * | *} [handler]
+ * @param {Array} args
+ * @returns {Promise}
  */
 
 export const attemptAsync = async (f, handler = e => e, ...args) => {
