@@ -184,6 +184,12 @@ describe('ö.unique', () => {
 
         expect(result).toMatchObject([1, 2])
     })
+
+    it('should handle any iterable', () => {
+        let result = ö.unique('001122')
+
+        expect(result).toMatchObject(['0', '1', '2'])
+    })
 })
 
 describe('ö.shuffle', () => {
@@ -193,6 +199,12 @@ describe('ö.shuffle', () => {
 
         expect(result).not.toEqual(arr)
         expect(result.sort()).toEqual(arr.sort())
+    })
+
+    it('should handle any iterable', () => {
+        let result = ö.shuffle('001122')
+
+        expect(result.length).toBe(6)
     })
 })
 
@@ -214,6 +226,16 @@ describe('ö.sample', () => {
         let result = ö.sample([], 1)
 
         expect(result).toEqual(undefined)
+    })
+
+    it('should handle any iterable', () => {
+        let result = ö.sample('000000')
+
+        expect(result).toBe('0')
+
+        result = ö.sample('000000', 2)
+
+        expect(result).toEqual(['0', '0'])
     })
 })
 
@@ -254,6 +276,12 @@ describe('ö.rotate', () => {
 
         expect(result).toEqual([])
     })
+
+    it('should handle any iterable', () => {
+        let result = ö.rotate('123')
+
+        expect(result).toEqual(['2', '3', '1'])
+    })
 })
 
 describe('ö.chunk', () => {
@@ -279,6 +307,17 @@ describe('ö.chunk', () => {
 
         expect(result).toHaveLength(0)
         expect(result).toEqual([])
+    })
+
+    it('should handle any iterable', () => {
+        let result = ö.chunk('001122', 2)
+
+        expect(result.length).toBe(3)
+        expect(result).toEqual([
+            ['0', '0'],
+            ['1', '1'],
+            ['2', '2'],
+        ])
     })
 })
 
@@ -353,6 +392,16 @@ describe('ö.split, ö.take, ö.drop', () => {
         expect(result).toHaveLength(2)
         expect(result).toEqual([[], []])
     })
+
+    it('should handle any iterable', () => {
+        let result = ö.split('001122', 2)
+
+        expect(result.length).toBe(2)
+        expect(result).toEqual([
+            ['0', '0'],
+            ['1', '1', '2', '2'],
+        ])
+    })
 })
 
 describe('ö.partition', () => {
@@ -394,6 +443,16 @@ describe('ö.partition', () => {
 
         expect(result).toHaveLength(2)
         expect(result).toEqual([[], []])
+    })
+
+    it('should handle any iterable', () => {
+        let result = ö.partition('001122', v => v % 2)
+
+        expect(result.length).toBe(2)
+        expect(result).toEqual([
+            ['1', '1'],
+            ['0', '0', '2', '2'],
+        ])
     })
 })
 
@@ -461,6 +520,18 @@ describe('ö.groupBy', () => {
             1: [{ a: 1 }, { a: 1 }],
             2: [{ a: 2 }],
         })
+    })
+
+    it('should handle any iterable', () => {
+        let result = ö.groupBy('001122', v => v)
+
+        expect(result).toEqual(
+            new Map([
+                ['0', ['0', '0']],
+                ['1', ['1', '1']],
+                ['2', ['2', '2']],
+            ]),
+        )
     })
 })
 

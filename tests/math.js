@@ -51,6 +51,16 @@ describe('ö.round', () => {
     })
 })
 
+describe('ö.mod', () => {
+    it('should return remainder, for negative numbers as well', () => {
+        expect(ö.mod(19, 20)).toBe(19)
+        expect(ö.mod(-19, 20)).toBe(1)
+        expect(ö.mod(-19.9, 20)).toBeCloseTo(.1)
+        expect(ö.mod(-19.9, 20.1)).toBeCloseTo(.2)
+    })
+})
+
+
 describe('ö.clamp', () => {
     it('should clamp n between min & non inclusive max, or flip max and min if min > max', () => {
         expect(ö.clamp(0, -1, 1)).toBe(0)

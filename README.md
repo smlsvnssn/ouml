@@ -97,28 +97,28 @@ Oh, and it's a `map` for `Object`s! In the rare case that you would mant to map 
 
 Mapping functions for `Map`s and `Object`s receive an array in the form of `[key, val]` as a value argument, and must return an array in the same format.
 
-#### ö.unique( arr ) → Array
+#### ö.unique( iterable ) → Array
 
 Returns an `Array` with unique entries.
 
-#### ö.shuffle( arr ) → Array
+#### ö.shuffle( iterable ) → Array
 
 Returns a new shuffled `Array`.
 
-#### ö.sample( arr, samples? = 1 ) → Array item | Array
+#### ö.sample( iterable, samples? = 1 ) → Array item | Array
 
-Returns random sample from `arr`, or an array of samples if `samples` is larger than one.
+Returns random sample from `iterable`, or an array of samples if `samples` is larger than one.
 
-#### ö.rotate( arr, steps? = 1 ) → Array
+#### ö.rotate( iterable, steps? = 1 ) → Array
 
-Rotates an array to the left if `steps` is positive, and to the right if `steps` is negative.
+Rotates an iterable to the left if `steps` is positive, and to the right if `steps` is negative.
 
 ```js
 ö.rotate([1, 2, 3, 4], 1) // returns[ 2, 3, 4, 1 ]
 ö.rotate([1, 2, 3, 4], -1) // returns[ 4, 1, 2, 3 ]
 ```
 
-#### ö.chunk( arr, chunkSize? = 1 ) → [ Arrays ]
+#### ö.chunk( iterable, chunkSize? = 1 ) → [ Arrays ]
 
 Returns an array of arrays with `chunkSize` length.
 
@@ -126,9 +126,9 @@ Returns an array of arrays with `chunkSize` length.
 ö.chunk([1, 2, 3, 4, 5, 6, 7], 3) // returns [ [1, 2, 3], [4, 5, 6], [7] ]
 ```
 
-#### ö.split( arr, index ) → [ Array, Array ]
+#### ö.split( iterable, index ) → [ Array, Array ]
 
-Splits `arr` into one part before `index` (excluding `index`), and one part after.
+Splits `iterable` into one part before `index` (excluding `index`), and one part after.
 
 Alternatively: Takes a function returning a boolean. The function receives `value, index, array` as arguments, and should return `false` on the array item where the split should be made.
 
@@ -136,7 +136,7 @@ Alternatively: Takes a function returning a boolean. The function receives `valu
 ö.split([1, 2, 3, 4], v => v <= 2) // returns [ [1, 2], [3, 4] ]
 ```
 
-#### ö.take( arr, index ) → Array
+#### ö.take( iterable, index ) → Array
 
 Same as `ö.split()`, but returns first part.
 
@@ -144,7 +144,7 @@ Same as `ö.split()`, but returns first part.
 ö.take([1, 2, 3, 4], v => v <= 2) // returns [1, 2]
 ```
 
-#### ö.drop( arr, index ) → Array
+#### ö.drop( iterable, index ) → Array
 
 Same as `ö.split()`, but returns last part.
 
@@ -152,7 +152,7 @@ Same as `ö.split()`, but returns last part.
 ö.drop([1, 2, 3, 4], v => v <= 2) // returns [3, 4]
 ```
 
-#### ö.partition( arr, f ) → [ Array, Array ]
+#### ö.partition( iterable, f ) → [ Array, Array ]
 
 Returns an array partitioned into two arrays, the first where `f` returns `true`, the second where `f` returns `false`.
 The function receives `value, index, array` as arguments.
@@ -161,39 +161,39 @@ The function receives `value, index, array` as arguments.
 ö.partition([1, 2, 3, 4], v => v % 2 == 0) // returns [ [2, 4], [1, 3] ]
 ```
 
-#### ö.sum( arr ) → Number
+#### ö.sum( iterable ) → Number
 
-Sums `arr`, with `Number` coercion.
+Sums `iterable`, with `Number` coercion.
 
-#### ö.mean( arr ) → Number
+#### ö.mean( iterable ) → Number
 
-Calculates mean value of `arr`, with `Number` coercion.
+Calculates mean value of `iterable`, with `Number` coercion.
 
-#### ö.product( arr ) → Number
+#### ö.product( iterable ) → Number
 
-Returns product of `arr`, with `Number` coercion. Reaches `Number.MAX_VALUE` rather quickly for large arrays, so use with some caution.
+Returns product of `iterable`, with `Number` coercion. Reaches `Number.MAX_VALUE` rather quickly for large arrays, so use with some caution.
 
-#### ö.geometricMean( arr ) → Number
+#### ö.geometricMean( iterable ) → Number
 
-Calculates the geometric mean of `arr`, with `Number` coercion. May return `Infinity` for large arrays or large numbers, since it uses `ö.product`.
+Calculates the geometric mean of `iterable`, with `Number` coercion. May return `Infinity` for large arrays or large numbers, since it uses `ö.product`.
 
-#### ö.median( arr ) → Number
+#### ö.median( iterable ) → Number
 
-Calculates median value of `arr`, with `Number` coercion.
+Calculates median value of `iterable`, with `Number` coercion.
 
-#### ö.max( arr ) → Number
+#### ö.max( iterable ) → Number
 
-Returns largest value in `arr`.
+Returns largest value in `iterable`.
 
-#### ö.min( arr ) → Number
+#### ö.min( iterable ) → Number
 
-Returns smallest value in `arr`.
+Returns smallest value in `iterable`.
 
-#### ö.groupBy( arr, prop | f, asObject? = false) → Map | Object
+#### ö.groupBy( iterable, prop | f, asObject? = false) → Map | Object
 
 Returns a `Map` with keys corresponding to `prop` values, holding grouped values as arrays. Optionally returns an `object` if `asObject` is set to true.
 
-If `prop` is a string, takes an iterable of `object`s with a common property. If `prop` is a function, takes a function returning keys for grouping based on `arr` contents. The function receives `value, index, array` as arguments.
+If `prop` is a string, takes an iterable of `object`s with a common property. If `prop` is a function, takes a function returning keys for grouping based on `iterable` contents. The function receives `value, index, array` as arguments.
 
 ### Tree structures
 
@@ -399,17 +399,17 @@ partial(3) // also 6
 
 Creates and returns memoised functions. By default, the arguments to the memoised function are used as key for storing the result (If only one argument, the raw input is used as key, if more than one, the arguments are joined to a string). If the arguments are objects instead of primitive values, you should provide a `keymaker`. `keymaker` receives all inputs from the memoised function, and should return something unique to use as a `Map` key for a given set of inputs. Use for example `JSON.stringify` when you expect objects as input.
 
-#### ö.createEnum( object ) → Object
+#### ö.Enum/createEnum( object ) → Object
 
 Creates and returns an enumerable, i.e. a frozen object where the keys have unique values. Lets you create kinda sorta vanilla typechecking light, but at runtime 🤪. Takes an object, or strings, or an array of strings, as input. In order for codehinting to work, you need to provide an explicit object.
 Example:
 
 ```js
-const SIZES = ö.createEnum('small', 'medium', 'large')
+const SIZES = ö.Enum('small', 'medium', 'large')
 // or:
-const SIZES = ö.createEnum(['small', 'medium', 'large'])
+const SIZES = ö.Enum(['small', 'medium', 'large'])
 // or:
-const SIZES = ö.createEnum({
+const SIZES = ö.Enum({
     small: Symbol('small'),
     medium: Symbol('medium'),
     large: Symbol('large'),
@@ -436,6 +436,16 @@ Returns random number from reasonably approximated normal distribution, centered
 #### ö.round( n, precision? = 0 ) → Number
 
 Returns `n` rounded to `precision` decimals.
+
+#### ö.mod( n, divisor ) → Number
+
+Returns remainder modulo `divisor`, for both positive and negative numbers. Returns a number that's always between `0` and `divisor`, unlike the `%` operator. 
+
+```js
+ö.mod(9, 10) == 9 % 10 // True
+ö.mod(-9, 10) == -9 % 10 // False, returns 1, instead of -9
+
+```
 
 #### ö.clamp( n, min, max ) → Number
 

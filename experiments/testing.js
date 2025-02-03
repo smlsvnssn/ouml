@@ -27,4 +27,9 @@ a[0] = a
 ö.log(ö.rotate([1, 2, 3, 4], 1))
 ö.log(ö.rotate([1, 2, 3, 4], -1))
 ö.log(ö.chunk([1, 2, 3, 4, 5, 6, 7], 3))
-ö.log(ö.rangeArray( 0, -1, .05 ))
+ö.log(ö.rangeArray(0, -1, .05))
+
+ö.log(ö.mod(9, 10))
+ö.log(9 % 10)
+ö.log(ö.mod(-9, 10))
+ö.log(-9 % 10)

@@ -134,11 +134,11 @@ export const map = (iterable, f) => {
 
 /**
  * Unique - Returns an `Array` with unique entries.
- * @param {Iterable} arr
+ * @param {Iterable} iterable
  * @returns {Array}
  */
 
-export const unique = arr => [...new Set(arr)]
+export const unique = iterable => [...new Set(iterable)]
 
 /**
  * Shuffle - Returns a new shuffled `Array`.
@@ -148,15 +148,15 @@ export const unique = arr => [...new Set(arr)]
  */
 
 export const shuffle = iterable => {
-    let a = Array.from(iterable)
+    let arr = Array.from(iterable)
 
     // classic loop for perf
-    for (let i = a.length - 1; i > 0; i--) {
+    for (let i = arr.length - 1; i > 0; i--) {
         let j = random(i + 1)
-        ;[a[j], a[i]] = [a[i], a[j]]
+        ;[arr[j], arr[i]] = [arr[i], arr[j]]
     }
 
-    return a
+    return arr
 }
 
 /**
@@ -303,45 +303,45 @@ export const geometricMean = iterable =>
 
 /**
  * Median - Calculates median value of `arr`, with `Number` coercion.
- * @param {Iterable<number>} arr
+ * @param {Iterable<number>} iterable
  * @returns {number}
  */
 
-export const median = arr => {
-    let a = Array.from(arr).sort((a, b) => Number(a) - Number(b))
-    let m = Math.floor(a.length / 2)
+export const median = iterable => {
+    let arr = Array.from(iterable).sort((a, b) => Number(a) - Number(b))
+    let m = Math.floor(arr.length / 2)
 
-    return m % 2 ? Number(a[m]) : (Number(a[m - 1]) + Number(a[m])) / 2
+    return m % 2 ? Number(arr[m]) : (Number(arr[m - 1]) + Number(arr[m])) / 2
 }
 
 /**
  * Max - Returns largest value in `arr`.
- * @param {Iterable<number>} arr
+ * @param {Iterable<number>} iterable
  * @returns {number}
  */
 
-export const max = arr => Math.max(...arr)
+export const max = iterable => Math.max(...iterable)
 
 /**
  * Min - Returns smallest value in `arr`.
- * @param {Iterable<number>} arr
+ * @param {Iterable<number>} iterable
  * @returns {number}
  */
 
-export const min = arr => Math.min(...arr)
+export const min = iterable => Math.min(...iterable)
 
 /**
  * GroupBy - Returns a `Map` with keys corresponding to `prop` values.
- * @param {Iterable} arr
+ * @param {Iterable} iterable
  * @param {(string | mapCB)} prop
  * @param {boolean} [asObject = false]
  * @returns {Map<*, Array> | Object.<string, Array>}
  */
 
-export const groupBy = (arr, prop, asObject = false) =>
+export const groupBy = (iterable, prop, asObject = false) =>
     // @ts-ignore
     globalThis[asObject ? 'Object' : 'Map'].groupBy(
-        arr,
+        iterable,
         isFunc(prop) ? prop : v => v[prop],
     )
 
@@ -362,6 +362,7 @@ export const groupBy = (arr, prop, asObject = false) =>
  */
 
 export const mapToTree = (arr, idProp, parentProp) => {
+    // Gather all parents...
     let parents = new Map()
     let rootKey = null
 
@@ -371,11 +372,11 @@ export const mapToTree = (arr, idProp, parentProp) => {
                 idProp(v, i, arr) // Should return [ownKey, parentKey]
             :   [v[idProp], v?.[parentProp ?? ''] ?? rootKey]
 
-        if (parents.has(parentKey))
-            parents.get(parentKey).push({ key, v }) // Using .push for performance reasons
+        if (parents.has(parentKey)) parents.get(parentKey).push({ key, v })
         else parents.set(parentKey, [{ key, v }])
     }
 
+    // ...and map them out.
     const traverse = (parentKey = rootKey) =>
         parents.get(parentKey)?.map(parent => ({
             // did you see the base case? Pretty small eh?
@@ -885,6 +886,18 @@ export const randomNormal = (mean = 0, sigma = 1) => {
 
 export const round = (n, precision = 0) =>
     Math.round(n * 10 ** precision + Number.EPSILON) / 10 ** precision
+
+/**
+ * Mod - Returns remainder of euclidian division. Wraps negative numbers.
+ * @param {number} n
+ * @param {number} divisor
+ * @returns {number}
+ */
+
+export const mod = (n, divisor) => {
+    divisor = Math.abs(divisor)
+    return ((n % divisor) + divisor) % divisor
+}
 
 const smallestFirst = (min, max) => (min > max ? [max, min] : [min, max])
 
