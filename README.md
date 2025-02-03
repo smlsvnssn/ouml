@@ -444,7 +444,6 @@ Returns remainder modulo `divisor`, for both positive and negative numbers. Retu
 ```js
 ö.mod(9, 10) == 9 % 10 // True
 ö.mod(-9, 10) == -9 % 10 // False, returns 1, instead of -9
-
 ```
 
 #### ö.clamp( n, min, max ) → Number
