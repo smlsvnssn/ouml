@@ -1268,11 +1268,11 @@ Creates an interpolator function that takes a `t` value between 0 and 1, and ret
 
 # Bits
 
-Apparantly, javascript stores a boolean as a byte, not a bit. Not at problem if you have a handful of them, but if you have thousands, or millions, `bits` can come in handy.
+Apparently, javascript stores a boolean as a byte, not a bit. Not at problem if you have a handful of them, but if you have thousands, or millions, `bits` can come in handy.
 
 The `bits` module provides simple storage of and access to bits, costing an eigth of a standard boolean. It exports the default function `bits()`, that creates `Bits` objects. It also exports `isBits()`.
 
-Handles loads of bits, up to 2^30 - 1 by the looks of it. 
+Handles loads of bits, up to 2^30 - 1 by the looks of it.
 
 Use like so:
 
@@ -1288,9 +1288,9 @@ myBits.get(1_000_000) // 1
 
 ### bits()
 
-#### bits( number? | bigint? | string? | Array? | Bits?, ...rest? ) → Bits
+#### bits( number? | bigint? | string? | array? | Bits?, ...rest? ) → Bits
 
-The `bits` function creates `Bits` from any `number` or `bigint`. It can also take `string`s in binary format, i.e. `"1001"`. If you give it an `Array`, it coerces all values to truthy/falsy before creating the bits. Optionally, you can give multiple arguments, like so:
+The `bits` function creates `Bits` from any `number` or `bigint`. It can also take `string`s in binary format, i.e. `"1001"`. If you give it an `array`, it coerces all values to truthy/falsy before creating the bits. Optionally, you can give multiple arguments, like so:
 
 ```js
 bits(true, 'yo', [], 1, 1n, () => 1).toString()
@@ -1298,9 +1298,10 @@ bits(63).toString()
 bits([1, 1, 1, 1, 1, 1]).toString()
 // 111111
 ```
+
 #### isBits( v ) → boolean
 
-Returns wether `v` is an instance of `Bits`.
+Returns whether `v` is an instance of `Bits`.
 
 ### Bits methods
 
@@ -1345,3 +1346,7 @@ Returns the `bigint` that contains the bits.
 #### Bits.toString()
 
 Returns the bits as a binary string.
+
+---
+
+🄯 Lhli 2025
