@@ -22,6 +22,7 @@ combinations
 permutations
 multiply and convolve for arrays
 
+
 Environment methods, ie isMobile, isTouchscreen, isHiResScreen, isDesktop, isServer etc
 let mql = window.matchMedia("(max-width: 600px)");
 https://developer.mozilla.org/en-US/docs/Web/API/Window/matchMedia
@@ -40,6 +41,11 @@ Cubic, Quadratic
 √ Rework colour functions to include oklch and new css features (browser only? Use create element hack?)
 
 */
+
+
+
+const zigzag = (x, n, xn = Math.floor(x / n), p = Math.pow(-1, xn)) =>
+    Math.round(n * (-(p / 2) + p * (x / n - xn) + 0.5))
 
 const attempt = (f, handle, ...args) => {
     try {

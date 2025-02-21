@@ -1372,6 +1372,7 @@ export const isDefined = is
 export const isNull = v => v === null
 
 export const isArr = v => Array.isArray(v)
+export const isArray = isArr
 
 /**
  * @returns {v is function}

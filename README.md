@@ -439,7 +439,7 @@ Returns `n` rounded to `precision` decimals.
 
 #### ö.mod( n, divisor ) → Number
 
-Returns remainder modulo `divisor`, for both positive and negative numbers. Returns a number that's always between `0` and `divisor`, unlike the `%` operator. 
+Returns remainder modulo `divisor`, for both positive and negative numbers. Returns a number that's always between `0` and `divisor`, unlike the `%` operator.
 
 ```js
 ö.mod(9, 10) == 9 % 10 // True
@@ -1265,3 +1265,83 @@ let html = ö.map(
 #### Colour.getInterpolator( clr: Colour | cssString, colourspace? = 'oklab', interpolator? = ö.lerp ) → function( t ) → Colour
 
 Creates an interpolator function that takes a `t` value between 0 and 1, and returns the `Colour` at `t` between current colour and `colour`.
+
+# Bits
+
+Apparantly, javascript stores a boolean as a byte, not a bit. Not at problem if you have a handful of them, but if you have thousands, or millions, `bits` can come in handy.
+
+The `bits` module provides simple storage of and access to bits, costing an eigth of a standard boolean. It exports the default function `bits()`, that creates `Bits` objects. It also exports `isBits()`.
+
+Handles loads of bits, up to 2^30 - 1 by the looks of it. 
+
+Use like so:
+
+```js
+import bits from 'ouml/bits'
+
+let myBits = bits()
+
+myBits.set(1_000_000)
+myBits.get(999_999) // 0
+myBits.get(1_000_000) // 1
+```
+
+### bits()
+
+#### bits( number? | bigint? | string? | Array? | Bits?, ...rest? ) → Bits
+
+The `bits` function creates `Bits` from any `number` or `bigint`. It can also take `string`s in binary format, i.e. `"1001"`. If you give it an `Array`, it coerces all values to truthy/falsy before creating the bits. Optionally, you can give multiple arguments, like so:
+
+```js
+bits(true, 'yo', [], 1, 1n, () => 1).toString()
+bits(63).toString()
+bits([1, 1, 1, 1, 1, 1]).toString()
+// 111111
+```
+#### isBits( v ) → boolean
+
+Returns wether `v` is an instance of `Bits`.
+
+### Bits methods
+
+Methods that manipulate bits return `this` and are chainable.
+
+#### Bits.get( index, asBool ) → number | boolean
+
+Returns the bit at `index`.
+
+#### Bits.set( index, value = 1 ) → Bits
+
+Sets `index` to `1` if `value` is truthy, or not passed. Optionally pass a falsy `value` to clear bit at `index`.
+
+#### Bits.flip( index ) → Bits
+
+Flips bit at `index`.
+
+#### Bits.clear( index ) → Bits
+
+Clears bit at `index`.
+
+#### Bits.slice( start = 0, end = Bits.length ) → Bits
+
+Returns a slice of `Bits`.
+
+#### Bits.range( start = 0, end = Bits.length ) yields bit
+
+Generator, yields bits in given range.
+
+#### ...Bits
+
+`Bits` are iterable.
+
+#### Bits.length
+
+Returns the number of bits stored, a.k.a. index of most significant bit + 1.
+
+#### Bits.valueOf()
+
+Returns the `bigint` that contains the bits.
+
+#### Bits.toString()
+
+Returns the bits as a binary string.
