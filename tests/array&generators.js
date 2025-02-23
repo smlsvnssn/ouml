@@ -597,9 +597,11 @@ let deepArr = [
         a: 1,
         b: [{ a: 1 }, { a: 2 }],
     },
+    { a: 0 },
+    { a: 0, b: [{ a: 2 }] },
     {
         a: 1,
-        b: [{ a: 1 }, { a: 1, b: [{ a: 1 }, { a: 2 }] }],
+        b: [{ a: 1 }, { a: 1, b: [{ a: 1 }, { a: 0 }] }],
     },
 ]
 
@@ -615,19 +617,19 @@ describe('ö.mapDeep', () => {
     it('should map over nested members given a mapping function', () => {
         const mapper = v => v.a
 
-        expect(ö.mapDeep(deepArr, mapper, 'b')).toHaveLength(8)
-        expect(ö.sum(ö.mapDeep(deepArr, mapper, 'b'))).toBe(10)
+        expect(ö.mapDeep(deepArr, mapper, 'b', true)).toHaveLength(11)
+        expect(ö.sum(ö.mapDeep(deepArr, mapper, 'b', true))).toBe(10)
     })
 
-    it('should preserve structure of tree if given an arr of objects with flatten == true (identity)', () => {
+    it('should preserve structure of tree if given an arr of objects with flatten == false (identity)', () => {
         const mapper = ö.id
 
         expect(ö.mapDeep(deepArr, mapper, 'b')).toMatchObject(deepArr)
     })
 
     it('should return prop values given a string', () => {
-        expect(ö.mapDeep(deepArr, 'a', 'b')).toHaveLength(8)
-        expect(ö.sum(ö.mapDeep(deepArr, 'a', 'b'))).toBe(10)
+        expect(ö.mapDeep(deepArr, 'a', 'b', true)).toHaveLength(11)
+        expect(ö.sum(ö.mapDeep(deepArr, 'a', 'b', true))).toBe(10)
     })
 })
 
@@ -635,7 +637,7 @@ describe('ö.filterDeep', () => {
     it('should find nested members given a filter function', () => {
         const filter = v => v.a == 2
 
-        let result = ö.filterDeep(deepArr, filter, 'b')
+        let result = ö.filterDeep(deepArr, filter, 'b', false)
 
         expect(result).toHaveLength(2)
         expect(ö.sum(result.map(v => v.a))).toBe(4)
@@ -648,8 +650,19 @@ describe('ö.filterDeep', () => {
         expect(ö.sum(result.map(v => v.a))).toBe(4)
     })
 
+    it('should find children that match and keep their parents when flatten == false', () => {
+        let result = ö.filterDeep(deepArr, 2, 'b', 'a', false)
+
+        expect(result).toHaveLength(2)
+        expect(ö.sum(ö.mapDeep(result, v => v.a, 'b', true))).toBe(5)
+    })
+
     it('should return an empty array with no match', () => {
         let result = ö.filterDeep(deepArr, 3, 'b', 'a')
+
+        expect(result).toHaveLength(0)
+
+        result = ö.filterDeep(deepArr, 3, 'b', 'a', false)
 
         expect(result).toHaveLength(0)
     })

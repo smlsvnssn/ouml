@@ -226,11 +226,13 @@ let sameTree = ö.mapToTree(flat, item => [
 ])
 ```
 
-#### ö.reduceDeep( arr, f, subArrayProp? = 'children', initial? ) → value
+#### ö.reduceDeep( arr, f, childrenProp? = 'children', initial?, flatten? = false ) → value
 
-Reduces arrays of nested objects to a single value. `subArrayProp` is a `string` matching the property containing nested arrays (defaults to `'children'`).
+Reduces arrays of nested objects to a single value. `childrenProp` is a `string` matching the property containing nested arrays (defaults to `'children'`).
 
 The reducer function `f` receives `accumulator, value, index, array` as arguments. `initial` can be omitted, just like the native `reduce`, in that case the first item of `arr` is used as the initial value.
+
+If `flatten` is `false`, the accumulator is an array, and the reducer returns an object, the structure of the original `arr` is preserved, and a property matching `childrenProp` is added to the object, containing its children.
 
 Example:
 
@@ -249,25 +251,25 @@ let arr = [
 ö.reduceDeep(arr, (acc, v) => acc + v.value, 'children', 0) // returns 0
 ```
 
-#### ö.mapDeep( arr, f | prop, subArrayProp? = 'children', flatten? = false ) → Array
+#### ö.mapDeep( arr, f | prop, childrenProp? = 'children', flatten? = false ) → Array
 
-Maps over arrays of nested objects. `subArrayProp` is a `string` matching the property containing nested arrays.
+Maps over arrays of nested objects. `childrenProp` is a `string` matching the property containing nested arrays.
 
-If `f` is a function, its return value is mapped to a new array. The function receives `value, index, array` as arguments. If `f` returns an `object`, and `flatten` is `false`, the structure of the original `arr` is preserved, and a property matching `subArrayProp` is added to the object, containing its children.
+If `f` is a function, its return value is mapped to a new array. The function receives `value, index, array` as arguments. If `flatten` is `false`, and `f` returns an `object`, the structure of the original `arr` is preserved, and a property matching `childrenProp` is added to the object, containing its children.
 
 If `f` is a `string`, the value of the property matching `f` is returned, in a flattened array.
 
-#### ö.filterDeep( arr, f | value, subArrayProp? = 'children', prop? ) → Array
+#### ö.filterDeep( arr, f | value, childrenProp? = 'children', prop?, flatten? = true ) → Array
 
-Finds items that match `f` in arrays of nested objects. `subArrayProp` is a `string` matching the property containing nested arrays.
+Finds items that match `f` in arrays of nested objects. `childrenProp` is a `string` matching the property containing nested arrays.
 
 If `f` is a function, returns items where `f` returns `true`. The function receives `value, index, array` as arguments. If `f` is a function, `prop` can be omitted.
 
 If `f` is not a function, the value of `f` is compared to the value of property `prop`.
 
-Returns a flat array with matching items, regardless of depth.
+If `flatten` is `false`, and `f` returns an `object`, the parents of matches are kept, persisting the path to matching leaf nodes. If `flatten` is `true`, returns a flat array with matching items, regardless of depth.
 
-#### ö.findDeep( arr, f | value, subArrayProp? = 'children', prop? ) → Array item
+#### ö.findDeep( arr, f | value, childrenProp? = 'children', prop? ) → Array item
 
 Same as `ö.filterDeep`, except it returns first match.
 

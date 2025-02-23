@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import bits from './index.mjs'
 import { time, log } from '../ö.mjs'
-log(bits(63).toString())
+
 describe('bits', () => {
     it('should create Bits from number input', () => {
         let a = bits(1023),
@@ -105,12 +105,16 @@ describe('Bits.set', () => {
     })
 
     it('should work up to max bigint size', () => {
-        expect(() => bits().set(1_073_741_823)).not.toThrow(
+        expect(() => bits().set(2 ** 30 - 1)).not.toThrow(
             'Maximum BigInt size exceeded',
         )
-        expect(() => bits().set(1_073_741_824)).toThrow(
+        expect(() => bits().clear(2 ** 30)).toThrow(
             'Maximum BigInt size exceeded',
         )
+    })
+
+    it('should not work above max bigint size, but it does when creating a bigint?', () => {
+        expect(() => bits(2 ** 32)).not.toThrow('Maximum BigInt size exceeded')
     })
 })
 

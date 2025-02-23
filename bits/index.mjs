@@ -1,4 +1,4 @@
-import { clamp, range, is, isArr, isStr } from '../ö.mjs'
+import { clamp, range, is, isArr, isStr, attempt } from '../ö.mjs'
 
 class Bits {
     /**
@@ -32,8 +32,8 @@ class Bits {
     // thx https://lucasfcosta.com/2018/12/25/bitwise-operations.html
 
     set(index, value = 1) {
-        if (+value == 0) this.clear(index)
-        else this.#b = this.#b | (1n << BigInt(index))
+        if (!value) return this.clear(index)
+        this.#b = this.#b | (1n << BigInt(index))
         return this
     }
 
@@ -100,10 +100,9 @@ class Bits {
     }
 }
 
-
 /**
  * @param {string} s
-*/
+ */
 
 const parseStr = s => (/[^01]/.test(s) ? strangeBits() : parseInt(s, 2))
 
@@ -124,15 +123,16 @@ export const isBits = v => v instanceof Bits
 export const bits = (value = 0n, ...args) => {
     let v = args.length ? [value, ...args] : value
 
-    try {
-        v = BigInt(
-            isStr(v) ? parseStr(v)
-            : isArr(v) ? parseInt(v.map(v => Number(Boolean(v))).join(''), 2)
-            : v,
-        )
-    } catch (e) {
-        strangeBits()
-    }
+    v = attempt(
+        () =>
+            BigInt(
+                isStr(v) ? parseStr(v)
+                : isArr(v) ?
+                    parseInt(v.map(v => Number(Boolean(v))).join(''), 2)
+                :   v,
+            ),
+        strangeBits,
+    )
 
     return Object.freeze(new Bits(v))
 }

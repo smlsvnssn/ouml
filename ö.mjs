@@ -395,7 +395,7 @@ export const mapToTree = (arr, idProp, parentProp) => {
  * ReduceDeep - Reduces arrays of nested objects to a single value.
  * @param {Array<Object>} arr
  * @param {reduceCB} f
- * @param {string} [subArrayProp = 'children']
+ * @param {string} [childrenProp = 'children']
  * @param {*} [initial]
  * @param {boolean} [flatten = false]
  * @returns {*}
@@ -404,42 +404,41 @@ export const mapToTree = (arr, idProp, parentProp) => {
 export const reduceDeep = (
     arr,
     f,
-    subArrayProp = 'children',
+    childrenProp = 'children',
     initial,
     flatten = false,
 ) => {
     const traverse = (a, acc, firstRun = false) =>
         a.reduce((acc, v, i) => {
-            acc = firstRun && isnt(acc) ? v : f(acc, v, i, a)
-
-            if (v[subArrayProp]) {
-                if (!flatten && isArr(acc) && isObj(acc[i]))
-                    acc[i][subArrayProp] = traverse(v[subArrayProp], [])
-                else acc = traverse(v[subArrayProp], acc)
+            if (firstRun && isnt(acc)) acc = v
+            // runs bottom up, to be able to analyse results from children
+            if (v[childrenProp]) {
+                if (!flatten && isArr(acc))
+                    v[childrenProp] = traverse(v[childrenProp], [])
+                else acc = traverse(v[childrenProp], acc)
             }
-
-            return acc
+            return f(acc, v, i, a)
         }, acc)
 
-    return traverse(arr, initial, true)
+    return traverse(clone(arr), initial, true)
 }
 
 /**
  * MapDeep - Maps over arrays of nested objects.
  * @param {Array<Object>} arr
  * @param {mapCB} f
- * @param {string} subArrayProp
- * @param {*} [flatten = false]
+ * @param {string} childrenProp
+ * @param {boolean} [flatten = false]
  * @returns {Array}
  */
 
-export const mapDeep = (arr, f, subArrayProp, flatten = false) =>
+export const mapDeep = (arr, f, childrenProp, flatten = false) =>
     reduceDeep(
         arr,
         (acc, v, i) => (
             isFunc(f) ? acc.push(f(v, i, arr)) : acc.push(v[f]), acc
         ),
-        subArrayProp,
+        childrenProp,
         [],
         flatten,
     )
@@ -448,41 +447,53 @@ export const mapDeep = (arr, f, subArrayProp, flatten = false) =>
  * FilterDeep - Finds items that match `f` in arrays of nested objects.
  * @param {Array<Object>} arr
  * @param {mapCB} f
- * @param {string} subArrayProp
+ * @param {string} childrenProp
  * @param {string} [prop]
  * @returns {Array}
  */
 
-export const filterDeep = (arr, f, subArrayProp, prop) =>
+export const filterDeep = (arr, f, childrenProp, prop, flatten = true) =>
     reduceDeep(
         arr,
         (acc, v, i) => {
             if (isFunc(f)) {
-                if (f(v, i, arr)) acc.push(v)
-            } else if (prop && v[prop] === f) acc.push(v)
+                if (flatten) {
+                    if (f(v, i, arr)) acc.push(v)
+                } else if (f(v, i, arr) || v[childrenProp]?.length > 0)
+                    acc.push(v)
+            } else {
+                if (flatten) {
+                    if (prop && v[prop] === f) acc.push(v)
+                } else if (
+                    prop &&
+                    (v[prop] === f || v[childrenProp]?.length > 0)
+                )
+                    acc.push(v)
+            }
             return acc
         },
-        subArrayProp,
+        childrenProp,
         [],
+        flatten,
     )
 
 /**
  * FindDeep - Same as `ö.filterDeep`, except it returns first match.
  * @param {Array<Object>} arr
  * @param {mapCB} f
- * @param {string} [subArrayProp = 'children']
+ * @param {string} [childrenProp = 'children']
  * @param {string} [prop]
  * @returns {(* | undefined)}
  */
 
-export const findDeep = (arr, f, subArrayProp = 'children', prop) => {
+export const findDeep = (arr, f, childrenProp = 'children', prop) => {
     for (let [i, v] of arr.entries()) {
         if (isFunc(f)) {
             if (f(v, i, arr)) return v
         } else if (prop && v[prop] === f) return v
 
-        if (v[subArrayProp]) {
-            let result = findDeep(v[subArrayProp], f, subArrayProp, prop)
+        if (v[childrenProp]) {
+            let result = findDeep(v[childrenProp], f, childrenProp, prop)
             if (is(result)) return result
         }
     }

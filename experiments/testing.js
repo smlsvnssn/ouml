@@ -28,3 +28,18 @@ a[0] = a
 ö.log(ö.rotate([1, 2, 3, 4], -1))
 ö.log(ö.chunk([1, 2, 3, 4, 5, 6, 7], 3))
 ö.log(ö.rangeArray(0, -1, 0.05))
+
+let deepArr = [
+    {
+        a: 666,
+        b: [{ a: 1 }, { a: 2 }],
+    },
+    { a: 222 },
+    { a: 666, b: [{ a: 0 }] },
+    {
+        a: 666,
+        b: [{ a: 1 }, { a: 333, b: [{ a: 1 }, { a: 2 }] }],
+    },
+]
+
+ö.log(JSON.stringify(ö.filterDeep(deepArr, 3, 'b', 'a', false), null, 2))
