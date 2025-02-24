@@ -234,6 +234,8 @@ The reducer function `f` receives `accumulator, value, index, array` as argument
 
 If `flatten` is `false`, the accumulator is an array, and the reducer returns an object, the structure of the original `arr` is preserved, and a property matching `childrenProp` is added to the object, containing its children.
 
+Deepclones `arr` to avoid mutation.
+
 Example:
 
 ```js
@@ -259,6 +261,9 @@ If `f` is a function, its return value is mapped to a new array. The function re
 
 If `f` is a `string`, the value of the property matching `f` is returned, in a flattened array.
 
+Deepclones `arr` to avoid mutation.
+
+
 #### ö.filterDeep( arr, f | value, childrenProp? = 'children', prop?, flatten? = true ) → Array
 
 Finds items that match `f` in arrays of nested objects. `childrenProp` is a `string` matching the property containing nested arrays.
@@ -269,9 +274,12 @@ If `f` is not a function, the value of `f` is compared to the value of property 
 
 If `flatten` is `false`, and `f` returns an `object`, the parents of matches are kept, persisting the path to matching leaf nodes. If `flatten` is `true`, returns a flat array with matching items, regardless of depth.
 
+Deepclones `arr` to avoid mutation.
+
+
 #### ö.findDeep( arr, f | value, childrenProp? = 'children', prop? ) → Array item
 
-Same as `ö.filterDeep`, except it returns first match.
+Same as `ö.filterDeep`, except it returns first match, and it doesn't clone the incoming `arr`. 
 
 ### Set operations
 

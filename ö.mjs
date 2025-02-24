@@ -34,7 +34,7 @@ export const range = function* (start, end, step = 1) {
         [0, +start, +step]
     :   [+start, +end, +step]
 
-    const count = start < end ?
+    let count = start < end ?
         () => (start += step) < end
     :   () => (start -= step) > end
 
@@ -213,7 +213,7 @@ const getSplitIndex = (arr, index) => {
     if (!isFunc(index)) return index
 
     for (let [i, v] of arr.entries()) if (!index(v, i, arr)) return i
-    return arr.length // defaults to returning whole array
+    return arr.length - 1 // defaults to returning whole array
 }
 
 /**
@@ -457,18 +457,14 @@ export const filterDeep = (arr, f, childrenProp, prop, flatten = true) =>
         arr,
         (acc, v, i) => {
             if (isFunc(f)) {
-                if (flatten) {
-                    if (f(v, i, arr)) acc.push(v)
-                } else if (f(v, i, arr) || v[childrenProp]?.length > 0)
-                    acc.push(v)
+                if (!flatten) {
+                    if (f(v, i, arr) || v[childrenProp]?.length > 0) acc.push(v)
+                } else if (f(v, i, arr)) acc.push(v)
             } else {
-                if (flatten) {
-                    if (prop && v[prop] === f) acc.push(v)
-                } else if (
-                    prop &&
-                    (v[prop] === f || v[childrenProp]?.length > 0)
-                )
-                    acc.push(v)
+                if (!flatten) {
+                    if (prop && (v[prop] === f || v[childrenProp]?.length > 0))
+                        acc.push(v)
+                } else if (prop && v[prop] === f) acc.push(v)
             }
             return acc
         },
