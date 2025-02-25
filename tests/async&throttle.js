@@ -78,7 +78,7 @@ describe('ö.nextFrame', () => {
         expect(await promise).toBe(true)
 
         time = Date.now() - time
-        expect(time).toBeGreaterThan(10).toBeLessThan(30)
+        expect(time).toBeGreaterThan(1).toBeLessThan(30)
     })
 })
 

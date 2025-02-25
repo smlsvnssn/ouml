@@ -279,12 +279,12 @@ Deepclones `arr` to avoid mutation.
 
 #### ö.findDeep( arr, f | value, childrenProp? = 'children', prop? ) → Array item
 
-Same as `ö.filterDeep`, except it returns first match, and it doesn't clone the incoming `arr`. 
+Same as `ö.filterDeep`, except it returns first match, and doesn't deepclone the incoming `arr`. 
 
 ### Set operations
 
 Methods for comparing arrays or array-like objects. Inputs are coerced to `Set`. All methods return a new `Array`, or `Boolean`.
-The outputs adhere to strict set logic. If the inputs are `Array`s, duplicate items are removed. All these methods are wrappers around internal `Set` methods, but returns arrays. (Available in evergreens and in node 22+)
+The outputs adhere to strict set logic. If the inputs are `Array`s, duplicate items are removed. All these methods are wrappers around internal `Set` methods, but return arrays. (Available in evergreens and in node 22+)
 
 #### ö.intersect( a, b ) → Array
 
