@@ -1,6 +1,6 @@
 {
     "name": "ouml",
-    "version": "0.3.10",
+    "version": "0.3.11",
     "description": "smlsvnssn",
     "main": "ö.mjs",
     "module": "ö.mjs",
@@ -10,7 +10,8 @@
         "./colour": "./colour/index.mjs",
         "./övents": "./övents/index.mjs",
         "./öbservable": "./öbservable/index.mjs",
-        "./chain": "./chain/index.mjs"
+        "./chain": "./chain/index.mjs",
+        "./bits": "./bits/index.mjs"
     },
     "prettier": {
         "experimentalTernaries": true,
