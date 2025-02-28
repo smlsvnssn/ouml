@@ -1,6 +1,6 @@
 {
     "name": "ouml",
-    "version": "0.3.13",
+    "version": "0.3.14",
     "description": "smlsvnssn",
     "main": "ö.mjs",
     "module": "ö.mjs",
@@ -27,7 +27,8 @@
         "coverage": "vitest run --coverage"
     },
     "devDependencies": {
-        "@types/node": "^18.19.76",
+        "@types/node": "^16.18.126",
+        "@vitest/coverage-c8": "^0.33.0",
         "@vitest/coverage-v8": "^2.1.9",
         "jsdom": "^25.0.1",
         "prettier": "^3.5.2",
