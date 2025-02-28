@@ -1,9 +1,7 @@
 {
     "name": "ouml",
-    "version": "0.3.14",
+    "version": "0.3.15",
     "description": "smlsvnssn",
-    "main": "ö.mjs",
-    "module": "ö.mjs",
     "type": "module",
     "exports": {
         ".": "./ö.mjs",
