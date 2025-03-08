@@ -714,11 +714,11 @@ Any iterable except strings work, but produce arraylike objects without a `lengt
 
 #### ö.getLocal( item ) → Object
 
-[browser] Gets `item` from local storage, if any. Converts item to `Object` via `JSON.parse`.
+[browser] Gets `item` from local or session storage, if any. Converts item to `Object` via `JSON.parse`. Checks `sessionStorage` first.
 
-#### ö.setLocal( item, v ) → v
+#### ö.setLocal( item, v expire? = false  ) → v
 
-[browser] Sets `item` in local storage to `v`, and returns `v`.
+[browser] Sets `item` in local storage to `v`, and returns `v`. Optionally sets to `sessionStorage` if `expire` is true.
 
 #### ö.getCss( prop, selector? = ':root') → css property value
 

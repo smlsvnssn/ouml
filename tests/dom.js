@@ -11,6 +11,27 @@ describe('ö.getLocal, ö.setLocal', () => {
 
         expect(ö.getLocal(key)).not.toBe(testObj)
         expect(ö.getLocal(key)).toEqual(testObj)
+        expect(JSON.stringify(ö.getLocal(key))).toEqual(
+            localStorage.getItem(key),
+        )
+
+        localStorage.clear()
+    })
+
+    it('gets/sets objects in sessionStorage if expire == true', () => {
+        let key = 'test'
+        let testObj = { a: 1, b: 2 }
+
+        expect(ö.getLocal(key)).toBe(null)
+        expect(ö.setLocal(key, testObj, true)).toBe(testObj)
+
+        expect(ö.getLocal(key)).not.toBe(testObj)
+        expect(ö.getLocal(key)).toEqual(testObj)
+        expect(JSON.stringify(ö.getLocal(key))).toEqual(
+            sessionStorage.getItem(key),
+        )
+
+        expect(JSON.stringify(localStorage.getItem(key))).toEqual('null')
     })
 })
 
@@ -48,7 +69,7 @@ describe('ö.parseDOMStringMap', () => {
         let data = ö.parseDOMStringMap(element.dataset)
 
         expect(data).toBeInstanceOf(Object)
-        expect(data).toEqual({test: 'test'})
+        expect(data).toEqual({ test: 'test' })
     })
 })
 
@@ -61,9 +82,9 @@ describe('ö.deepest', () => {
 
         expect(child).toBeInstanceOf(HTMLAnchorElement)
         expect(child.innerHTML).toEqual('Hello')
-	})
-	
-	it('finds deepest `Element` in `element` by selector', () => {
+    })
+
+    it('finds deepest `Element` in `element` by selector', () => {
         let parent = ö.createElement(
             '<div><ul><li>Bye</li><li><a>Hello</a></li></ul></div>',
         )
@@ -78,8 +99,8 @@ it('translates a string into rövarspråket', () => {
     let str = 'Hej värld!'
     let result = ö.rorövovarorsospoproråkoketot(str)
 
-	expect(result).toBe('Hohejoj vovärorloldod!')
-	
+    expect(result).toBe('Hohejoj vovärorloldod!')
+
     expect(ö.rorövovarorsospoproråkoketot.name).toBe(
         ö.rorövovarorsospoproråkoketot('rövarspråket'),
     )

@@ -340,7 +340,7 @@ export const min = iterable => Math.min(...iterable)
 
 export const groupBy = (iterable, prop, asObject = false) =>
     // @ts-ignore
-    globalThis[asObject ? 'Object' : 'Map'].groupBy(
+    (asObject ? Object : Map).groupBy(
         iterable,
         isFunc(prop) ? prop : v => v[prop],
     )
@@ -1522,8 +1522,8 @@ export const onAnimationFrame = f => {
  * @returns {* | undefined}
  */
 
-export const getLocal = item => {
-    let i = localStorage.getItem(item)
+export const getLocal = (item) => {
+    let i = sessionStorage.getItem(item) ?? localStorage.getItem(item)
     return i && JSON.parse(i)
 }
 
@@ -1532,11 +1532,12 @@ export const getLocal = item => {
  * @template {any} v
  * @param {string} item
  * @param {v} v
+ * @param {boolean} [expire = false]
  * @returns {v}
  */
 
-export const setLocal = (item, v) => (
-    localStorage.setItem(item, JSON.stringify(v)), v
+export const setLocal = (item, v, expire = false) => (
+    (expire ? sessionStorage : localStorage).setItem(item, JSON.stringify(v)), v
 )
 
 /**
