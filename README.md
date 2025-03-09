@@ -26,7 +26,7 @@ Most methods are runnable within node/deno. Some methods require browser API:s, 
 
 ## Modules
 
-Includes modules [chain](#Chain), a method for chaining calls on any type, [öbservable](#%C3%B6bservable), a basic implementation of reactive values, [övents](#%C3%B6vents), a collection of useful custom browser events, and [colour](#Colour), a simple way to work with oklch colours.
+Includes modules [chain](#Chain), a method for chaining calls on any type, [öbservable](#%C3%B6bservable), a basic implementation of reactive values, [övents](#%C3%B6vents), a collection of useful custom browser events, [colour](#Colour), a simple way to work with oklch colours, and [bits](#Bits), an easy way to flip bits.
 
 Import them from
 

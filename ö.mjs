@@ -1141,6 +1141,8 @@ export const wrapFirstWords = (
             `${startWrap}$&${endWrap}`,
         )
 
+const isCssVar = s => s.match(/^\-\-/)
+
 /**
  * ToCamelCase - Returns regular sentence, kebab-case or snake_case string converted to camelCase.
  * @param {string} s
@@ -1148,12 +1150,11 @@ export const wrapFirstWords = (
  */
 
 export const toCamelCase = s =>
-    s.match(/^\-\-/) ?
-        s // is css var, so leave it alone
-        // @ts-ignore
-    :   s.replace(/([-_\s])([a-zA-Z0-9])/g, (m, _, c, o) =>
+    isCssVar(s) ? s : (
+        s.replace(/([-_\s])([a-zA-Z0-9])/g, (_, __, c, o) =>
             o ? c.toUpperCase() : c,
         )
+    )
 
 /**
  * ToKebabCase - Returns regular sentence or camelCase string converted to kebab-case.
@@ -1163,12 +1164,12 @@ export const toCamelCase = s =>
 
 // thx https://gist.github.com/nblackburn/875e6ff75bc8ce171c758bf75f304707
 export const toKebabCase = s =>
-    s.match(/^\-\-/) ?
-        s // is css var, so leave it alone
-    :   s
+    isCssVar(s) ? s : (
+        s
             .replace(/\s/g, '-')
             .replace(/([a-z0-9])([A-Z0-9])/g, '$1-$2')
             .toLowerCase()
+    )
 
 /**
  * Capitalise
@@ -1188,27 +1189,16 @@ export const capitalize = capitalise
  * @returns {string}
  */
 
-export const charRange = (start, end = 0) => {
-    if (isNum(start) && isNum(end))
-        return String.fromCharCode(
-            ...range(start, start < end ? end + 1 : end - 1),
-        )
-
-    if (isStr(start) && start.split('-').length == 2)
-        [start, end] = start.split('-')
-
-    return String.fromCharCode(
-        ...range(
+export const charRange = (start, end = start) => {
+    if (isStr(start) && isStr(end)) {
+        if (start.split('-').length == 2)
+            [start, end] = start.split('-');
             // @ts-ignore
-            start.codePointAt(),
-            // @ts-ignore
-            start.codePointAt() < end.codePointAt() ?
-                // @ts-ignore
-                end.codePointAt() + 1
-                // @ts-ignore
-            :   end.codePointAt() - 1,
-        ),
-    )
+        ;[start, end] = [start.codePointAt(), end.codePointAt()]
+    }
+
+    // @ts-ignore
+    return String.fromCharCode(...range(start, start < end ? end + 1 : end - 1))
 }
 
 /**
@@ -1522,7 +1512,7 @@ export const onAnimationFrame = f => {
  * @returns {* | undefined}
  */
 
-export const getLocal = (item) => {
+export const getLocal = item => {
     let i = sessionStorage.getItem(item) ?? localStorage.getItem(item)
     return i && JSON.parse(i)
 }

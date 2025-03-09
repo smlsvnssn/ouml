@@ -88,7 +88,9 @@ describe('ö.charRange', () => {
         expect(ö.charRange('a', 'z')).toHaveLength(26)
         expect(ö.charRange('a', 'z')).toEqual(alphabet)
         expect(ö.charRange('a-z')).toEqual(alphabet)
-        expect(ö.charRange('z-a')).toEqual(alphabet.split('').reverse().join(''))
+        expect(ö.charRange('z-a')).toEqual(
+            alphabet.split('').reverse().join(''),
+        )
 
         expect(ö.charRange('0-9')).toEqual('0123456789')
     })
@@ -98,11 +100,9 @@ describe('ö.charRange', () => {
         expect(ö.charRange(97, 97 + 25)).toEqual(alphabet)
     })
 
-    it.todo('both arguments must have same type', () => {
-        // Maybe fix this?
-        expect(() => ö.charRange('a')).toThrow(
-            'end.codePointAt is not a function',
-        )
+    it('should handle single argument nicely', () => {
+        expect(ö.charRange('a')).toBe('a')
+        expect(ö.charRange(97)).toBe('a')
     })
 })
 
