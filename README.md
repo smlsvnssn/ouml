@@ -472,6 +472,14 @@ Normalises `n` to a value between 0 and 1, within range given by `min` and `max`
 
 Checks if `n` is prime.
 
+#### ö.gcd( a, b ) → Number
+
+Finds greatest common divisor of `a` and `b`.
+
+#### ö.lcm( a, b ) → Number
+
+Finds least common multiple of `a` and `b`.
+
 #### ö.lerp( a, b, t ) → Number
 
 Interpolates linearly between `a` and `b`. `t` is a percentage value between 0 and 1.

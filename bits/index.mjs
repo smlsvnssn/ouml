@@ -75,7 +75,7 @@ class Bits {
     *range(start = 0, end) {
         let l = this.length
         start = clamp(start, 0, l)
-        end = is(end) ? clamp(end, start, l) : l
+        end = is(end) ? clamp(end, start, end) : l
 
         for (let i of range(start, end)) yield this.get(i)
     }

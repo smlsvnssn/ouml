@@ -43,3 +43,5 @@ let deepArr = [
 ]
 
 ö.log(JSON.stringify(ö.filterDeep(deepArr, 3, 'b', 'a', false), null, 2))
+
+

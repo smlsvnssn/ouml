@@ -17,6 +17,9 @@ zip/unzip?
 √ split
 √ splitWhile
 
+Math
+  factorization
+
 maybe:
 combinations
 permutations

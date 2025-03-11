@@ -55,11 +55,10 @@ describe('ö.mod', () => {
     it('should return remainder, for negative numbers as well', () => {
         expect(ö.mod(19, 20)).toBe(19)
         expect(ö.mod(-19, 20)).toBe(1)
-        expect(ö.mod(-19.9, 20)).toBeCloseTo(.1)
-        expect(ö.mod(-19.9, 20.1)).toBeCloseTo(.2)
+        expect(ö.mod(-19.9, 20)).toBeCloseTo(0.1)
+        expect(ö.mod(-19.9, 20.1)).toBeCloseTo(0.2)
     })
 })
-
 
 describe('ö.clamp', () => {
     it('should clamp n between min & non inclusive max, or flip max and min if min > max', () => {
@@ -116,6 +115,32 @@ describe('ö.isPrime', () => {
             2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
             67, 71, 73, 79, 83, 89, 97,
         ])
+    })
+})
+
+describe('ö.gcd', () => {
+    it('should return greatest common divisor', () => {
+        expect(ö.gcd(1, 1)).toEqual(1)
+        expect(ö.gcd(1000, 1000)).toEqual(1000)
+        expect(ö.gcd(Number.MAX_SAFE_INTEGER, 6361)).toEqual(6361)
+        expect(ö.gcd(-Number.MAX_SAFE_INTEGER, -6361)).toEqual(6361)
+        expect(ö.gcd(0, 1)).toEqual(1)
+        expect(ö.gcd(1, 0)).toEqual(1)
+    })
+})
+
+describe('ö.lcm', () => {
+    it('should return least common multiple', () => {
+        expect(ö.lcm(1, 1)).toEqual(1)
+        expect(ö.lcm(1000, 1000)).toEqual(1000)
+        expect(ö.lcm(Number.MAX_SAFE_INTEGER, 6361)).toEqual(
+            Number.MAX_SAFE_INTEGER,
+        )
+        expect(ö.lcm(-Number.MAX_SAFE_INTEGER, -6361)).toEqual(
+            Number.MAX_SAFE_INTEGER,
+        )
+        expect(ö.lcm(0, 1)).toEqual(0)
+        expect(ö.lcm(1, 0)).toEqual(0)
     })
 })
 

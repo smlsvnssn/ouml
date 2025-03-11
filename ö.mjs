@@ -976,6 +976,24 @@ export const isPrime = n => {
 }
 
 /**
+ * Gcd - Returns greatest common divisor.
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+
+export const gcd = (a, b) => (b == 0 ? Math.max(a, -a) : gcd(b, a % b))
+
+/**
+ * Lcm - Returns least common multiple.
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+
+export const lcm = (a, b) => Math.abs(a) * (Math.abs(b) / gcd(a,b))
+
+/**
  * NthRoot - Returns nth root of positive number.
  * @param {number} x
  * @param {number} n
@@ -1191,9 +1209,8 @@ export const capitalize = capitalise
 
 export const charRange = (start, end = start) => {
     if (isStr(start) && isStr(end)) {
-        if (start.split('-').length == 2)
-            [start, end] = start.split('-');
-            // @ts-ignore
+        if (start.split('-').length == 2) [start, end] = start.split('-')
+        // @ts-ignore
         ;[start, end] = [start.codePointAt(), end.codePointAt()]
     }
 
