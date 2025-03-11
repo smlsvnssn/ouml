@@ -61,7 +61,7 @@ export const range = function* (start, end, step = 1) {
  * @returns {Array}
  */
 
-export const times = (times, f = i => i, ...rest) =>
+export const times = (times = 0, f = i => i, ...rest) =>
     Array(Math.abs(times))
         .fill(0)
         // @ts-ignore
@@ -211,7 +211,6 @@ export const chunk = (iterable, chunkSize = 1) => {
 
 const getSplitIndex = (arr, index) => {
     if (!isFunc(index)) return index
-
     for (let [i, v] of arr.entries()) if (!index(v, i, arr)) return i
     return arr.length - 1 // defaults to returning whole array
 }
@@ -264,6 +263,33 @@ export const partition = (iterable, f) =>
     Array.from(iterable).reduce(
         (acc, v, i, a) => (f(v, i, a) ? acc[0].push(v) : acc[1].push(v), acc),
         [[], []],
+    )
+
+const minLen = arr => {
+    let len = Math.min(...arr.map(v => v.length))
+    return len == Infinity ? 0 : len
+}
+
+/**
+ * Zip - Returns an array of arrays with elements grouped by index
+ * @param  {...Iterable} iterables
+ * @returns {any[][]} */
+
+export const zip = (...iterables) => {
+    let arrs = iterables.map(v => [...v])
+    return times(minLen(arrs), i => times(arrs.length, ii => arrs[ii][i]))
+}
+
+/**
+ * Unzip - The inverse of zip
+ * @param {any[][]} arr
+ * @returns {any[][]}
+ */
+
+export const unzip = (arr = []) =>
+    arr.reduce(
+        (acc, v) => (v.forEach((v, i) => acc[i]?.push(v)), acc),
+        times(minLen(arr), () => []),
     )
 
 /**
@@ -991,7 +1017,7 @@ export const gcd = (a, b) => (b == 0 ? Math.max(a, -a) : gcd(b, a % b))
  * @returns {number}
  */
 
-export const lcm = (a, b) => Math.abs(a) * (Math.abs(b) / gcd(a,b))
+export const lcm = (a, b) => Math.abs(a) * (Math.abs(b) / gcd(a, b))
 
 /**
  * NthRoot - Returns nth root of positive number.
@@ -1209,8 +1235,9 @@ export const capitalize = capitalise
 
 export const charRange = (start, end = start) => {
     if (isStr(start) && isStr(end)) {
-        if (start.split('-').length == 2) [start, end] = start.split('-')
-        // @ts-ignore
+        if (start.split('-').length == 2)
+            [start, end] = start.split('-')
+            // @ts-ignore
         ;[start, end] = [start.codePointAt(), end.codePointAt()]
     }
 

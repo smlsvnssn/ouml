@@ -1,10 +1,10 @@
 import * as ö from 'ouml'
-import { isFunc, isStr, is, mapToTree, range, clone } from 'ouml'
+import { isFunc, isStr, is, mapToTree, range, clone, times, max } from 'ouml'
 /* 
 TODO:
 
 Array:
-zip/unzip?
+√ zip/unzip?
 
 √ partition
 
@@ -18,7 +18,7 @@ zip/unzip?
 √ splitWhile
 
 Math
-  factorization
+  factorization?
 
 maybe:
 combinations
@@ -41,11 +41,8 @@ Cubic, Quadratic
 √ include .observable in ö?
 √ rewrite övents as svelte actions?
 (√ kinda) partition as separate modules?
-√ Rework colour functions to include oklch and new css features (browser only? Use create element hack?)
-
+√ Rework colour functions to include oklch and new css features (browser only? Use create element hacks
 */
-
-
 
 const zigzag = (x, n, xn = Math.floor(x / n), p = Math.pow(-1, xn)) =>
     Math.round(n * (-(p / 2) + p * (x / n - xn) + 0.5))

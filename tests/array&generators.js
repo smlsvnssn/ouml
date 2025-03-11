@@ -405,7 +405,7 @@ describe('ö.split, ö.take, ö.drop', () => {
 })
 
 describe('ö.partition', () => {
-    it('should return apartitioned array', () => {
+    it('should return a partitioned array', () => {
         let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
         let predicate = v => v % 2 == 0
         let result = ö.partition(arr, predicate)
@@ -453,6 +453,66 @@ describe('ö.partition', () => {
             ['1', '1'],
             ['0', '0', '2', '2'],
         ])
+    })
+})
+
+let arr = [0, 1, 2, 3]
+let str = '012345'
+let set = new Set(arr)
+
+describe('ö.zip', () => {
+    it('should return a zipped array given iterables, with length matching shortest iterable', () => {
+        expect(ö.zip(arr, str, set)).toEqual([
+            [0, '0', 0],
+            [1, '1', 1],
+            [2, '2', 2],
+            [3, '3', 3],
+        ])
+
+        expect(ö.zip([1, 2, 3], 'abc')).toEqual([
+            [1, 'a'],
+            [2, 'b'],
+            [3, 'c'],
+        ])
+    })
+
+    it('should return a "zipped" array given one iterable', () => {
+        expect(ö.zip(str)).toEqual([['0'], ['1'], ['2'], ['3'], ['4'], ['5']])
+    })
+
+    it('should handle empty input without errors', () => {
+        expect(ö.zip()).toEqual([])
+        expect(ö.zip([])).toEqual([])
+    })
+})
+
+describe('ö.unzip', () => {
+    it('should return an unzipped array given an array of tuples, with length matching shortest tuple', () => {
+        expect(ö.unzip(ö.zip(arr, str, set))).toEqual([
+            [0, 1, 2, 3],
+            ['0', '1', '2', '3'],
+            [0, 1, 2, 3],
+        ])
+
+        let unevenTuples = [
+            [0, '0', 0],
+            [1, '1', 1],
+            [2, '2'],
+        ]
+
+        expect(ö.unzip(unevenTuples)).toEqual([
+            [0, 1, 2],
+            ['0', '1', '2'],
+        ])
+    })
+
+    it('should return an "unzipped" array given tuple of one', () => {
+        expect(ö.unzip([[0], [1]])).toEqual([[0, 1]])
+    })
+
+    it('should handle empty input without errors', () => {
+        expect(ö.unzip()).toEqual([])
+        expect(ö.unzip([])).toEqual([])
     })
 })
 

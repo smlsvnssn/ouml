@@ -161,6 +161,26 @@ The function receives `value, index, array` as arguments.
 ö.partition([1, 2, 3, 4], v => v % 2 == 0) // returns [ [2, 4], [1, 3] ]
 ```
 
+#### ö.zip( ...iterables ) → [ Arrays ]
+
+Returns an array of tuples with elements grouped by index, up to the length of the shortest iterable.
+
+```js
+ö.zip([1, 2, 3], 'abc') // returns [ [1, 'a'], [2, 'b'], [3, 'c'] ]
+ö.zip([1, 2, 3], 'ab') // returns [ [1, 'a'], [2, 'b'] ]
+```
+
+#### ö.unzip( arr ) → [ Arrays ]
+
+Returns an unzipped array of tuples. If the tuples are of uneven length, longer tuples are cropped to match the shortest.
+
+```js
+ö.unzip([
+    [1, 'a'],
+    [2, 'b'],
+]) // returns [ [1, 2], ['a', 'b'] ]
+```
+
 #### ö.sum( iterable ) → Number
 
 Sums `iterable`, with `Number` coercion.
@@ -263,7 +283,6 @@ If `f` is a `string`, the value of the property matching `f` is returned, in a f
 
 Deepclones `arr` to avoid mutation.
 
-
 #### ö.filterDeep( arr, f | value, childrenProp? = 'children', prop?, flatten? = true ) → Array
 
 Finds items that match `f` in arrays of nested objects. `childrenProp` is a `string` matching the property containing nested arrays.
@@ -276,10 +295,9 @@ If `flatten` is `false`, and `f` returns an `object`, the parents of matches are
 
 Deepclones `arr` to avoid mutation.
 
-
 #### ö.findDeep( arr, f | value, childrenProp? = 'children', prop? ) → Array item
 
-Same as `ö.filterDeep`, except it returns first match, and doesn't deepclone the incoming `arr`. 
+Same as `ö.filterDeep`, except it returns first match, and doesn't deepclone the incoming `arr`.
 
 ### Set operations
 
@@ -724,7 +742,7 @@ Any iterable except strings work, but produce arraylike objects without a `lengt
 
 [browser] Gets `item` from local or session storage, if any. Converts item to `Object` via `JSON.parse`. Checks `sessionStorage` first.
 
-#### ö.setLocal( item, v expire? = false  ) → v
+#### ö.setLocal( item, v expire? = false ) → v
 
 [browser] Sets `item` in local storage to `v`, and returns `v`. Optionally sets to `sessionStorage` if `expire` is true.
 
@@ -1364,4 +1382,3 @@ Returns the `bigint` that contains the bits.
 #### Bits.toString()
 
 Returns the bits as a binary string.
-
