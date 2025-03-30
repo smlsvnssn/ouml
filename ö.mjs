@@ -277,20 +277,17 @@ const minLen = arr => {
 
 export const zip = (...iterables) => {
     let arrs = iterables.map(v => [...v])
-    return times(minLen(arrs), i => times(arrs.length, ii => arrs[ii][i]))
+    return times(minLen(arrs), x => times(arrs.length, y => arrs[y][x]))
 }
 
 /**
- * Unzip - The inverse of zip
+ * Transpose/unzip - zip with single argument
  * @param {any[][]} arr
  * @returns {any[][]}
  */
 
-export const unzip = (arr = []) =>
-    arr.reduce(
-        (acc, v) => (v.forEach((v, i) => acc[i]?.push(v)), acc),
-        times(minLen(arr), () => []),
-    )
+export const unzip = (arr = []) => zip(...arr)
+export const transpose = unzip
 
 /**
  * Sum - Sums `arr`, with `Number` coercion.
@@ -746,7 +743,7 @@ export const isEqual = (a, b, deep = true) =>
         // are lexically same functions? (Closures not compared)
     : isFunc(a) && isFunc(b) ? '' + a === '' + b
         // are nonobjects?
-    : !a || !b || (typeof a !== 'object' && typeof b !== 'object') ? a === b
+    : !a || !b || typeof a !== 'object' || typeof b !== 'object' ? a === b
         // have same prototype?
     : Reflect.getPrototypeOf(a) !== Reflect.getPrototypeOf(b) ? false
         // have same length ?

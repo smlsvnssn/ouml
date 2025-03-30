@@ -61,7 +61,6 @@ Cubic, Quadratic
 √ Rework colour functions to include oklch and new css features (browser only? Use create element hacks
 */
 
-
 const zigzag = (x, n, xn = Math.floor(x / n), p = Math.pow(-1, xn)) =>
     Math.round(n * (-(p / 2) + p * (x / n - xn) + 0.5))
 
@@ -221,3 +220,16 @@ const times3 = (times, f = i => i, ...rest) =>
         .map((v, i) => f(i, ...rest))
 
 ö.time(() => times3(1000000))
+
+let a = [
+    [1, 2, 3],
+    ['a', 'b', 'c'],
+]
+
+ö.pipe(
+    a,
+    ö.transpose,
+    ö.transpose,
+    transposedTwice => ö.equals(transposedTwice, a),
+    ö.log,
+)

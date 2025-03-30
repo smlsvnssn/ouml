@@ -170,9 +170,9 @@ Returns an array of tuples with elements grouped by index, up to the length of t
 ö.zip([1, 2, 3], 'ab') // returns [ [1, 'a'], [2, 'b'] ]
 ```
 
-#### ö.unzip( arr ) → [ Arrays ]
+#### ö.transpose/ö.unzip( arr ) → [ Arrays ]
 
-Returns an unzipped array of tuples. If the tuples are of uneven length, longer tuples are cropped to match the shortest.
+Returns a transposed array of arrays. If the arrays are of uneven length, longer arrays are cropped to match the shortest. Where `zip` takes multiple iterables, `transpose/unzip` takes an array of iterables. `transpose` is its own inverse.
 
 ```js
 ö.unzip([
