@@ -177,7 +177,7 @@ Returns an unzipped array of tuples. If the tuples are of uneven length, longer 
 ```js
 ö.unzip([
     [1, 'a'],
-    [2, 'b'],
+    [2, 'b', 2],
 ]) // returns [ [1, 2], ['a', 'b'] ]
 ```
 
@@ -209,7 +209,23 @@ Returns largest value in `iterable`.
 
 Returns smallest value in `iterable`.
 
-#### ö.groupBy( iterable, prop | f, asObject? = false) → Map | Object
+#### ö.covariance( a, b ) → Number
+
+Returns (population) [covariance](https://en.wikipedia.org/wiki/Covariance) of `a` and `b`, with `Number` coercion. `a` and `b` should have the same length.
+
+#### ö.variance( iterable ) → Number
+
+Returns (population) [variance](https://en.wikipedia.org/wiki/Variance) of `iterable`.
+
+#### ö.standardDeviation( iterable ) → Number
+
+Returns (population) [standard deviation](https://en.wikipedia.org/wiki/Standard_deviation) of `iterable`.
+
+#### ö.correlation( a, b ) → Number
+
+Returns the (population) [Pearson correlation coefficient](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient) between `a` and `b`. `a` and `b` should have the same length.
+
+#### ö.groupBy( iterable, prop | f, asObject? = false ) → Map | Object
 
 Returns a `Map` with keys corresponding to `prop` values, holding grouped values as arrays. Optionally returns an `object` if `asObject` is set to true.
 

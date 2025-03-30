@@ -1,5 +1,17 @@
+import { it } from 'node:test'
 import * as ö from 'ouml'
-import { isFunc, isStr, is, mapToTree, range, clone, times, max } from 'ouml'
+import {
+    isFunc,
+    isStr,
+    is,
+    mapToTree,
+    range,
+    clone,
+    times,
+    max,
+    sum,
+    mean,
+} from 'ouml'
 /* 
 TODO:
 
@@ -16,6 +28,11 @@ Array:
 √ dropWhile
 √ split
 √ splitWhile
+
+√ correlation coefficient?
+https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
+√ covariance
+√ standard deviation
 
 Math
   factorization?
@@ -43,6 +60,7 @@ Cubic, Quadratic
 (√ kinda) partition as separate modules?
 √ Rework colour functions to include oklch and new css features (browser only? Use create element hacks
 */
+
 
 const zigzag = (x, n, xn = Math.floor(x / n), p = Math.pow(-1, xn)) =>
     Math.round(n * (-(p / 2) + p * (x / n - xn) + 0.5))
@@ -114,7 +132,7 @@ const lens = (...path) => {
 
 const obj = { level1: { level2: 'value' } }
 const level2lens = lens('level1', 'level2')
-const newObj = level2lens(obj)
+const newObj = level2lens.get(obj)
 
 // based on https://gist.github.com/jlevy/c246006675becc446360a798e2b2d781
 const hash = (str, seed = 0) => {
@@ -189,8 +207,6 @@ const map2 = (a, f, acc = [], i = 0) =>
 //     -2,
 //     (i) => ++i,
 // )
-
-ö.log(ö.isPlainObj(a[0]), ö.isPlainObj(new Date()))
 
 ö.time(() => ö.times(1000000))
 

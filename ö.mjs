@@ -357,6 +357,54 @@ export const max = iterable => Math.max(...iterable)
 export const min = iterable => Math.min(...iterable)
 
 /**
+ * Covariance - returns covariance of a and b
+ * @param {Iterable<number>} a
+ * @param {Iterable<number>} b
+ * @returns {number}
+ */
+
+export const covariance = (a, b) => {
+    let meanA = mean(a),
+        meanB = a == b ? meanA : mean(b)
+
+    let aa = Array.from(a),
+        ab = a == b ? aa : Array.from(b)
+
+    if (aa.length != ab.length)
+        error('Arguments a and b should be of the same length.')
+
+    return mean(aa.map((v, i) => (+v - meanA) * (+ab[i] - meanB)))
+}
+
+/**
+ * Variance - returns variance of iterable
+ * @param {Iterable<number>} iterable
+ * @returns {number}
+ */
+
+export const variance = iterable => covariance(iterable, iterable)
+
+/**
+ * Standard deviation - returns stddev of iterable
+ * https://en.wikipedia.org/wiki/Standard_deviation
+ * @param {Iterable<number>} iterable
+ * @returns {number}
+ */
+
+export const standardDeviation = iterable => Math.sqrt(variance(iterable))
+
+/**
+ * Correlation - returns Pearson correlation coefficient of a and b
+ * https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
+ * @param {Iterable<number>} a
+ * @param {Iterable<number>} b
+ * @returns {number}
+ */
+
+export const correlation = (a, b) =>
+    covariance(a, b) / (standardDeviation(a) * standardDeviation(b)) || 0
+
+/**
  * GroupBy - Returns a `Map` with keys corresponding to `prop` values.
  * @param {Iterable} iterable
  * @param {(string | mapCB)} prop
@@ -1008,7 +1056,7 @@ export const isPrime = n => {
  * @returns {number}
  */
 
-export const gcd = (a, b) => (b == 0 ? Math.max(a, -a) : gcd(b, a % b))
+export const gcd = (a, b) => (b == 0 ? Math.abs(a) : gcd(b, a % b))
 
 /**
  * Lcm - Returns least common multiple.

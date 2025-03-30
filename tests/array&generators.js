@@ -565,6 +565,47 @@ describe('ö.min', () => {
         expect(ö.min(iterableOfNumbers)).toBe(1))
 })
 
+describe('ö.covariance', () => {
+    it('should return covariance of a and b', () => {
+        expect(ö.covariance('12345', '12345')).toBe(2)
+        expect(ö.covariance('12345', '54321')).toBe(-2)
+        expect(ö.covariance('00000', '99999')).toBe(0)
+        expect(ö.covariance('00', '0')).toBe(NaN)
+    })
+})
+
+describe('ö.variance', () => {
+    it('should return variance of a', () => {
+        expect(ö.variance('12345')).toBe(2)
+        expect(ö.variance('54321')).toBe(2)
+        expect(ö.variance([-5, -4, -3, -2, -1])).toBe(2)
+        expect(ö.variance([-10, 10])).toBe(100)
+        expect(ö.variance('00000')).toBe(0)
+    })
+})
+
+describe('ö.standardDeviation', () => {
+    it('should return standardDeviation of a', () => {
+        expect(ö.standardDeviation('12345')).toBe(Math.sqrt(2))
+        expect(ö.standardDeviation([-10, 10])).toBe(10)
+        expect(ö.standardDeviation('00000')).toBe(0)
+    })
+})
+
+describe('ö.correlation', () => {
+    it('should return correlation of a and b', () => {
+        expect(
+            ö.correlation(
+                [1, 2, 3, 4, 5, 6, 7, 8, 9],
+                [1, 2, 3, 4, 5, 6, 7, 8, 9],
+            ),
+        ).toBeCloseTo(1)
+        expect(ö.correlation([1, 2, 3], [1, 8, 27])).toBeCloseTo(0.966)
+        expect(ö.correlation([-1, -2, -3], [1, 2, 3])).toBeCloseTo(-1)
+        expect(ö.correlation([2, 2, 2], [1, 2, 3])).toBeCloseTo(0)
+    })
+})
+
 describe('ö.groupBy', () => {
     it('should group an array of objects by the value of "prop"', () => {
         let m = [{ a: 1 }, { a: 1 }, { a: 2 }]
