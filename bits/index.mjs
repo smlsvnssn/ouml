@@ -1,4 +1,4 @@
-import { clamp, range, is, isArr, isStr, attempt } from '../ö.mjs'
+import { clamp, range, is, isArr, isStr, attempt } from '../ouml.mjs'
 
 class Bits {
     /**

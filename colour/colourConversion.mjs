@@ -1,4 +1,4 @@
-import { normalise, pipe, warn } from '../ö.mjs'
+import { normalise, pipe, warn } from '../ouml.mjs'
 
 export const getNumbers = s => s.match(/([0-9\.])+/g).map(v => Number(v))
 

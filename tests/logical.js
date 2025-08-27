@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import * as ö from '../ö.mjs'
+import * as ö from '../ouml.mjs'
 import { beforeEach } from 'vitest'
 
 describe('ö.equals', () => {
@@ -85,9 +85,9 @@ describe('ö.clone', () => {
     })
 
     it('should break on circular references', () => {
-        let a = {b: 0}
+        let a = { b: 0 }
         a.b = a
-        
+
         expect(() => ö.clone(a, true, false, true)).toThrow(
             'Maximum call stack size exceeded',
         )
@@ -160,7 +160,7 @@ describe('ö.memoise', () => {
         let before = Date.now()
         let result1 = memo(1, -1)
         let time1 = Date.now() - before
-        
+
         before = Date.now()
         let result2 = memo(1, -1)
         let time2 = Date.now() - before

@@ -1,4 +1,4 @@
-import { isnt, isFunc, clone, isEqual } from '../ö.mjs'
+import { isnt, isFunc, clone, isEqual } from '../ouml.mjs'
 
 const isobservable = Symbol('observable')
 const primitive = Symbol('primitive') // a little like a vue ref
@@ -46,7 +46,7 @@ const makeObservable = (v, isPrimitive) => {
         deleteProperty: (obj, key) => {
             if (Object.hasOwn(obj, key)) {
                 Reflect.deleteProperty(obj, key)
-                notifyObservers(observers, key) 
+                notifyObservers(observers, key)
             }
             return true // to avoid a type error
         },

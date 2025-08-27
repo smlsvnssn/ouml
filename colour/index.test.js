@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import colour, { isColour } from './index.mjs'
-import { log } from '../ö.mjs'
+import { log } from '../ouml.mjs'
 
 describe('colour', () => {
     it('should create a new Colour from colour strings', () => {
@@ -197,13 +197,13 @@ describe('Colour.palette', () => {
 describe('Colour.gradient', () => {
     it('should return valid css gradient strings', () => {
         let c = colour('#333').gradient(['#666', '#888'])
-        
+
         expect(c.toString()).toBe(
             'linear-gradient(in oklab 0deg, oklch(32.1093% 0 180 / 1), oklch(51.0278% 0 188.1301 / 1), oklch(62.6754% 0 180 / 1))',
         )
 
         c = colour('#333').gradient(['#666', '#888'], 'radial')
-        
+
         expect(c.toString()).toBe(
             'radial-gradient(in oklab farthest-corner at 50% 50%, oklch(32.1093% 0 180 / 1), oklch(51.0278% 0 188.1301 / 1), oklch(62.6754% 0 180 / 1))',
         )

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import * as ö from '../ö.mjs'
+import * as ö from '../ouml.mjs'
 
 describe('ö.grid', () => {
     it('should yield objects with {x, y} values', () => {

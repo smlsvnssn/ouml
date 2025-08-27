@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, afterEach, beforeEach } from 'vitest'
-import * as ö from '../ö.mjs'
+import * as ö from '../ouml.mjs'
 
 beforeEach(() => vi.useFakeTimers())
 

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, afterEach } from 'vitest'
-import * as ö from '../ö.mjs'
+import * as ö from '../ouml.mjs'
 
 const log = vi.spyOn(console, 'log')
 const warn = vi.spyOn(console, 'warn')
@@ -36,11 +36,9 @@ describe('ö.attempt', () => {
     })
 
     it('should return caught error if handler is not provided', () => {
-        let result = ö.attempt(
-            () => {
-                throw new Error('err')
-            },
-        )
+        let result = ö.attempt(() => {
+            throw new Error('err')
+        })
 
         expect(result).toBeInstanceOf(Error)
         expect(result.message).toBe('err')

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import bits from './index.mjs'
-import { time, log } from '../ö.mjs'
+import { time, log } from '../ouml.mjs'
 
 describe('bits', () => {
     it('should create Bits from number input', () => {

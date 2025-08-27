@@ -2,7 +2,7 @@
 TypelessScript™
 */
 
-import * as ö from '../ö.mjs'
+import * as ö from '../ouml.mjs'
 
 const lookup = (key, v, isThrowing) => {
     // methods in v?

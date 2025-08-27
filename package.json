@@ -1,15 +1,15 @@
 {
     "name": "ouml",
-    "version": "0.3.16",
+    "version": "0.3.17",
     "description": "smlsvnssn",
-    "main": "ö.mjs",
-    "module": "ö.mjs",
+    "main": "ouml.mjs",
+    "module": "ouml.mjs",
     "type": "module",
     "exports": {
-        ".": "./ö.mjs",
+        ".": "./ouml.mjs",
         "./colour": "./colour/index.mjs",
-        "./övents": "./övents/index.mjs",
-        "./öbservable": "./öbservable/index.mjs",
+        "./övents": "./events/index.mjs",
+        "./öbservable": "./observable/index.mjs",
         "./chain": "./chain/index.mjs",
         "./bits": "./bits/index.mjs"
     },

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import * as ö from '../ö.mjs'
+import * as ö from '../ouml.mjs'
 
 describe('ö.random', () => {
     it('should return integers between min & non inclusive max, with 0 and 2 as defaults', () => {

@@ -9,7 +9,7 @@ import {
     times,
     isFunc,
     isNum,
-} from '../ö.mjs'
+} from '../ouml.mjs'
 
 import {
     parseToRgb,
