@@ -290,6 +290,69 @@ export const unzip = (arr = []) => zip(...arr)
 export const transpose = unzip
 
 /**
+ * Combinations - Returns combinations of length k, or all combinations if k is undefined
+ * @param {Iterable} iterable
+ * @param {number | undefined} k
+ * @returns {any[][]}
+ */
+
+export const combinations = (iterable = [], k) => {
+    let arr = Array.from(iterable)
+
+    const traverse = (current, n, out) => {
+        if (current.length == k) return out.push(current.slice())
+
+        for (n; n < arr.length; n++) {
+            current.push(arr[n])
+            traverse(current, n + 1, out)
+            current.pop()
+        }
+    }
+
+    if (!k)
+        return arr.reduce(
+            (acc, _, i) => (acc.push(...combinations(arr, i + 1)), acc),
+            [],
+        )
+
+    let out = []
+    traverse([], 0, out)
+
+    return out
+}
+
+/**
+ * Permutations - Returns all permutations of iterable.
+ * Beware of memory issues for inputs longer than 10. Uses Heap's algorithm.
+ * @param {Iterable} iterable
+ * @returns {any[][]}
+ */
+
+export const permutations = (iterable = []) => {
+    let arr = Array.from(iterable)
+
+    const swap = (arr, a, b, ib = arr[b]) => ((arr[b] = arr[a]), (arr[a] = ib))
+
+    const traverse = (n, arr, out) => {
+        if (n === 1) return out.push(arr.slice())
+
+        traverse(n - 1, arr, out)
+
+        for (let i = 0; i < n - 1; i++) {
+            n % 2 ? swap(arr, 0, n - 1) : swap(arr, i, n - 1)
+            traverse(n - 1, arr, out)
+        }
+    }
+
+    if (!arr.length) return []
+
+    let out = []
+    traverse(arr.length, arr, out)
+
+    return out
+}
+
+/**
  * Sum - Sums `arr`, with `Number` coercion.
  * @param {Iterable<number>} iterable
  * @returns {number}

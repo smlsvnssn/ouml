@@ -1,6 +1,6 @@
 {
     "name": "ouml",
-    "version": "0.3.17",
+    "version": "0.3.18",
     "description": "smlsvnssn",
     "main": "ouml.mjs",
     "module": "ouml.mjs",

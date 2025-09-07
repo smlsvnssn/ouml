@@ -38,8 +38,8 @@ Math
   factorization?
 
 maybe:
-combinations
-permutations
+√ combinations
+√ permutations
 multiply and convolve for arrays
 
 
@@ -60,6 +60,8 @@ Cubic, Quadratic
 (√ kinda) partition as separate modules?
 √ Rework colour functions to include oklch and new css features (browser only? Use create element hacks
 */
+
+
 
 const zigzag = (x, n, xn = Math.floor(x / n), p = Math.pow(-1, xn)) =>
     Math.round(n * (-(p / 2) + p * (x / n - xn) + 0.5))

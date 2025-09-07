@@ -181,6 +181,24 @@ Returns a transposed array of arrays. If the arrays are of uneven length, longer
 ]) // returns [ [1, 2], ['a', 'b'] ]
 ```
 
+#### ö.combinations( iterable, k ) → [ Arrays ]
+
+Returns all combinations of length `k` in iterable. If `k` is omitted, returns all possible combinations.
+
+```js
+ö.combinations('abc', 2)
+// returns [['a', 'b'], ['a', 'c'], ['b', 'c']]
+```
+
+#### ö.permutations( iterable ) → [ Arrays ]
+
+Returns all permutations of iterable. Beware of out-of-memory issues for values above a length of 10. Uses [Heap's algorithm](https://en.wikipedia.org/wiki/Heap's_algorithm).
+
+```js
+ö.permutations('abc')
+// returns [['a', 'b', 'c'], ['b', 'a', 'c'], ['c', 'a', 'b'], ['a', 'c', 'b'], ['b', 'c', 'a'], ['c', 'b', 'a']]
+```
+
 #### ö.sum( iterable ) → Number
 
 Sums `iterable`, with `Number` coercion.

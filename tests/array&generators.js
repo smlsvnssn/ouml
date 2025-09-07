@@ -516,6 +516,60 @@ describe('ö.unzip', () => {
     })
 })
 
+describe('ö.combinations', () => {
+    it('should return combinations of given length', () => {
+        expect(ö.combinations([1, 2, 3], 2)).toEqual([
+            [1, 2],
+            [1, 3],
+            [2, 3],
+        ])
+    })
+
+    it('should return all combinations if k is undefined', () => {
+        expect(ö.combinations([1, 2, 3])).toEqual([
+            [1],
+            [2],
+            [3],
+            [1, 2],
+            [1, 3],
+            [2, 3],
+            [1, 2, 3],
+        ])
+    })
+
+    it('should handle empty input without errors', () => {
+        expect(ö.combinations()).toEqual([])
+        expect(ö.combinations('')).toEqual([])
+        expect(ö.combinations([])).toEqual([])
+    })
+})
+
+describe('ö.permutations', () => {
+    it('should return permutations of iterable', () => {
+        expect(ö.permutations([1, 2, 3])).toEqual([
+            [1, 2, 3],
+            [2, 1, 3],
+            [3, 1, 2],
+            [1, 3, 2],
+            [2, 3, 1],
+            [3, 2, 1],
+        ])
+    })
+
+    it('should return permutations of string', () => {
+        expect(ö.permutations('ab')).toEqual([
+            ['a', 'b'],
+            ['b', 'a'],
+        ])
+    })
+
+    it('should handle empty input without errors', () => {
+        expect(ö.permutations()).toEqual([])
+        expect(ö.permutations('')).toEqual([])
+        expect(ö.permutations([])).toEqual([])
+    })
+})
+
 let iterableOfNumbers = '1234'
 describe('ö.sum', () => {
     it('should sum an iterable', () =>
