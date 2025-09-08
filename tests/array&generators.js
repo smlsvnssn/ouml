@@ -537,6 +537,10 @@ describe('ö.combinations', () => {
         ])
     })
 
+    it('should accept duplicate items', () => {
+        expect(ö.combinations([1, 1])).toEqual([[1], [1], [1, 1]])
+    })
+
     it('should handle empty input without errors', () => {
         expect(ö.combinations()).toEqual([])
         expect(ö.combinations('')).toEqual([])
@@ -553,6 +557,13 @@ describe('ö.permutations', () => {
             [1, 3, 2],
             [2, 3, 1],
             [3, 2, 1],
+        ])
+    })
+
+    it('should accept duplicate items', () => {
+        expect(ö.permutations([1, 1])).toEqual([
+            [1, 1],
+            [1, 1],
         ])
     })
 

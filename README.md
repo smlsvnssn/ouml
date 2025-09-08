@@ -26,7 +26,7 @@ Most methods are runnable within node/deno. Some methods require browser API:s, 
 
 ## Modules
 
-Includes modules [chain](#Chain), a method for chaining calls on any type, [öbservable](#%C3%B6bservable), a basic implementation of reactive values, [övents](#%C3%B6vents), a collection of useful custom browser events, [colour](#Colour), a simple way to work with oklch colours, and [bits](#Bits), an easy way to flip bits.
+Includes modules [chain](#chain), a method for chaining calls on any type, [öbservable](#%C3%B6bservable), a basic implementation of reactive values, [övents](#%C3%B6vents), a collection of useful custom browser events, [colour](#colour), a simple way to work with oklch colours, and [bits](#bits), an easy way to flip bits.
 
 Import them from
 
@@ -43,6 +43,7 @@ import {
     clickoutside,
 } from 'ouml/övents'
 import colour, { isColour } from 'ouml/colour'
+import bits, { isBits } from 'ouml/bits'
 ```
 
 ## Methods
@@ -190,6 +191,12 @@ Returns all combinations of length `k` in iterable. If `k` is omitted, returns a
 // returns [['a', 'b'], ['a', 'c'], ['b', 'c']]
 ```
 
+Members in iterable are allowed to be duplicates:
+
+```js
+ö.combinations([1, 1]) // returns [[1], [1], [1, 1]]
+```
+
 #### ö.permutations( iterable ) → [ Arrays ]
 
 Returns all permutations of iterable. Beware of out-of-memory issues for values above a length of 10. Uses [Heap's algorithm](https://en.wikipedia.org/wiki/Heap's_algorithm).
@@ -197,6 +204,12 @@ Returns all permutations of iterable. Beware of out-of-memory issues for values 
 ```js
 ö.permutations('abc')
 // returns [['a', 'b', 'c'], ['b', 'a', 'c'], ['c', 'a', 'b'], ['a', 'c', 'b'], ['b', 'c', 'a'], ['c', 'b', 'a']]
+```
+
+Members in iterable are allowed to be duplicates:
+
+```js
+ö.permutations([1, 1]) // returns [[1, 1], [1, 1]]
 ```
 
 #### ö.sum( iterable ) → Number
