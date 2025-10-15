@@ -50,15 +50,15 @@ export const range = function* (start, end, step = 1) {
 /**
  * @callback timesCB
  * @param {number} index
- * @param  {Array} rest
+ * @param  {any[]} rest
  */
 
 /**
  * Times - Calls a function `times` times, with `index` as argument.
  * @param {number} times
  * @param {timesCB} f
- * @param  {Array} rest
- * @returns {Array}
+ * @param  {any[]} rest
+ * @returns {any[]}
  */
 
 export const times = (times = 0, f = i => i, ...rest) =>
@@ -76,7 +76,7 @@ export const times = (times = 0, f = i => i, ...rest) =>
  * @param {number} start
  * @param {number} [end = start]
  * @param {number} [step = 1]
- * @returns {Array<number>}
+ * @returns {number[]}
  */
 
 export const rangeArray = (start, end, step) => [...range(start, end, step)]
@@ -86,21 +86,21 @@ export const rangeArray = (start, end, step) => [...range(start, end, step)]
  * @param {*} accumulator
  * @param {*} value
  * @param {number} index
- * @param {Array} array
+ * @param {any[]} array
  */
 
 /**
  * @callback mapCB
  * @param {*} value
  * @param {number} index
- * @param {Array} array
+ * @param {any[]} array
  */
 
 /**
  * Map - Same as a normal map, except it accepts a `string` as a shorthand for retrieving values from an object property, if given an iterable that contains objects.
- * @param {Iterable | Object} iterable
+ * @param {Iterable<any> | Object} iterable
  * @param {(string | mapCB)} f
- * @returns {Iterable | Object}
+ * @returns {Iterable<any> | Object}
  */
 
 export const map = (iterable, f) => {
@@ -134,16 +134,16 @@ export const map = (iterable, f) => {
 
 /**
  * Unique - Returns an `Array` with unique entries.
- * @param {Iterable} iterable
- * @returns {Array}
+ * @param {Iterable<any>} iterable
+ * @returns {any[]}
  */
 
 export const unique = iterable => [...new Set(iterable)]
 
 /**
  * Shuffle - Returns a new shuffled `Array`.
- * @param {Iterable} iterable
- * @returns {Array}
+ * @param {Iterable<any>} iterable
+ * @returns {any[]}
  * @see https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
  */
 
@@ -161,9 +161,9 @@ export const shuffle = iterable => {
 
 /**
  * Sample - Returns random sample from `arr`, or an array of samples if `samples` is larger than one.
- * @param {Iterable} iterable
+ * @param {Iterable<any>} iterable
  * @param {number} [samples = 1]
- * @returns {(* | Array)}
+ * @returns {(* | any[])}
  */
 
 export const sample = (iterable, samples = 1) => {
@@ -176,9 +176,9 @@ export const sample = (iterable, samples = 1) => {
 
 /**
  * Rotate - Rotates an array n steps left or right
- * @param {Iterable} iterable
+ * @param {Iterable<any>} iterable
  * @param {number} [steps = 1]
- * @returns {Array} */
+ * @returns {any[]} */
 
 export const rotate = (iterable, steps = 1) => {
     let arr = Array.from(iterable)
@@ -191,7 +191,7 @@ export const rotate = (iterable, steps = 1) => {
 
 /**
  * Chunk - Partitions an array into chunks of n length
- * @param {Iterable} iterable
+ * @param {Iterable<any>} iterable
  * @param {number} [chunkSize = 1]
  * @returns {any[][]} */
 
@@ -205,8 +205,8 @@ export const chunk = (iterable, chunkSize = 1) => {
 }
 
 /**
- * @param {Array} arr
- * @param {number | ((v:any, i:number, a:array) => boolean)} index
+ * @param {any[]} arr
+ * @param {number | ((v:any, i:number, a:any[]) => boolean)} index
  * @returns {number} */
 
 const getSplitIndex = (arr, index) => {
@@ -218,8 +218,8 @@ const getSplitIndex = (arr, index) => {
 /**
  * Split - Splits array into part before index/predicate returning false, and part after
  * Takes an index, or a function returning a boolean
- * @param {Iterable} iterable
- * @param {number | ((v:any, i:number, a:array) => boolean)} index
+ * @param {Iterable<any>} iterable
+ * @param {number | ((v:any, i:number, a:any[]) => boolean)} index
  * @returns {any[] | any[][]} */
 
 export const split = (iterable, index) => {
@@ -231,9 +231,9 @@ export const split = (iterable, index) => {
 /**
  * Take - Returns array part before index/predicate returning false
  * Takes an index, or a function returning a boolean
- * @param {Iterable} iterable
- * @param {number | ((v:any, i:number, a:array) => boolean)} index
- * @returns {Array} */
+ * @param {Iterable<any>} iterable
+ * @param {number | ((v:any, i:number, a:any[]) => boolean)} index
+ * @returns {any[]} */
 
 export const take = (iterable, index) => {
     let arr = Array.from(iterable)
@@ -243,9 +243,9 @@ export const take = (iterable, index) => {
 /**
  * Drop - Returns array part after index/predicate returning false
  * Takes an index, or a function returning a boolean
- * @param {Iterable} iterable
- * @param {number | ((v:any, i:number, a:array) => boolean)} index
- * @returns {Array} */
+ * @param {Iterable<any>} iterable
+ * @param {number | ((v:any, i:number, a:any[]) => boolean)} index
+ * @returns {any[]} */
 
 export const drop = (iterable, index) => {
     let arr = Array.from(iterable)
@@ -255,8 +255,8 @@ export const drop = (iterable, index) => {
 /**
  * Partition - Returns an array partitioned into two arrays, the first where predicate is true, the second where predicate is false
  * Takes an index, or a function returning a boolean
- * @param {Iterable} iterable
- * @param {((v:any, i:number, a:array) => boolean)} f
+ * @param {Iterable<any>} iterable
+ * @param {((v:any, i:number, a:any[]) => boolean)} f
  * @returns {any[][]} */
 
 export const partition = (iterable, f) =>
@@ -272,7 +272,7 @@ const minLen = arr => {
 
 /**
  * Zip - Returns an array of arrays with elements grouped by index
- * @param  {...Iterable} iterables
+ * @param  {...Iterable<any>} iterables
  * @returns {any[][]} */
 
 export const zip = (...iterables) => {
@@ -291,7 +291,7 @@ export const transpose = unzip
 
 /**
  * Combinations - Returns combinations of length k, or all combinations if k is undefined
- * @param {Iterable} iterable
+ * @param {Iterable<any>} iterable
  * @param {number | undefined} k
  * @returns {any[][]}
  */
@@ -324,7 +324,7 @@ export const combinations = (iterable = [], k) => {
 /**
  * Permutations - Returns all permutations of iterable.
  * Beware of memory issues for inputs longer than 10. Uses Heap's algorithm.
- * @param {Iterable} iterable
+ * @param {Iterable<any>} iterable
  * @returns {any[][]}
  */
 
@@ -483,7 +483,7 @@ export const groupBy = (iterable, prop, asObject = false) =>
  * @callback idPropCB
  * @param {*} value
  * @param {number} index
- * @param {Array} array
+ * @param {any[]} array
  *  @returns {[*,*]}
  */
 
@@ -492,8 +492,9 @@ export const groupBy = (iterable, prop, asObject = false) =>
  * @param {Array<Object>} arr
  * @param {(string | idPropCB)} idProp
  * @param {string} [parentProp]
- * @returns {Array}
+ * @returns {any[]}
  */
+
 
 export const mapToTree = (arr, idProp, parentProp) => {
     // Gather all parents...
@@ -512,14 +513,14 @@ export const mapToTree = (arr, idProp, parentProp) => {
 
     // ...and map them out.
     const traverse = (parentKey = rootKey) =>
-        parents.get(parentKey)?.map(parent => ({
+        parents.get(parentKey)?.map(parent => {
             // did you see the base case? Pretty small eh?
-            ...parent.v,
-            children: traverse(parent.key),
-        }))
+            let children = traverse(parent.key)
+            return children ? { ...parent.v, children } : { ...parent.v }
+        })
 
     return traverse()
-}
+} 
 
 /**
  * Methods for arrays of nested objects
@@ -563,7 +564,7 @@ export const reduceDeep = (
  * @param {mapCB} f
  * @param {string} childrenProp
  * @param {boolean} [flatten = false]
- * @returns {Array}
+ * @returns {any[]}
  */
 
 export const mapDeep = (arr, f, childrenProp, flatten = false) =>
@@ -583,7 +584,7 @@ export const mapDeep = (arr, f, childrenProp, flatten = false) =>
  * @param {mapCB} f
  * @param {string} childrenProp
  * @param {string} [prop]
- * @returns {Array}
+ * @returns {any[]}
  */
 
 export const filterDeep = (arr, f, childrenProp, prop, flatten = true) =>
@@ -637,44 +638,44 @@ export const findDeep = (arr, f, childrenProp = 'children', prop) => {
 
 /**
  * Intersect - Intersection, returns elements that are members of both `a` and `b`.
- * @param {Iterable} a
- * @param {Iterable} b
- * @returns {Array}
+ * @param {Iterable<any>} a
+ * @param {Iterable<any>} b
+ * @returns {any[]}
  */
 
 export const intersect = (a, b) => [...new Set(a).intersection(new Set(b))]
 
 /**
  * Subtract - Difference, returns members of `a` but not members of `b`, i.e. subtracts `b` from `a`.
- * @param {Iterable} a
- * @param {Iterable} b
- * @returns {Array}
+ * @param {Iterable<any>} a
+ * @param {Iterable<any>} b
+ * @returns {any[]}
  */
 
 export const subtract = (a, b) => [...new Set(a).difference(new Set(b))]
 
 /**
  * Exclude - Symmetric difference, returns elements that are members of `a` or `b`, but not both.
- * @param {Iterable} a
- * @param {Iterable} b
- * @returns {Array}
+ * @param {Iterable<any>} a
+ * @param {Iterable<any>} b
+ * @returns {any[]}
  */
 
 export const exclude = (a, b) => [...new Set(a).symmetricDifference(new Set(b))]
 
 /**
  * Union - Returns (unique) members of both `a` and `b`.
- * @param {Iterable} a
- * @param {Iterable} b
- * @returns {Array}
+ * @param {Iterable<any>} a
+ * @param {Iterable<any>} b
+ * @returns {any[]}
  */
 
 export const union = (a, b) => [...new Set(a).union(new Set(b))]
 
 /**
  * IsSubset - Returns `true` if `a` is a subset of `b`.
- * @param {Iterable} a
- * @param {Iterable} b
+ * @param {Iterable<any>} a
+ * @param {Iterable<any>} b
  * @returns {boolean}
  */
 
@@ -682,8 +683,8 @@ export const isSubset = (a, b) => new Set(a).isSubsetOf(new Set(b))
 
 /**
  * IsSuperset - Returns `true` if `a` is a superset of `b`.
- * @param {Iterable} a
- * @param {Iterable} b
+ * @param {Iterable<any>} a
+ * @param {Iterable<any>} b
  * @returns {boolean}
  */
 
@@ -691,8 +692,8 @@ export const isSuperset = (a, b) => new Set(a).isSupersetOf(new Set(b))
 
 /**
  * IsDisjoint - Returns `true` if `a` and `b` share no members.
- * @param {Iterable} a
- * @param {Iterable} b
+ * @param {Iterable<any>} a
+ * @param {Iterable<any>} b
  * @returns {boolean}
  */
 

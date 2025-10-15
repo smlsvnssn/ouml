@@ -27,7 +27,6 @@ export const parseToRgb = c => {
             return getNumbers(c).map((v, i) =>
                 i < 3 ? Math.round((v / 100) * 255) : v,
             )
-
         return getNumbers(c)
     }
 
@@ -35,7 +34,7 @@ export const parseToRgb = c => {
     if (/^hsl\(|^hsla\(/.test(c)) {
         let [h, s, l, alpha] = getNumbers(c)
 
-        return [...hslToRgb([h, s, l]), alpha]
+            return [...hslToRgb([h, s, l]), alpha]
     }
 
     return warn("Colour says: Sorry, can't parse " + c), [0, 0, 0]
@@ -122,36 +121,16 @@ const hslToRgb = ([h, s, l]) => {
 
     let c = (1 - Math.abs(2 * l - 1)) * s,
         x = c * (1 - Math.abs(((h / 60) % 2) - 1)),
-        m = l - c / 2,
-        r = 0,
-        g = 0,
-        b = 0
+        m = l - c / 2
 
-    if (0 <= h && h < 60) {
-        r = c
-        g = x
-        b = 0
-    } else if (60 <= h && h < 120) {
-        r = x
-        g = c
-        b = 0
-    } else if (120 <= h && h < 180) {
-        r = 0
-        g = c
-        b = x
-    } else if (180 <= h && h < 240) {
-        r = 0
-        g = x
-        b = c
-    } else if (240 <= h && h < 300) {
-        r = x
-        g = 0
-        b = c
-    } else if (300 <= h && h < 360) {
-        r = c
-        g = 0
-        b = x
-    }
+    let [r, g, b] =
+        0 <= h && h < 60 ? [c, x, 0]
+        : 60 <= h && h < 120 ? [x, c, 0]
+        : 120 <= h && h < 180 ? [0, c, x]
+        : 180 <= h && h < 240 ? [0, x, c]
+        : 240 <= h && h < 300 ? [x, 0, c]
+        : 300 <= h && h < 360 ? [c, 0, x]
+        : 0
 
     r = Math.round((r + m) * 255)
     g = Math.round((g + m) * 255)

@@ -20,9 +20,17 @@ describe('colour', () => {
 
         c = colour('rgb(203, 96, 157)')
         expect(c.toString()).toBe('oklch(63.6978% 0.1524 346.9864 / 1)')
+        
+        c = colour('rgba(203, 96, 157 / .5)')
+        expect(c.toString()).toBe('oklch(63.6978% 0.1524 346.9864 / 0.5)')
 
+
+        
         c = colour('hsl(325.79 51% 59%)')
         expect(c.toString()).toBe('oklch(64.0086% 0.1523 346.9539 / 1)')
+
+        c = colour('hsla(325.79 51% 59% / .5)')
+        expect(c.toString()).toBe('oklch(64.0086% 0.1523 346.9539 / 0.5)')
 
         c = colour('oklch(63.68% 0.1529 347)')
         expect(c.toString()).toBe('oklch(63.68% 0.1529 347 / 1)')

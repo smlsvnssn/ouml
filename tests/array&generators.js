@@ -603,7 +603,9 @@ describe('ö.product', () => {
 
 describe('ö.geometricMean', () => {
     it('should return the geometric mean of an iterable', () =>
-        expect(ö.geometricMean(iterableOfNumbers)).toBe(2.2133638394006434))
+        expect(ö.geometricMean(iterableOfNumbers)).toBeCloseTo(
+            2.2133638394006434,
+        ))
 
     it('should handle large numbers', () => {
         expect(ö.geometricMean(ö.rangeArray(1, 171))).not.toBe(Infinity)
@@ -755,6 +757,69 @@ describe('ö.mapToTree', () => {
         let result = ö.mapToTree(flat, 'id', 'parent')
 
         expect(result).toMatchObject(expected)
+    })
+
+    let flat2 = [
+        { id: '1' },
+        { id: '0.1', parent: '0' }, // eeeh
+        { id: '1.1.1', parent: '1.1' },
+        { id: '1.2', parent: '1' },
+        { id: '2' },
+        { id: '2.2', parent: '2' },
+    ]
+
+    let expected2 = [
+        {
+            id: '1',
+            children: [
+                {
+                    id: '1.2',
+                    parent: '1',
+                },
+            ],
+        },
+        {
+            id: '2',
+            children: [
+                {
+                    id: '2.2',
+                    parent: '2',
+                },
+            ],
+        },
+    ]
+
+    it('should create a tree from imperfect data with orphans', () => {
+        let result = ö.mapToTree(flat2, 'id', 'parent')
+
+        expect(result).toMatchObject(expected2)
+
+        result = ö.mapToTree(flat2, child => [
+            child.id,
+            child.id.split('.').slice(0, -1).join('.') || null,
+        ])
+
+        expect(result).toMatchObject(expected2)
+    })
+
+    let flat3 = [
+        { id: '1' },
+        { id: '0.1' },
+        { id: '1.1.1' },
+        { id: '0.2' },
+        { id: '2' },
+        { id: '3.2' },
+    ]
+
+    let expected3 = [{ id: '1' }, { id: '2' }]
+
+    it('should create a tree from even worse data, with no undefined children', () => {
+        let result = ö.mapToTree(flat3, child => [
+            child.id,
+            child.id.split('.').slice(0, -1).join('.') || null,
+        ])
+        ö.log(JSON.stringify(result))
+        expect(result).toMatchObject(expected3)
     })
 })
 

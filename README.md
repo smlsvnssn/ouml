@@ -289,7 +289,7 @@ let tree = ö.mapToTree(flat, 'id', 'parent')
 // or
 let sameTree = ö.mapToTree(flat, item => [
     item.id,
-    item.id.split('.').slice(0, -1).join('.'),
+    item.id.split('.').slice(0, -1).join('.') || null,
 ])
 ```
 
