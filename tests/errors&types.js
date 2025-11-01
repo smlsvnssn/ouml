@@ -261,4 +261,16 @@ describe('type conversion', () => {
         expect(ö.mapToObj(new Set())).toSatisfy(ö.isObj)
         expect(ö.mapToObj([])).toSatisfy(ö.isObj)
     })
+
+    it('should produce numbers from strings', () => {
+        expect(ö.strToNum('test')).toBe(NaN)
+        expect(ö.strToNum('1_234_567')).toBe(1234567)
+        expect(ö.strToNum('1 234 567,')).toBe(1234567)
+        expect(ö.strToNum('123456,7')).toBe(123456.7)
+        expect(ö.strToNum('1,23456,7')).toBe(1.23456)
+        expect(ö.strToNum('1,23456E5')).toBe(123456)
+        expect(ö.strToNum('-1,23456E5')).toBe(-123456)
+        expect(ö.strToNum('blabla-1,23456E5dollares')).toBe(-123456)
+        expect(ö.strToNum('Infinity')).toBe(NaN)
+    })
 })

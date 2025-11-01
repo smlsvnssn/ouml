@@ -599,6 +599,10 @@ Returns `s` with first `numWords` words wrapped in `startWrap` and `endWrap`. Ma
 
 Returns regular sentence, kebab-case or snake_case string converted to camelCase. Leaves `--custom-properties` alone.
 
+#### ö.delatinise/ö.delatinize( str ) → String
+
+Delatinises string. For example, "Gås är gött, rock n' roll är passé" becomes "Gas ar gott, rock n roll ar passe".
+
 #### ö.capitalise/ö.capitalize( str ) → String
 
 Capitalises first letter. No fuss!
@@ -782,6 +786,10 @@ Checks for `[Symbol.iterator]` in `v`.
 Any iterable except strings work, but produce arraylike objects without a `length`.
 
 #### ö.objToMap( obj ) → Map
+
+#### ö.strToNum( str ) → Number
+
+A slightly more competent `parseFloat`. Handles spaces, commas, and the like. Returns `NaN` for `+/-Infinity`, though.
 
 ### DOM and browser
 

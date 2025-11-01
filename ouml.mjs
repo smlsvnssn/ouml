@@ -495,7 +495,6 @@ export const groupBy = (iterable, prop, asObject = false) =>
  * @returns {any[]}
  */
 
-
 export const mapToTree = (arr, idProp, parentProp) => {
     // Gather all parents...
     let parents = new Map()
@@ -520,7 +519,7 @@ export const mapToTree = (arr, idProp, parentProp) => {
         })
 
     return traverse()
-} 
+}
 
 /**
  * Methods for arrays of nested objects
@@ -1231,21 +1230,14 @@ export const toCartesian = (r, theta) => ({
     y: r * Math.sin(theta),
 })
 
-// https://www.youtube.com/watch?v=sULa9Lc4pck&t=3s
-// export const triangleOfPower = (base, exponent, power) => {
-// 	if (base && exponent) return base ** exponent // pow
-// 	if (exponent && power) return power ** (1 / Math.abs(exponent)) // root
-// 	if (base && power) return Math.log(power) / Math.log(base) // log
-// }
-
 /**
  * String
  */
 
 /**
  * PrettyNumber - Returns `n` rounded to `precision` decimals and formatted by `n.toLocaleString()`.
- * @param {number} n
- * @param {string} [locale = 'sv-SE']
+ * @param {number | string} n
+ * @param {string | number} [locale = 'sv-SE']
  * @param {number} [precision = 2]
  * @returns {string}
  */
@@ -1255,7 +1247,7 @@ export const prettyNumber = (n, locale = 'sv-SE', precision = 2) => {
     ;[locale, precision] =
         isNum(locale) ? ['sv-SE', locale] : [locale, precision]
 
-    n = round(n, precision)
+    n = round(isStr(n) ? strToNum(n) : n, precision)
 
     return (
         Number.isNaN(n) ? '-'
@@ -1304,7 +1296,7 @@ const isCssVar = s => s.match(/^\-\-/)
 
 export const toCamelCase = s =>
     isCssVar(s) ? s : (
-        s.replace(/([-_\s])([a-zA-Z0-9])/g, (_, __, c, o) =>
+        delatinise(s).replace(/([-_\s])([a-zA-Z0-9])/g, (_, __, c, o) =>
             o ? c.toUpperCase() : c,
         )
     )
@@ -1318,11 +1310,25 @@ export const toCamelCase = s =>
 // thx https://gist.github.com/nblackburn/875e6ff75bc8ce171c758bf75f304707
 export const toKebabCase = s =>
     isCssVar(s) ? s : (
-        s
+        delatinise(s)
             .replace(/\s/g, '-')
             .replace(/([a-z0-9])([A-Z0-9])/g, '$1-$2')
             .toLowerCase()
     )
+
+/**
+ * Delatinise
+ * @param {string} s
+ * @returns {string}
+ */
+
+export const delatinise = s =>
+    s
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[`´'"]/g, '')
+
+export const delatinize = delatinise
 
 /**
  * Capitalise
@@ -1331,7 +1337,6 @@ export const toKebabCase = s =>
  */
 
 export const capitalise = s => s[0].toUpperCase() + s.slice(1)
-
 export const capitalize = capitalise
 
 /**
@@ -1579,6 +1584,14 @@ export const mapToObj = map => Object.fromEntries(map.entries())
  */
 
 export const objToMap = obj => new Map(Object.entries(obj))
+
+/**
+ * @param {string} str
+ * @returns {number}
+ */
+
+export const strToNum = str =>
+    parseFloat(log(str.replace(/[^\d-+.,eE]/g, '').replace(',', '.')))
 
 /**
  * Throttle, debounce, onAnimationFrame

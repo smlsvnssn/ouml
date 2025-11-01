@@ -11,6 +11,9 @@ describe('ö.prettyNumber', () => {
 
         result = ö.prettyNumber(123456.789, 0)
         expect(result).toBe('123 457')
+
+        result = ö.prettyNumber('123456,789 kr', 0)
+        expect(result).toBe('123 457')
     })
 })
 
@@ -47,6 +50,7 @@ describe('ö.wrapFirstWords', () => {
 describe('ö.toCamelCase', () => {
     it('should return camelCasedStrings', () => {
         expect(ö.toCamelCase('Snygg hatt!')).toBe('SnyggHatt!')
+        expect(ö.toCamelCase('Snygg mössa!')).toBe('SnyggMossa!')
 
         expect(ö.toCamelCase('my_var')).toBe('myVar')
     })
@@ -59,12 +63,22 @@ describe('ö.toCamelCase', () => {
 describe('ö.toKebabCase', () => {
     it('should return camelCasedStrings', () => {
         expect(ö.toKebabCase('Snygg hatt!')).toBe('snygg-hatt!')
+        expect(ö.toKebabCase('Snygg mössa!')).toBe('snygg-mossa!')
 
         expect(ö.toKebabCase('myVar')).toBe('my-var')
     })
 
     it('should leave css vars as is', () => {
         expect(ö.toKebabCase('--myVar')).toBe('--myVar')
+    })
+})
+
+describe('ö.delatinise', () => {
+    it('should delatinise string', () => {
+        expect(ö.delatinise('Snygg mössa!')).toBe('Snygg mossa!')
+        expect(ö.delatinise("Gås är gött, rock n' roll är passé")).toBe(
+            'Gas ar gott, rock n roll ar passe',
+        )
     })
 })
 
