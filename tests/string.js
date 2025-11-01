@@ -130,7 +130,7 @@ describe('ö.stripTags', () => {
         expect(ö.stripTags('<>')).not.toBe('')
         expect(
             ö.stripTags(
-                `<a href="${'javascript:eval("function(){ return evil }")'}>not evil</a>`,
+                `<a href="${'javascript:eval("function(){ return evil }")'}>not<span /> evil</a>`,
             ),
         ).toBe('not evil')
     })
@@ -138,7 +138,6 @@ describe('ö.stripTags', () => {
 
 describe('ö.when', () => {
     it('should return whenTrue when bool = true', () => {
-        let s = 'a <a href="#">link</a>'
         expect(ö.when(true, 'Hello')).toBe('Hello')
         expect(ö.when(false, 'Hello')).toBe('')
         expect(ö.when(false, 'Hello', 'Bye')).toBe('Bye')

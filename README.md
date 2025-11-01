@@ -789,7 +789,7 @@ Any iterable except strings work, but produce arraylike objects without a `lengt
 
 #### ö.strToNum( str ) → Number
 
-A slightly more competent `parseFloat`. Handles spaces, commas, and the like. Returns `NaN` for `+/-Infinity`, though.
+A slightly more competent `parseFloat`. Handles spaces, commas, and the like. Returns `NaN` for `+/-Infinity`, though. Feed it for example "Debt: -1 035,50$", and it returns `-1035.5`.
 
 ### DOM and browser
 
@@ -800,6 +800,10 @@ A slightly more competent `parseFloat`. Handles spaces, commas, and the like. Re
 #### ö.setLocal( item, v, expire? = false ) → v
 
 [browser] Sets `item` in local storage to `v`, and returns `v`. Optionally sets to `sessionStorage` if `expire` is true.
+
+#### ö.getOrInsertLocal( item, defaultVal, expire? = false ) → v
+
+[browser] Gets `item` from local storage, if any, otherwise inserts (and returns) default value.
 
 #### ö.getCss( prop, selector? = ':root') → css property value
 

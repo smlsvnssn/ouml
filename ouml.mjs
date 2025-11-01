@@ -1591,7 +1591,12 @@ export const objToMap = obj => new Map(Object.entries(obj))
  */
 
 export const strToNum = str =>
-    parseFloat(log(str.replace(/[^\d-+.,eE]/g, '').replace(',', '.')))
+    parseFloat(
+        str
+            .replace(/[^\d-+.,eE]/g, '')
+            .replace(/^[eE]*/, '')
+            .replace(',', '.'),
+    )
 
 /**
  * Throttle, debounce, onAnimationFrame
@@ -1695,6 +1700,17 @@ export const getLocal = item => {
 export const setLocal = (item, v, expire = false) => (
     (expire ? sessionStorage : localStorage).setItem(item, JSON.stringify(v)), v
 )
+
+/**
+ * GetOrInsertLocal - Gets `item` from local storage, if any, otherwise inserts default value.
+ * @param {string} item
+ * @param {any} defaultVal
+ * @param {boolean} [expire = false]
+ * @returns {any}
+ */
+
+export const getOrInsertLocal = (item, defaultVal, expire = false) =>
+    setLocal(item, getLocal(item) ?? defaultVal, expire)
 
 /**
  * GetCss - Gets `prop` on selected element.

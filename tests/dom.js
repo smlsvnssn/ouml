@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import * as ö from '../ouml.mjs'
 
 describe('ö.getLocal, ö.setLocal', () => {
-    it('gets/sets objects in localStorage', () => {
+    it('gets/sets values in localStorage', () => {
         let key = 'test'
         let testObj = { a: 1, b: 2 }
 
@@ -18,7 +18,7 @@ describe('ö.getLocal, ö.setLocal', () => {
         localStorage.clear()
     })
 
-    it('gets/sets objects in sessionStorage if expire == true', () => {
+    it('gets/sets values in sessionStorage if expire == true', () => {
         let key = 'test'
         let testObj = { a: 1, b: 2 }
 
@@ -32,6 +32,14 @@ describe('ö.getLocal, ö.setLocal', () => {
         )
 
         expect(JSON.stringify(localStorage.getItem(key))).toEqual('null')
+    })
+
+    it('gets values if defined, otherwise sets default', () => {
+        let key = 'test2'
+        let testObj = { a: 1, b: 2 }
+
+        expect(ö.getOrInsertLocal(key, testObj)).toStrictEqual(testObj)
+        expect(ö.getOrInsertLocal(key, 'noo')).toStrictEqual(testObj)
     })
 })
 
