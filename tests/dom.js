@@ -19,7 +19,7 @@ describe('ö.getLocal, ö.setLocal', () => {
     })
 
     it('gets/sets values in sessionStorage if expire == true', () => {
-        let key = 'test'
+        let key = 'test2'
         let testObj = { a: 1, b: 2 }
 
         expect(ö.getLocal(key)).toBe(null)
@@ -35,7 +35,7 @@ describe('ö.getLocal, ö.setLocal', () => {
     })
 
     it('gets values if defined, otherwise sets default', () => {
-        let key = 'test2'
+        let key = 'test3'
         let testObj = { a: 1, b: 2 }
 
         expect(ö.getOrInsertLocal(key, testObj)).toStrictEqual(testObj)

@@ -1612,9 +1612,9 @@ export const strToNum = str =>
  */
 
 export const throttle = (f, t = 50, debounce = false, immediately = false) => {
-    let timeout,
-        lastRan,
-        running = false
+    let timeout 
+    let lastRan
+    let running = false
 
     return function () {
         let context = this,
