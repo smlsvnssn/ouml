@@ -44,14 +44,29 @@ describe('ö.getLocal, ö.setLocal', () => {
 })
 
 describe('ö.getCss, ö.setCss', () => {
-    it('gets/sets objects in localStorage', () => {
+    it('gets/sets css on :root by default', () => {
         let key = '--test'
         let testValue = '1px'
 
-        expect(ö.getCss(key)).toBe('')
+        document.querySelector(':root')?.style.setProperty(key, '0')
+
+        expect(ö.getCss(key)).toBe('0')
         expect(ö.setCss(key, testValue)).toBe(testValue)
 
         expect(ö.getCss(key)).toEqual(testValue)
+    })
+
+    it('gets/sets css on selected element', () => {
+        let key = '--test2'
+        let testValue = '2px'
+        let selector = 'body'
+
+        document.querySelector(selector)?.style.setProperty(key, '0')
+
+        expect(ö.getCss(key, selector)).toBe('0')
+        expect(ö.setCss(key, testValue, selector)).toBe(testValue)
+
+        expect(ö.getCss(key, selector)).toEqual(testValue)
     })
 })
 

@@ -1612,7 +1612,7 @@ export const strToNum = str =>
  */
 
 export const throttle = (f, t = 50, debounce = false, immediately = false) => {
-    let timeout 
+    let timeout
     let lastRan
     let running = false
 
@@ -1719,10 +1719,10 @@ export const getOrInsertLocal = (item, defaultVal, expire = false) =>
  * @returns {* | undefined}
  */
 
-export const getCss = (prop, selector = ':root') =>
-    // @ts-ignore
-    document.querySelector(selector)?.style.getPropertyValue(prop)
-
+export const getCss = (prop, selector = ':root') => {
+    let el = document.querySelector(selector)
+    return el ? window.getComputedStyle(el).getPropertyValue(prop) : undefined
+}
 /**
  * SetCss - Sets `prop` to `v`.
  * @param {string} prop
