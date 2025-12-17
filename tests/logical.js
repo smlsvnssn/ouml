@@ -71,6 +71,13 @@ describe('ö.clone', () => {
         expect(Object.getPrototypeOf(ö.clone(Object.create(null)))).toBe(null)
     })
 
+    it('should clone a Node', () => {
+        let node = ö.createElement('<div>')
+        expect(ö.clone(node)).toBeInstanceOf(Node)
+        expect(ö.clone(node)).toStrictEqual(node)
+        expect(ö.clone(node).isEqualNode(node)).toBe(true)
+    })
+
     it('should shallow clone when deep = false', () => {
         let shallow = ö.clone(obj, false)
 

@@ -244,6 +244,14 @@ describe('type checking', () => {
         expect([]).toSatisfy(ö.isIterable)
         expect([][Symbol.iterator]).not.toSatisfy(ö.isIterable)
         expect(123).not.toSatisfy(ö.isIterable)
+
+        expect(ö.createElement('<div>')).toSatisfy(ö.isNode)
+        
+        // testing for env where node is not present 
+        let temp = Node
+        Node = undefined;
+        expect(ö.createElement('<div>')).not.toSatisfy(ö.isNode)
+        Node = temp
     })
 })
 

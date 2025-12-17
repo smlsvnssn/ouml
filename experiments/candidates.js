@@ -36,6 +36,8 @@ https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
 
 Math
   factorization?
+  dampened spring (Svelte motion, but simpler)
+  maybe https://github.com/sveltejs/svelte/blob/main/packages/svelte/src/motion/spring.js
 
 maybe:
 √ combinations

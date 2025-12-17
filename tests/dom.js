@@ -50,7 +50,7 @@ describe('ö.getCss, ö.setCss', () => {
 
         document.querySelector(':root')?.style.setProperty(key, '0')
 
-        expect(ö.getCss(key)).toBe('0')
+        expect(ö.getCss(key)).toBe('0') 
         expect(ö.setCss(key, testValue)).toBe(testValue)
 
         expect(ö.getCss(key)).toEqual(testValue)

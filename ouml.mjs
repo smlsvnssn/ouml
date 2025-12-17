@@ -11,8 +11,7 @@
  * @yields {IterableIterator.<{x: number, y: number }>}
  */
 
-export const grid = function* (width, height) {
-    height ??= width
+export const grid = function* (width, height = width) {
     let x = 0
 
     do {
@@ -50,7 +49,7 @@ export const range = function* (start, end, step = 1) {
 /**
  * @callback timesCB
  * @param {number} index
- * @param  {any[]} rest
+ * @param  {...any[]} rest
  */
 
 /**
@@ -64,7 +63,6 @@ export const range = function* (start, end, step = 1) {
 export const times = (times = 0, f = i => i, ...rest) =>
     Array(Math.abs(times))
         .fill(0)
-        // @ts-ignore
         .map((_, i) => f(i, ...rest))
 
 /**
@@ -491,31 +489,31 @@ export const groupBy = (iterable, prop, asObject = false) =>
  * MapToTree - Maps a flat array of objects to a tree structure.
  * @param {Array<Object>} arr
  * @param {(string | idPropCB)} idProp
- * @param {string} [parentProp]
+ * @param {string} [parentProp = '']
  * @returns {any[]}
  */
 
-export const mapToTree = (arr, idProp, parentProp) => {
+export const mapToTree = (arr, idProp, parentProp = '') => {
     // Gather all parents...
     let parents = new Map()
     let rootKey = null
 
-    for (let [i, v] of arr.entries()) {
+    arr.forEach((v, i) => {
         let [key, parentKey] =
             isFunc(idProp) ?
                 idProp(v, i, arr) // Should return [ownKey, parentKey]
-            :   [v[idProp], v?.[parentProp ?? ''] ?? rootKey]
+            :   [v[idProp], v?.[parentProp] ?? rootKey]
 
         if (parents.has(parentKey)) parents.get(parentKey).push({ key, v })
         else parents.set(parentKey, [{ key, v }])
-    }
+    })
 
     // ...and map them out.
     const traverse = (parentKey = rootKey) =>
-        parents.get(parentKey)?.map(parent => {
+        parents.get(parentKey)?.map(node => {
             // did you see the base case? Pretty small eh?
-            let children = traverse(parent.key)
-            return children ? { ...parent.v, children } : { ...parent.v }
+            let children = traverse(node.key)
+            return children ? { ...node.v, children } : { ...node.v }
         })
 
     return traverse()
@@ -744,7 +742,7 @@ const d = new WeakMap()
 
 /**
  * Data - Associates `anyVal` with data via a `WeakMap`.
- * @param {Object | Symbol} obj
+ * @param {Object | HTMLElement} obj
  * @param {(string | Object)} key
  * @param {*} value
  * @returns {Object.<string, *> | *}
@@ -830,26 +828,31 @@ export const equals = isEqual
 // use memoise?
 
 export const clone = (v, deep = true, immutable = false) => {
-    const doClone = v => (deep ? clone(v, deep, immutable) : v)
-    const doFreeze = v => (immutable ? Object.freeze(v) : v)
+    const maybeClone = v => (deep ? clone(v, deep, immutable) : v)
+    const maybeFreeze = v => (immutable ? Object.freeze(v) : v)
 
     // Return primitives and functions as is.
     // no cloning of functions, too gory. They are passed by reference instead
     if (typeof v != 'object' || isNull(v)) return v
 
     // catch arraylike
-    if ('map' in v && isFunc(v.map)) return doFreeze(v.map(i => doClone(i)))
+    if ('map' in v && isFunc(v.map))
+        return maybeFreeze(v.map(i => maybeClone(i)))
 
-    if (isMap(v)) return doFreeze(new Map(doClone(Array.from(v))))
+    if (isMap(v)) return maybeFreeze(new Map(maybeClone(Array.from(v))))
 
-    if (isSet(v)) return doFreeze(new Set(doClone(Array.from(v))))
+    if (isSet(v)) return maybeFreeze(new Set(maybeClone(Array.from(v))))
 
-    if (isDate(v)) return doFreeze(new Date().setTime(v.getTime()))
+    if (isDate(v)) return maybeFreeze(new Date().setTime(v.getTime()))
+    
+    if (isNode(v)) return v.cloneNode(deep)
 
     let o = {}
-    for (let key of Reflect.ownKeys(v)) o[key] = doClone(v[key])
+    for (let key of Reflect.ownKeys(v)) o[key] = maybeClone(v[key])
 
-    return doFreeze(Object.assign(Object.create(Reflect.getPrototypeOf(v)), o))
+    return maybeFreeze(
+        Object.assign(Object.create(Reflect.getPrototypeOf(v)), o),
+    )
 }
 
 /**
@@ -1543,7 +1546,10 @@ export const isSet = v => v instanceof Set
 
 export const isRegex = v => v instanceof RegExp
 
-export const isError = v => v instanceof Error
+export const isError = v =>
+    Error.isError ? Error.isError(v) : v instanceof Error
+
+export const isNode = v => is(Node) && v instanceof Node
 
 export const isObj = v =>
     typeof v == 'object' &&
@@ -1561,7 +1567,7 @@ export const isNakedObj = v => isObj(v) && Reflect.getPrototypeOf(v) === null
 
 /**
  * @param {*} v
- * @returns {v is Iterable}
+ * @returns {v is Iterable<any>}
  */
 
 export const isIterable = v =>
@@ -1572,7 +1578,7 @@ export const isIterable = v =>
  */
 
 /**
- * @param {Map} map
+ * @param {Map<any, any>} map
  * @returns {{}}
  */
 
@@ -1580,7 +1586,7 @@ export const mapToObj = map => Object.fromEntries(map.entries())
 
 /**
  * @param {{}} obj
- * @returns {Map}
+ * @returns {Map<any, any>}
  */
 
 export const objToMap = obj => new Map(Object.entries(obj))
@@ -1761,8 +1767,8 @@ export const attempt = (f, handler = e => e, ...args) => {
  * AttemptAsync - Tries a function and returns result, or result of handler.
  * @param {function} f
  * @param {(e: Error) => * | *} [handler]
- * @param {Array} args
- * @returns {Promise}
+ * @param {any[]} args
+ * @returns {Promise<any>}
  */
 
 export const attemptAsync = async (f, handler = e => e, ...args) => {
@@ -1795,7 +1801,7 @@ export const verbose = (verbose, throwing) => {
  * Error - Logs errors to console, optionally throws instead.
  * @param {*} e
  * @param  {...any} r
- * @returns {* | Array}
+ * @returns {* | any[]}
  */
 
 export const error = (e, ...r) => {
@@ -1810,7 +1816,7 @@ export const error = (e, ...r) => {
  * Warn - Outputs arguments to console.
  * @param {*} msg
  * @param  {...any} r
- * @returns {* | Array}
+ * @returns {* | any[]}
  */
 
 export const warn = (msg, ...r) => {
@@ -1821,7 +1827,7 @@ export const warn = (msg, ...r) => {
 /**
  * Log - Outputs arguments to console. Returns single argument, or multiple arguments as an array.
  * @param  {...any} msg
- * @returns {* | Array}
+ * @returns {* | any[]}
  */
 
 export const log = (...msg) => {

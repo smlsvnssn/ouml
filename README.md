@@ -407,7 +407,7 @@ Checks equality by value rather than reference. Compares prototypes, and uses `R
 
 #### ö.clone( v, deep? = true, immutable? = false ) → cloned value
 
-Performs cloning of most common types, including `Array` and typed arrays, `Map`, `Set`, `Date` and objects. Defaults to deep cloning, set `deep` to `false` for shallow cloning. Tries to preserve `prototype` when cloning objects, but may fail in untested edge cases. Set `preservePrototype` to false to disable this (this is somewhat faster). Does not clone functions, and doesn't handle circular references. Use with some caution 🤫.
+Performs cloning of most common types, including `Array` and typed arrays, `Map`, `Set`, `Date`, `Node` and objects. Defaults to deep cloning, set `deep` to `false` for shallow cloning. Tries to preserve `prototype` when cloning objects, but may fail in untested edge cases. Set `preservePrototype` to false to disable this (this is somewhat faster). Does not clone functions, and doesn't handle circular references. Use with some caution 🤫.
 
 The native `structuredClone` is probably slower (by alot!) in most cases, errors on functions, and doesn't preserve prototype, but it handles circular references. Choose wisely!
 
@@ -1255,7 +1255,7 @@ Inputs are clamped to valid values. `lightness` takes values between 0 and 1, `c
 
 The methods that return `Colour` are chainable, and the methods that return an array of `Colour`s are chainable via `.map()`.
 
-All methods that interpolate between colours, such as `.mix()` or `.palette()`, interpolate through `oklab` by default, since oklab avoids hue variations when interpolating. If you want a poppier feel, go for `oklch` instead. Oklch and oklab are the only colourspaces supported. [Try out interpolation through different colour spaces here to see why](https://codepen.io/smlsvnssn/full/dyQaQvp).
+All methods that interpolate between colours, such as `.mix()` or `.palette()`, interpolate through `oklab` by default, since oklab avoids hue variations when interpolating. Oklch and oklab are the only colourspaces supported. [Try out interpolation through different colour spaces here to see why](https://codepen.io/smlsvnssn/full/dyQaQvp).
 
 #### Colour.lightness( v? ) → Colour
 
