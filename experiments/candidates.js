@@ -38,6 +38,38 @@ Math
   factorization?
   dampened spring (Svelte motion, but simpler)
   maybe https://github.com/sveltejs/svelte/blob/main/packages/svelte/src/motion/spring.js
+*/
+
+// could be written as a generator, yielding values for an async loop
+
+const spring = (
+    value,
+    target,
+    prevValue = 0,
+    deltaTime = 1 / 60,
+    { stiffness = 0.85, damping = 0.15, mass = 1, precision = 0.025 } = {},
+) => {
+    let delta = target - value
+    let velocity = (value - prevValue) / (deltaTime || Number.EPSILON) // no / 0
+    let spring = stiffness * delta
+    let damp = damping * velocity
+    let acceleration = (spring - damp) * mass
+    let d = (velocity + acceleration) * deltaTime
+
+    return Math.abs(d) < precision && Math.abs(delta) < precision ?
+            {
+                value,
+                prevValue: value,
+                settled: true,
+            }
+        :   {
+                value: value + d,
+                prevValue: value,
+                settled: false,
+            }
+}
+
+/*
 
 maybe:
 √ combinations

@@ -1402,7 +1402,7 @@ let timeout, rejectPrev
  * @param {number} [t]
  * @param {function} [f]
  * @param {boolean} [resetPrevCall = false]
- * @returns {Promise}
+ * @returns {Promise<any>}
  */
 
 export const wait = async (t = 1, f, resetPrevCall = false) => {
@@ -1430,7 +1430,7 @@ export const wait = async (t = 1, f, resetPrevCall = false) => {
 /**
  * NextFrame - Waits one frame.
  * @param {function} [f]
- * @returns {Promise}
+ * @returns {Promise<any>}
  */
 
 export const nextFrame = async f => {
@@ -1447,7 +1447,7 @@ export const nextFrame = async f => {
  * @param {number} [n]
  * @param {function} [f]
  * @param {boolean} [everyFrame]
- * @returns {Promise}
+ * @returns {Promise<any>}
  */
 
 export const waitFrames = async (n = 1, f, everyFrame = false) => {
@@ -1459,7 +1459,7 @@ export const waitFrames = async (n = 1, f, everyFrame = false) => {
  * @param {string} selector
  * @param {string} event
  * @param {function} [f]
- * @returns {Promise}
+ * @returns {Promise<any>}
  */
 
 export const waitFor = async (selector, event, f) => {
