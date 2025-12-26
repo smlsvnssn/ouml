@@ -1,6 +1,6 @@
 {
     "name": "ouml",
-    "version": "0.3.21",
+    "version": "0.3.22",
     "description": "smlsvnssn",
     "main": "ouml.mjs",
     "module": "ouml.mjs",
@@ -11,7 +11,8 @@
         "./övents": "./events/index.mjs",
         "./öbservable": "./observable/index.mjs",
         "./chain": "./chain/index.mjs",
-        "./bits": "./bits/index.mjs"
+        "./bits": "./bits/index.mjs",
+        "./spring": "./spring/index.mjs"
     },
     "prettier": {
         "experimentalTernaries": true,
