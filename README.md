@@ -1486,10 +1486,12 @@ mySpring.setTarget(200)
 `settings` are provided in the format
 
 ```js
-{ stiffness: 0.5, damping: 0.5, mass: 1, precision: 0.1 }
+{ stiffness: 0.1, damping: 0.5, mass: 1, precision: 0.1 }
 ```
 
 (default values). All parameters are optional. Values for stiffness and damping are clamped between 0 and 1.
+
+`stiffness`, or tension, controls how "springy" the animation feels. `damping`, or friction, controls how fast the animation slows down. A damping value of `0` will never settle. `mass` controls how heavy the animated object should feel, and `precision` controls the treshold for determining if the animation has settled.
 
 ### Spring methods and properties
 
@@ -1499,7 +1501,7 @@ Sets target value for spring, and starts animation if it isn't running. Also upd
 
 #### prevValue
 
-Access to `prevValue` lets you calculate for example the difference vector between animation frames, letting you create effects like motionblur and directional rotation. [Here's an example](https://codepen.io/smlsvnssn/pen/zxBOQQw).
+Access to `prevValue` lets you calculate for example the difference vector between animation frames, letting you create effects like motionblur and directional rotation. [Here's an example](https://codepen.io/smlsvnssn/pen/XJKWqNP).
 
 In principle:
 

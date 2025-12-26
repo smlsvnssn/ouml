@@ -3,7 +3,7 @@
 import { isNum, is, clamp, isObj } from '../ouml.mjs'
 
 const defaultSettings = {
-    stiffness: 0.5,
+    stiffness: 0.1,
     damping: 0.5,
     mass: 1,
     precision: 0.1,
@@ -35,7 +35,7 @@ const springStep = (
     let velocity = (value - prevValue) / (deltaTime || Number.EPSILON) // no / 0
     let spring = stiffness * delta
     let damp = damping * velocity
-    let acceleration = (spring - damp) * mass
+    let acceleration = (spring - damp) * (1 / mass)
     let d = (velocity + acceleration) * deltaTime
 
     return {
@@ -157,7 +157,6 @@ class Spring {
      * @returns {Promise<string>}
      */
 
-    
     setTarget(target) {
         this.#targetValue = this.#formatInput(target)
 
