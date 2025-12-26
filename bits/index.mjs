@@ -120,7 +120,7 @@ export const isBits = v => v instanceof Bits
  * @returns {Bits}
  */
 
-export const bits = (value = 0n, ...args) => {
+const bits = (value = 0n, ...args) => {
     let v = args.length ? [value, ...args] : value
 
     v = attempt(

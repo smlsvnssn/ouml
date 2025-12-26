@@ -759,6 +759,8 @@ Less verbose than `typeof`/`Array.isArray`/`instanceof`:
 
 #### ö.isError( v ) → Boolean
 
+#### ö.isNode( v ) → Boolean
+
 #### ö.is( v ) / ö.isDefined( v ) → Boolean
 
 #### ö.isnt( v ) / ö.isUndefined( v ) → Boolean
@@ -1441,3 +1443,86 @@ Returns the `bigint` that contains the bits.
 #### Bits.toString()
 
 Returns the bits as a binary string.
+
+# Spring
+
+Spring animates a value, or a set of values, from its current value to its target value, using [spring physics](https://en.wikipedia.org/wiki/Hooke%27s_law). This animation is not time-bound, and results in a smoother motion than tween-based animations, especially when the target changes as the animation runs.
+
+Spring runs in the main browser thread, so there's some sensitivity to renderblocking javascript execution, but the animation uses deltatime internally to compensate.
+
+Use like so:
+
+```js
+import spring from 'ouml/spring'
+
+let el = document.querySelector('#someEl')
+let mySpring = spring(
+    { x: 0, y: 0 },
+    ({ x, y }) => (el.style.translate = `${x}px ${y}px`),
+    { stiffness: 0.2 },
+)
+
+mySpring.setTarget({ x: 100, y: 100 }).then(doStuffWhenAnimationIsSettled)
+```
+
+or with a number value:
+
+```js
+let mySpring = spring(100, n => renderSomething(n))
+
+mySpring.setTarget(200)
+```
+
+### spring()
+
+`spring` creates `Spring` instances that handle animation.
+
+#### spring( current, f , settings? ) → Spring
+
+`spring` takes a `current` value, in the format of either a `number` or an `object` whose properties contain numbers.
+
+`f` recieves a value in the same format, representing the updated current state, as well as a reference to the calling `Spring`. `f` is called every frame while the animation is running.
+
+`settings` are provided in the format
+
+```js
+{ stiffness: 0.5, damping: 0.5, mass: 1, precision: 0.1 }
+```
+
+(default values). All parameters are optional. Values for stiffness and damping are clamped between 0 and 1.
+
+### Spring methods and properties
+
+#### Spring.setTarget( target ) → Promise
+
+Sets target value for spring, and starts animation if it isn't running. Also updates the target while animation is running. Returns a `Promise` that resolves to the target value of `Spring` when the animation settles.
+
+#### prevValue
+
+Access to `prevValue` lets you calculate for example the difference vector between animation frames, letting you create effects like motionblur and directional rotation. [Here's an example](https://codepen.io/smlsvnssn/pen/zxBOQQw).
+
+In principle:
+
+```js
+let el = document.querySelector('#someEl')
+
+const renderEl = ({ x, y }, springInstance) => {
+    let differenceVector = ö.toPolar(
+        x - springInstance.prevValue.x,
+        y - springInstance.prevValue.y,
+    )
+    el.style.translate = `${x}px ${y}px`
+    el.style.scale = `${1 + differenceVector.r / 50} 1`
+    el.style.rotate = `${differenceVector.theta}rad`
+}
+
+let mySpring = spring({ x: 0, y: 0 }, renderEl)
+```
+
+#### settings
+
+Settings can be changed while the animation is running. Set them like this:
+
+```js
+mySpring.settings = { stiffness: 0.5 }
+```
