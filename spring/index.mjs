@@ -103,7 +103,7 @@ class Spring {
             this,
         )
 
-        this.running = false
+        this.#running = false
         this.#resolver?.(this.#targetValue)
         this.#prevTime =
             this.#prevValue =
@@ -157,11 +157,12 @@ class Spring {
      * @returns {Promise<string>}
      */
 
+    
     setTarget(target) {
         this.#targetValue = this.#formatInput(target)
 
         if (!this.#running) {
-            this.running = true
+            this.#running = true
             this.#animate()
         }
 
