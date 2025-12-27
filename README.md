@@ -1489,7 +1489,7 @@ mySpring.setTarget(200)
 { stiffness: 0.1, damping: 0.5, mass: 1, precision: 0.1 }
 ```
 
-(default values). All parameters are optional. Values for stiffness and damping are clamped between 0 and 1.
+(default values). All parameters are optional. Values for stiffness and damping are clamped between 0 and 1, mass is clamped between 0.1 and 1000.
 
 `stiffness`, or tension, controls how "springy" the animation feels. `damping`, or friction, controls how fast the animation slows down. A damping value of `0` will never settle. `mass` controls how heavy the animated object should feel, and `precision` controls the treshold for determining if the animation has settled.
 

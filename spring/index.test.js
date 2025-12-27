@@ -76,8 +76,8 @@ describe('spring.setTarget', async () => {
     })
 
     it('should animate between current and target', () => {
-        expect(yValues.length).toBe(71)
-        expect(xValues.length).toBe(71)
+        expect(yValues.length).toBe(8)
+        expect(xValues.length).toBe(8)
     })
 
     vi.useRealTimers()

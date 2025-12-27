@@ -19,11 +19,14 @@ const defaultSettings = {
  * @returns {{value: number, settled: boolean}}
  */
 
+// eeeh... something's not balanced. Investigate. Inverted mass breaks below .5, why? Lowest value for mass should be 1?
+// allow for setting of initial velocity
+
 const springStep = (
     value,
     target,
     prevValue = value,
-    deltaTime = 1 / 60,
+    deltaTime = 1,
     {
         stiffness = defaultSettings.stiffness,
         damping = defaultSettings.damping,
@@ -44,10 +47,21 @@ const springStep = (
     }
 }
 
-const isSettled = state => Object.values(state).every(value => value.settled)
-const isAllNum = input => Object.values(input).every(value => isNum(value))
-
+const everyInObj = (obj, f) => Object.values(obj).every(f)
 const mapObj = (obj, f) => Object.fromEntries(Object.entries(obj).map(f))
+
+const isSettled = state => everyInObj(state, v => v.settled)
+const isAllNum = input => everyInObj(input, isNum)
+
+const baseFR = 60
+const lowestFR = 15
+
+// deltaTime as ratio of base framerate
+const getDeltaTime = pt => {
+    let mspt = Date.now() - pt || 1000 / baseFR
+    mspt = Math.min(mspt, 1000 / lowestFR) // Cap at lowestFR
+    return (mspt * baseFR) / 1000 || 1
+}
 
 const validateSettings = settings => ({
     ...defaultSettings,
@@ -56,6 +70,7 @@ const validateSettings = settings => ({
         { stiffness: clamp(settings.stiffness, 0, 1) }
     :   {}),
     ...(is(settings.damping) ? { damping: clamp(settings.damping, 0, 1) } : {}),
+    ...(is(settings.mass) ? { damping: clamp(settings.mass, 0.1, 1000) } : {}),
 })
 
 class Spring {
@@ -113,7 +128,8 @@ class Spring {
     }
 
     #animate() {
-        let dt = (Date.now() - this.#prevTime) / 1000 || 1 / 60
+        let dt = getDeltaTime(this.#prevTime)
+
         let state = mapObj(this.#currentValue, ([k]) => [
             k,
             springStep(
