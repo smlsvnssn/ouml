@@ -70,7 +70,7 @@ const validateSettings = settings => ({
         { stiffness: clamp(settings.stiffness, 0, 1) }
     :   {}),
     ...(is(settings.damping) ? { damping: clamp(settings.damping, 0, 1) } : {}),
-    ...(is(settings.mass) ? { damping: clamp(settings.mass, 0.1, 1000) } : {}),
+    ...(is(settings.mass) ? { mass: clamp(settings.mass, 0.1, 1000) } : {}),
 })
 
 class Spring {
