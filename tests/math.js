@@ -77,6 +77,21 @@ describe('ö.clamp', () => {
     })
 })
 
+describe('ö.closeEnough', () => {
+    it('should return true when a and b are equal within inclusive tolerance', () => {
+        expect(ö.closeEnough(0, 1, 1)).toBe(true)
+        expect(ö.closeEnough(0, 1, -1)).toBe(true)
+        expect(ö.closeEnough(0, 0, Number.EPSILON)).toBe(true)
+        expect(ö.closeEnough(0, Number.EPSILON, Number.EPSILON)).toBe(true)
+    })
+
+    it('should return false when a and b are not equal within inclusive tolerance', () => {
+        expect(ö.closeEnough(1, -1, 1)).toBe(false)
+        expect(ö.closeEnough(0, 1 + Number.EPSILON, -1)).toBe(false)
+        expect(ö.closeEnough(0, Number.EPSILON ** -2)).toBe(false)
+    })
+})
+
 describe('ö.between', () => {
     it('should return true when n is between min & non inclusive max, or flip max and min if min > max', () => {
         expect(ö.between(0, -1, 1)).toBe(true)

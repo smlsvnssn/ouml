@@ -11,15 +11,22 @@ describe('spring', () => {
         expect(mySpring.constructor.name).toEqual('Spring')
     })
 
-    it('should clamp inputs for stiffness and damping', () => {
-        expect(mySpring.settings.stiffness).toEqual(1)
-        expect(mySpring.settings.damping).toEqual(1)
+    it('should clamp inputs for stiffness, damping and mass', () => {
+        expect(mySpring.settings.stiffness).toBe(1)
+        expect(mySpring.settings.damping).toBe(1)
 
+        // setting directly should not work 
         mySpring.settings.stiffness = -1
-        expect(mySpring.settings.stiffness).toEqual(1)
+        expect(mySpring.settings.stiffness).toBe(1)
 
         mySpring.settings = { stiffness: -1 }
-        expect(mySpring.settings.stiffness).toEqual(0)
+        expect(mySpring.settings.stiffness).toBe(0)
+
+        mySpring.settings = { mass: -1 }
+        expect(mySpring.settings.mass).toBe(0.1)
+
+        mySpring.settings = { mass: 1001 }
+        expect(mySpring.settings.mass).toEqual(1000)
     })
 
     it('should take a number as input', () => {
@@ -30,9 +37,11 @@ describe('spring', () => {
     })
 
     it('should throw on malformed input', () => {
-        expect(() => spring('string')).toThrow('Input must ')
+        let expectedError =
+            'Current and target must be either a number, or an object with properties containing numbers.'
 
-        expect(() => spring({ x: 'string' })).toThrow('Input must ')
+        expect(() => spring('string')).toThrow(expectedError)
+        expect(() => spring({ x: 'string' })).toThrow(expectedError)
     })
 })
 

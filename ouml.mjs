@@ -844,7 +844,7 @@ export const clone = (v, deep = true, immutable = false) => {
     if (isSet(v)) return maybeFreeze(new Set(maybeClone(Array.from(v))))
 
     if (isDate(v)) return maybeFreeze(new Date().setTime(v.getTime()))
-    
+
     if (isNode(v)) return v.cloneNode(deep)
 
     let o = {}
@@ -1059,6 +1059,18 @@ export const clamp = (n, min, max) => {
     return Math.min(Math.max(n, min), max)
 }
 
+
+/**
+ * CloseEnough - Checks if `a` is close enough to `b`, given `tolerance`.
+ * @param {number} a
+ * @param {number} b
+ * @param {number} [tolerance]
+ * @returns {boolean}
+ */
+
+export const closeEnough = (a, b, tolerance = Number.EPSILON) =>
+    Math.abs(a - b) <= Math.abs(tolerance)
+
 /**
  * Between - Checks if `n` is between `min` and `max`.
  * @param {number} n
@@ -1072,6 +1084,7 @@ export const between = (n, min, max) => {
 
     return n >= min && n < max
 }
+
 /**
  * Normalize - Normalises `n` to a value between 0 and 1, within range given by `min` and `max`.
  * @param {number} n
@@ -1433,14 +1446,12 @@ export const wait = async (t = 1, f, resetPrevCall = false) => {
  * @returns {Promise<any>}
  */
 
-export const nextFrame = async f => {
-    return new Promise(resolve =>
-        requestAnimationFrame(async () => {
-            if (isFunc(f)) resolve(await f())
-            else resolve(undefined)
-        }),
+export const nextFrame = async f =>
+    new Promise(resolve =>
+        requestAnimationFrame(async () =>
+            resolve(await (isFunc(f) ? f() : undefined)),
+        ),
     )
-}
 
 /**
  * WaitFrames - Waits `n` frames.
@@ -1665,7 +1676,7 @@ export const debounce = (f, t = 50, immediately = false) =>
  */
 
 export const onAnimationFrame = f => {
-    let timeout
+    let timeout = 0
 
     return function () {
         let context = this,
@@ -1679,9 +1690,6 @@ export const onAnimationFrame = f => {
 /**
  * Util & environment
  */
-
-// export const q = document.querySelector.bind(document);
-// export const qa = document.querySelectorAll.bind(document);
 
 /**
  * GetLocal - Gets `item` from local storage, if any. Converts item to `Object` via `JSON.parse`.
@@ -1751,7 +1759,7 @@ export const setCss = (prop, v, selector = ':root') =>
  * Attempt - Tries a function and returns result, or result of handler.
  * @param {function} f
  * @param {(e: Error) => * | *} [handler]
- * @param {Array} args
+ * @param {any[]} args
  * @returns {*}
  */
 
@@ -1876,7 +1884,7 @@ export const message = s => `ö says: ${s}\n`
 // stuff
 export const toString = () => `Hello ö!`
 
-/**
+/** 
  * @param  {string} s
  * @returns {string}
  */

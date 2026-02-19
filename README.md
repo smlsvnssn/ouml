@@ -26,7 +26,7 @@ Most methods are runnable within node/deno. Some methods require browser API:s, 
 
 ## Modules
 
-Includes modules [chain](#chain), a method for chaining calls on any type, [öbservable](#%C3%B6bservable), a basic implementation of reactive values, [övents](#%C3%B6vents), a collection of useful custom browser events, [colour](#colour), a simple way to work with oklch colours, and [bits](#bits), an easy way to flip bits.
+Includes modules [chain](#chain), a method for chaining calls on any type, [öbservable](#%C3%B6bservable), a basic implementation of reactive values, [övents](#%C3%B6vents), a collection of useful custom browser events, [colour](#colour), a simple way to work with oklch colours, [bits](#bits), an easy way to flip bits, and [spring](#spring), a spring animation utility.
 
 Import them from
 
@@ -44,6 +44,7 @@ import {
 } from 'ouml/övents'
 import colour, { isColour } from 'ouml/colour'
 import bits, { isBits } from 'ouml/bits'
+import spring from 'ouml/spring'
 ```
 
 ## Methods
@@ -525,6 +526,10 @@ Returns remainder modulo `divisor`, for both positive and negative numbers. Retu
 
 Clamps `n` between `min` and `max`.
 
+#### ö.closeEnough( a, b, tolerance? ) → Boolean
+
+Checks if `a` is close enough to `b`, given `tolerance`. Tolerance defaults to `Number.EPSILON`.
+
 #### ö.between( n, min, max ) → Boolean
 
 Checks if `n` is between `min` and up to, but not including, `max`.
@@ -915,7 +920,7 @@ Chain wraps a value, and creates a `Proxy` that handles the chaining. `chain` ev
 
 #### chainAsync( value, isThrowing? = false ) → Proxy
 
-Same as `chain`, but results in a `Promise`.
+Same as `chain`, but results in a `Promise` once the chain is executed.
 
 ### "Methods"
 
@@ -1247,7 +1252,7 @@ Or have a look at a [small demo](https://codepen.io/smlsvnssn/full/ExqWeQG).
 
 ### colour()
 
-#### colour( lightness | cssString | Colour, chroma, hue, alpha ) → Colour
+#### colour( lightness | cssString | Colour, chroma?, hue?, alpha? ) → Colour
 
 The `colour` function creates `Colour`s from either css strings in hex/rgb/rgba/hsl/hsla/oklch format, or a `Colour`, or numeric values for the colour channels.
 
@@ -1491,13 +1496,15 @@ mySpring.setTarget(200)
 
 (default values). All parameters are optional. Values for stiffness and damping are clamped between 0 and 1, mass is clamped between 0.1 and 1000.
 
-`stiffness`, or tension, controls how "springy" the animation feels. `damping`, or friction, controls how fast the animation slows down. A damping value of `0` will never settle. `mass` controls how heavy the animated object should feel, and `precision` controls the treshold for determining if the animation has settled.
+`stiffness`, or tension, controls how "springy" the animation feels. `damping`, or friction, controls how fast the animation slows down. A damping value of `0` will never settle. `mass` controls how heavy the animated object should feel, and `precision` controls the threshold for determining if the animation has settled.
 
 ### Spring methods and properties
 
-#### Spring.setTarget( target ) → Promise
+#### Spring.setTarget( target, prevValue? ) → Promise
 
 Sets target value for spring, and starts animation if it isn't running. Also updates the target while animation is running. Returns a `Promise` that resolves to the target value of `Spring` when the animation settles.
+
+Accepts `prevValue` as a second argument, that can be used to give the animation an initial velocity. Defaults to the value of `current` if not specified, meaning the animation will start from zero velocity.
 
 #### prevValue
 

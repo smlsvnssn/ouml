@@ -13,26 +13,18 @@ const defaultSettings = {
  * springStep - Calculates step for single value.
  * @param { number } value
  * @param { number } target
+ * @param { { stiffness: number, damping: number, mass: number, precision: number } } settings
  * @param { number } [prevValue]
- * @param { number } [deltaTime] - In seconds
- * @param { { stiffness?: number, damping?: number, mass?: number, precision?: number } } [settings]
- * @returns {{value: number, settled: boolean}}
+ * @param { number } [deltaTime] - In ratio of 1 / 60 s.
+ * @returns { {value: number, settled: boolean} }
  */
-
-// eeeh... something's not balanced. Investigate. Inverted mass breaks below .5, why? Lowest value for mass should be 1?
-// allow for setting of initial velocity
 
 const springStep = (
     value,
     target,
+    { stiffness, damping, mass, precision },
     prevValue = value,
     deltaTime = 1,
-    {
-        stiffness = defaultSettings.stiffness,
-        damping = defaultSettings.damping,
-        mass = defaultSettings.mass,
-        precision = defaultSettings.precision,
-    } = {},
 ) => {
     let delta = target - value
     let velocity = (value - prevValue) / (deltaTime || Number.EPSILON) // no / 0
@@ -55,10 +47,9 @@ const isAllNum = input => everyInObj(input, isNum)
 
 const baseFR = 60
 const lowestFR = 15
-
 // deltaTime as ratio of base framerate
-const getDeltaTime = pt => {
-    let mspt = Date.now() - pt || 1000 / baseFR
+const getDeltaTime = (now, pt) => {
+    let mspt = now - pt || 1000 / baseFR
     mspt = Math.min(mspt, 1000 / lowestFR) // Cap at lowestFR
     return (mspt * baseFR) / 1000 || 1
 }
@@ -93,7 +84,6 @@ class Spring {
     #settings
     #callback
 
-    #running = false
     #isRawValue = false
     #promise
     #resolver
@@ -101,25 +91,26 @@ class Spring {
     #formatInput(v) {
         if ((!isObj(v) && !isNum(v)) || !isAllNum(v))
             throw new TypeError(
-                'Input must be either a number, or an object with properties containing numbers',
+                'Current and target must be either a number, or an object with properties containing numbers.',
             )
 
         // allow plain number as input
         if (isNum(v)) {
             this.#isRawValue = true
-            v = { value: v }
+            return { value: v }
         }
         return v
     }
 
     #reset() {
+        // return exact target value on last call
         this.#callback(
             this.#isRawValue ? this.#targetValue.value : this.#targetValue,
             this,
         )
 
-        this.#running = false
-        this.#resolver?.(this.#targetValue)
+        this.#resolver(this.#targetValue)
+
         this.#prevTime =
             this.#prevValue =
             this.#promise =
@@ -128,21 +119,20 @@ class Spring {
     }
 
     #animate() {
-        let dt = getDeltaTime(this.#prevTime)
-
+        let now = Date.now()
         let state = mapObj(this.#currentValue, ([k]) => [
             k,
             springStep(
                 this.#currentValue[k],
                 this.#targetValue[k],
-                this.#prevValue?.[k],
-                dt,
                 this.#settings,
+                this.#prevValue?.[k],
+                getDeltaTime(now, this.#prevTime),
             ),
         ])
 
         this.#prevValue = this.#currentValue
-        this.#prevTime = Date.now()
+        this.#prevTime = now
 
         // convert state to raw values
         this.#currentValue = mapObj(state, ([k, v]) => [k, v.value])
@@ -170,19 +160,18 @@ class Spring {
 
     /**
      * @param { SpringValue } target
+     * @param { SpringValue } [prevValue]
      * @returns {Promise<string>}
      */
 
-    setTarget(target) {
+    setTarget(target, prevValue = this.#currentValue) {
         this.#targetValue = this.#formatInput(target)
+        this.#prevValue = this.#formatInput(prevValue)
 
-        if (!this.#running) {
-            this.#running = true
+        if (!this.#promise) {
+            this.#promise = new Promise(resolve => (this.#resolver = resolve))
             this.#animate()
         }
-
-        if (!this.#promise)
-            this.#promise = new Promise(resolve => (this.#resolver = resolve))
 
         return this.#promise
     }
