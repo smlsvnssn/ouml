@@ -509,6 +509,15 @@ Shorthand for random integers between `min` and `max`-1. If `max` is omitted or 
 
 Returns random number from reasonably approximated normal distribution, centered around `mean`, with [more or less 68.2% of the sample set](https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule) within ± `sigma`. Values max out at a bit above ± 3 `sigma`, with extreme outliers up to about ± 4 `sigma`. There are [more mathematically accurate methods](https://observablehq.com/@d3/d3-random#normal) to do this, but this method is fast, and good enough for most people. Use it for fun and visuals, not for statistical analysis 🤓.
 
+#### ö.seededRandom( seed ) → Number
+
+Returns random number between 0 and 1 in a deterministic sequence based on `seed`. Nothing fancy, just a fast and simple PRNG (don't use it for crypto 🙀). Seeds are cached, so subsequent calls with the same seed generates the next value in the sequence. `seed` can be a number or a string. If called without seed, uses `Math.random()` instead.
+
+```js
+ö.seededRandom('hello') // returns 0.62696239259094
+ö.seededRandom('hello') // returns 0.7342567658051848
+```
+
 #### ö.round( n, precision? = 0 ) → Number
 
 Returns `n` rounded to `precision` decimals.

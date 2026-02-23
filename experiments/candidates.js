@@ -36,6 +36,8 @@ https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
 
 Math
   factorization?
+  √ seeded random
+ 
 */
 
 /*
@@ -66,8 +68,6 @@ Cubic, Quadratic
 
 // export const q = document.querySelector.bind(document);
 // export const qa = document.querySelectorAll.bind(document);
-
-
 
 const zigzag = (x, n, xn = Math.floor(x / n), p = Math.pow(-1, xn)) =>
     Math.round(n * (-(p / 2) + p * (x / n - xn) + 0.5))
@@ -241,3 +241,18 @@ let a = [
     transposedTwice => ö.equals(transposedTwice, a),
     ö.log,
 )
+
+ö.time(
+    () =>
+        ö.times(1000000, () =>
+            ö.seededRandom(
+                'kukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkuken',
+            ),
+        ),
+    'seeded',
+)
+ö.time(() => ö.times(1000000, () => Math.random()), 'vanilla')
+
+ö.log(ö.seededRandom('hello'))
+ö.log(ö.seededRandom('hello'))
+//ö.log(ö.seededRandom(123456789012345))

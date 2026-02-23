@@ -38,6 +38,40 @@ describe('ö.randomNormal', () => {
     })
 })
 
+describe('ö.seededRandom', () => {
+    it('should return deterministic random numbers between 0 and 1', () => {
+        let result = ö.times(10, () => ö.seededRandom('häst'))
+
+        expect(result.every(v => ö.between(v, 0, 1))).toBe(true)
+        expect(result).toEqual([
+            0.39482243568636477, 0.7763427223544568, 0.7718048873357475,
+            0.23658807016909122, 0.9967331448569894, 0.6269117034971714,
+            0.14642689237371087, 0.6860835158731788, 0.4166808028239757,
+            0.6465471903793514,
+        ])
+
+        let seedZero = [
+            0.26642920868471265, 0.0003297457005828619, 0.2232720274478197,
+            0.1462021479383111, 0.46732782293111086,
+        ]
+
+        result = ö.times(5, () => ö.seededRandom(0))
+
+        expect(result).toEqual(seedZero)
+
+        expect(ö.times(5, () => ö.seededRandom(0))).not.toEqual(seedZero)
+
+        expect(
+            ö.times(5, () => ö.seededRandom(1111111111111111111111)),
+        ).not.toEqual(seedZero)
+
+        // very large numbers (> 2**73 or whatever) breaks the seeds, but that's ok
+        expect(
+            ö.times(5, () => ö.seededRandom(11111111111111111111111)),
+        ).toEqual(seedZero)
+    })
+})
+
 describe('ö.round', () => {
     it('should return rounded numbers', () => {
         expect(ö.round(0.3 - 0.2, 5)).toBe(0.1)

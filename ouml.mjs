@@ -61,7 +61,7 @@ export const range = function* (start, end, step = 1) {
  */
 
 export const times = (times = 0, f = i => i, ...rest) =>
-    Array(Math.abs(times))
+    Array(Math.abs(Math.trunc(times)))
         .fill(0)
         .map((_, i) => f(i, ...rest))
 
@@ -504,6 +504,8 @@ export const mapToTree = (arr, idProp, parentProp = '') => {
                 idProp(v, i, arr) // Should return [ownKey, parentKey]
             :   [v[idProp], v?.[parentProp] ?? rootKey]
 
+        // Not in node yet:
+        // parents.getOrInsert(parentKey, [{ key, v }]).push({ key, v })
         if (parents.has(parentKey)) parents.get(parentKey).push({ key, v })
         else parents.set(parentKey, [{ key, v }])
     })
@@ -1022,6 +1024,38 @@ export const randomNormal = (mean = 0, sigma = 1) => {
 }
 
 /**
+ * SeededRandom - random number from seed.
+ * @param {number | string} seed
+ * @returns {number}
+ */
+
+const seenSeeds = new Set()
+let currentSeed = 0
+export const seededRandom = seed => {
+    if (isnt(seed)) return Math.random()
+
+    if (!seenSeeds.has(seed)) {
+        seenSeeds.add(seed)
+
+        if (isStr(seed))
+            seed = +[...seed].reduce(
+                (acc, v) => (acc * v.charCodeAt(0)) / 100,
+                1,
+            )
+
+        // apply some random weirdness
+        currentSeed =
+            ((seed < 1 ? 1 / seed : seed) * Math.PI ** 8) % 2 ** 32 >>> 0
+    }
+
+    // Mulberry32
+    let t = (currentSeed += 0x6d2b79f5)
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+}
+
+/**
  * Round - Returns `n` rounded to `precision` decimals.
  * @param {number} n
  * @param {number} [precision = 0]
@@ -1058,7 +1092,6 @@ export const clamp = (n, min, max) => {
 
     return Math.min(Math.max(n, min), max)
 }
-
 
 /**
  * CloseEnough - Checks if `a` is close enough to `b`, given `tolerance`.
@@ -1884,7 +1917,7 @@ export const message = s => `ö says: ${s}\n`
 // stuff
 export const toString = () => `Hello ö!`
 
-/** 
+/**
  * @param  {string} s
  * @returns {string}
  */
