@@ -111,6 +111,23 @@ describe('ö.clamp', () => {
     })
 })
 
+describe('ö.wrap', () => {
+    it('should wrap n around min & non inclusive max', () => {
+        expect(ö.wrap(0, -1, 1)).toBe(0)
+        expect(ö.wrap(0, 1, -1)).toBe(0)
+        expect(ö.wrap(1, 1, -1)).toBe(-1)
+        expect(ö.wrap(0.9999, 1, -1)).toBeCloseTo(1)
+        expect(ö.wrap(2, 1, -1)).toBe(0)
+        expect(ö.wrap(2.5, 1, -1)).toBe(0.5)
+        expect(ö.wrap(2.5, 0, -1)).toBe(-0.5)
+        expect(ö.wrap(Math.PI * 3, 0, Math.PI * 2)).toBe(Math.PI)
+        expect(ö.wrap(Math.PI * 3, -Math.PI, Math.PI)).toBe(-Math.PI)
+        expect(ö.wrap(Math.PI * 3 - 0.1, -Math.PI, Math.PI)).toBeCloseTo(
+            Math.PI - 0.1,
+        )
+    })
+})
+
 describe('ö.closeEnough', () => {
     it('should return true when a and b are equal within inclusive tolerance', () => {
         expect(ö.closeEnough(0, 1, 1)).toBe(true)

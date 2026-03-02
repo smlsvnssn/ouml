@@ -107,7 +107,7 @@ export const map = (iterable, f) => {
         : isMap(iterable) ? ([key, val]) => [key, val?.[f]]
         : v => v[f]
 
-    const getMap = iterable => Array.from(iterable).map(getMapper(f))
+    const getMap = iterable => Array.from(iterable, getMapper(f))
 
     if (!isIterable(iterable) && !isObj(iterable))
         error('Argument "iterable" must be an iterable or an object.')
@@ -131,7 +131,7 @@ export const map = (iterable, f) => {
 }
 
 /**
- * Unique - Returns an `Array` with unique entries.
+ * Unique - Returns an array with unique entries.
  * @param {Iterable<any>} iterable
  * @returns {any[]}
  */
@@ -139,7 +139,7 @@ export const map = (iterable, f) => {
 export const unique = iterable => [...new Set(iterable)]
 
 /**
- * Shuffle - Returns a new shuffled `Array`.
+ * Shuffle - Returns a new shuffled array.
  * @param {Iterable<any>} iterable
  * @returns {any[]}
  * @see https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
@@ -505,7 +505,7 @@ export const mapToTree = (arr, idProp, parentProp = '') => {
             :   [v[idProp], v?.[parentProp] ?? rootKey]
 
         // Not in node yet:
-        // parents.getOrInsert(parentKey, [{ key, v }]).push({ key, v })
+        // parents.getOrInsert(parentKey, []).push({ key, v })
         if (parents.has(parentKey)) parents.get(parentKey).push({ key, v })
         else parents.set(parentKey, [{ key, v }])
     })
@@ -1063,7 +1063,7 @@ export const seededRandom = seed => {
  */
 
 export const round = (n, precision = 0) =>
-    Math.round(n * 10 ** precision + Number.EPSILON) / 10 ** precision
+    Math.round(n * 10 ** precision) / 10 ** precision
 
 /**
  * Mod - Returns remainder of euclidian division. Wraps negative numbers.
@@ -1091,6 +1091,20 @@ export const clamp = (n, min, max) => {
     ;[min, max] = smallestFirst(min, max)
 
     return Math.min(Math.max(n, min), max)
+}
+
+/**
+ * Wrap - Wrap `n` around `min` and `max`.
+ * @param {number} n
+ * @param {number} min
+ * @param {number} max
+ * @returns {number}
+ */
+
+export const wrap = (n, min, max) => {
+    ;[min, max] = smallestFirst(min, max)
+
+    return mod(n - min, max - min) + min
 }
 
 /**

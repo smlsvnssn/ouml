@@ -514,8 +514,8 @@ Returns random number from reasonably approximated normal distribution, centered
 Returns random number between 0 and 1 in a deterministic sequence based on `seed`. Nothing fancy, just a fast and simple PRNG (don't use it for crypto 🙀). Seeds are cached, so subsequent calls with the same seed generates the next value in the sequence. `seed` can be a number or a string. If called without seed, uses `Math.random()` instead.
 
 ```js
-ö.seededRandom('hello') // returns 0.62696239259094
-ö.seededRandom('hello') // returns 0.7342567658051848
+ö.seededRandom('hello') // 0.62696239259094
+ö.seededRandom('hello') // 0.7342567658051848
 ```
 
 #### ö.round( n, precision? = 0 ) → Number
@@ -534,6 +534,10 @@ Returns remainder modulo `divisor`, for both positive and negative numbers. Retu
 #### ö.clamp( n, min, max ) → Number
 
 Clamps `n` between `min` and `max`.
+
+#### ö.wrap( n, min, max ) → Number
+
+Wraps `n` around between `min` and `max`, pac-man style.
 
 #### ö.closeEnough( a, b, tolerance? ) → Boolean
 
