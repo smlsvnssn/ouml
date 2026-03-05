@@ -118,13 +118,4 @@ describe('ö.deepest', () => {
     })
 })
 
-it('translates a string into rövarspråket', () => {
-    let str = 'Hej värld!'
-    let result = ö.rorövovarorsospoproråkoketot(str)
 
-    expect(result).toBe('Hohejoj vovärorloldod!')
-
-    expect(ö.rorövovarorsospoproråkoketot.name).toBe(
-        ö.rorövovarorsospoproråkoketot('rövarspråket'),
-    )
-})

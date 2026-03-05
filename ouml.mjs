@@ -1937,7 +1937,4 @@ export const toString = () => `Hello ö!`
  */
 
 export const rorövovarorsospoproråkoketot = s =>
-    (s || '').replace(
-        /[bcdfghjklmnpqrstvwxyz]/gi,
-        m => `${m}o${m.toLowerCase()}`,
-    )
+    s.replace(/[bcdfghjklmnpqrstvwxyz]/gi, m => `${m}o${m.toLowerCase()}`)

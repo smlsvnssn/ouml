@@ -164,7 +164,7 @@ class Spring {
      * @returns {Promise<string>}
      */
 
-    setTarget(target, prevValue = this.#currentValue) {
+    setTarget(target, prevValue = this.#prevValue ?? this.#currentValue) {
         this.#targetValue = this.#formatInput(target)
         this.#prevValue = this.#formatInput(prevValue)
 
