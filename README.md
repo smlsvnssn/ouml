@@ -799,6 +799,16 @@ Checks if `v` is a naked object, that is, has `null` as prototype.
 
 Checks for `[Symbol.iterator]` in `v`.
 
+### Environment
+
+#### ö.isBrowser() → Boolean
+
+Detects if we're running in a browser.
+
+#### ö.isServer() → Boolean
+
+Detects if we're running in a server environment.
+
 ### Type conversion
 
 #### ö.mapToObj( map ) → Object

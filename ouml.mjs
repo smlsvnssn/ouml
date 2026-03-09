@@ -1636,6 +1636,17 @@ export const isIterable = v =>
     v !== null && v[Symbol.iterator] instanceof Function
 
 /**
+ * Env
+ */
+
+export const isServer = () =>
+    typeof process !== 'undefined' &&
+    (is(process?.versions?.node) || is(process?.versions?.bun))
+
+export const isBrowser = () =>
+    typeof window !== 'undefined' && is(window?.document)
+
+/**
  * Type conversion
  */
 
