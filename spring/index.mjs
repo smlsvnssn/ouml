@@ -27,10 +27,10 @@ const springStep = (
     deltaTime = 1,
 ) => {
     let delta = target - value
-    let velocity = (value - prevValue) / (deltaTime || Number.EPSILON) // no / 0
+    let velocity = (value - prevValue) / deltaTime
     let spring = stiffness * delta
     let damp = damping * velocity
-    let acceleration = (spring - damp) * (1 / mass)
+    let acceleration = (spring - damp) / mass
     let d = (velocity + acceleration) * deltaTime
 
     return {
@@ -88,6 +88,10 @@ class Spring {
     #promise
     #resolver
 
+    #callbackWith(val) {
+        this.#callback(this.#isRawValue ? val.value : val, this)
+    }
+
     #formatInput(v) {
         if ((!isObj(v) && !isNum(v)) || !isAllNum(v))
             throw new TypeError(
@@ -104,11 +108,7 @@ class Spring {
 
     #reset() {
         // return exact target value on last call
-        this.#callback(
-            this.#isRawValue ? this.#targetValue.value : this.#targetValue,
-            this,
-        )
-
+        this.#callbackWith(this.#targetValue)
         this.#resolver(this.#targetValue)
 
         this.#prevTime =
@@ -139,10 +139,7 @@ class Spring {
 
         if (isSettled(state)) return this.#reset()
 
-        this.#callback(
-            this.#isRawValue ? this.#currentValue.value : this.#currentValue,
-            this,
-        )
+        this.#callbackWith(this.#currentValue)
 
         requestAnimationFrame(() => this.#animate())
     }

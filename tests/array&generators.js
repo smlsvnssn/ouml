@@ -228,6 +228,12 @@ describe('ö.sample', () => {
         expect(result).toEqual(undefined)
     })
 
+    it('should handle an array with one item', () => {
+        let result = ö.sample([1], 1)
+
+        expect(result).toEqual(1)
+    })
+
     it('should handle any iterable', () => {
         let result = ö.sample('000000')
 

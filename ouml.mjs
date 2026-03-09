@@ -139,26 +139,32 @@ export const map = (iterable, f) => {
 export const unique = iterable => [...new Set(iterable)]
 
 /**
- * Shuffle - Returns a new shuffled array.
- * @param {Iterable<any>} iterable
+ * Fisher-Yates, classic loop for perf
+ * @param {any[]} arr
+ * @param {number} n
  * @returns {any[]}
  * @see https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
  */
 
-export const shuffle = iterable => {
-    let arr = Array.from(iterable)
-
-    // classic loop for perf
-    for (let i = arr.length - 1; i > 0; i--) {
-        let j = random(i + 1)
-        ;[arr[j], arr[i]] = [arr[i], arr[j]]
+const shuffleArr = (arr, n = arr.length) => {
+    for (let i = 0; i < n - 2; i++) {
+        let j = random(i + 1, arr.length)
+        ;[arr[i], arr[j]] = [arr[j], arr[i]]
     }
 
-    return arr
+    return arr.slice(0, n)
 }
 
 /**
- * Sample - Returns random sample from `arr`, or an array of samples if `samples` is larger than one.
+ * Shuffle - Returns a new shuffled array.
+ * @param {Iterable<any>} iterable
+ * @returns {any[]}
+ */
+
+export const shuffle = iterable => shuffleArr(Array.from(iterable))
+
+/**
+ * Sample - Returns random sample from `iterable`, or an array of samples if `samples` is larger than one.
  * @param {Iterable<any>} iterable
  * @param {number} [samples = 1]
  * @returns {(* | any[])}
@@ -167,9 +173,7 @@ export const shuffle = iterable => {
 export const sample = (iterable, samples = 1) => {
     let arr = Array.from(iterable)
 
-    return samples == 1 ?
-            arr[random(arr.length)]
-        :   shuffle(arr).slice(0, samples) // since shuffle is fast, shuffle whole array before sampling, ez!
+    return samples == 1 ? arr[random(arr.length)] : shuffleArr(arr, samples)
 }
 
 /**

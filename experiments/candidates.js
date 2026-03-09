@@ -218,7 +218,7 @@ const map2 = (a, f, acc = [], i = 0) =>
 ö.time(() => ö.times(1000000))
 
 const times2 = (times, f = i => i, ...rest) =>
-    Array.from({ length: Math.abs(times) }, (v, i) => f(i, ...rest))
+    Array.from(Array(Math.abs(times)), (v, i) => f(i, ...rest))
 
 ö.time(() => times2(1000000))
 
@@ -242,15 +242,7 @@ let a = [
     ö.log,
 )
 
-ö.time(
-    () =>
-        ö.times(1000000, () =>
-            ö.seededRandom(
-                'kukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkukenkuken',
-            ),
-        ),
-    'seeded',
-)
+
 ö.time(() => ö.times(1000000, () => Math.random()), 'vanilla')
 
 ö.log(ö.seededRandom('hello'))
