@@ -262,3 +262,5 @@ let a = [
 ö.log(ö.seededRandom('hello'))
 ö.log(ö.seededRandom('hello'))
 //ö.log(ö.seededRandom(123456789012345))
+
+ö.log(ö.isNode(''))

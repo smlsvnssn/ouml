@@ -779,6 +779,8 @@ Less verbose than `typeof`/`Array.isArray`/`instanceof`:
 
 #### ö.isNode( v ) → Boolean
 
+Checks if `v` is a DOM node.
+
 #### ö.is( v ) / ö.isDefined( v ) → Boolean
 
 #### ö.isnt( v ) / ö.isUndefined( v ) → Boolean
@@ -803,11 +805,11 @@ Checks for `[Symbol.iterator]` in `v`.
 
 #### ö.isBrowser() → Boolean
 
-Detects if we're running in a browser.
+Detects if we're running in a browser, by checking for `window.document`.
 
 #### ö.isServer() → Boolean
 
-Detects if we're running in a server environment.
+Detects if we're running in a server environment, by checking for `process.versions`.
 
 ### Type conversion
 

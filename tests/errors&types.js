@@ -255,6 +255,15 @@ describe('type checking', () => {
     })
 })
 
+describe('environment predicates', () => {
+    it('should pass', () => {
+        expect(ö.isServer()).toBe(true)
+
+        // since jsDom is active
+        expect(ö.isBrowser()).toBe(true)
+    })
+})
+
 describe('type conversion', () => {
     it('should pass', () => {
         expect(ö.mapToObj(new Map())).toSatisfy(ö.isObj)

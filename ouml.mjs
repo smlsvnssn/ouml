@@ -1611,7 +1611,7 @@ export const isRegex = v => v instanceof RegExp
 export const isError = v =>
     Error.isError ? Error.isError(v) : v instanceof Error
 
-export const isNode = v => is(Node) && v instanceof Node
+export const isNode = v => typeof Node !== 'undefined' && v instanceof Node
 
 export const isObj = v =>
     typeof v == 'object' &&
@@ -1640,8 +1640,7 @@ export const isIterable = v =>
  */
 
 export const isServer = () =>
-    typeof process !== 'undefined' &&
-    (is(process?.versions?.node) || is(process?.versions?.bun))
+    typeof process !== 'undefined' && is(process?.versions)
 
 export const isBrowser = () =>
     typeof window !== 'undefined' && is(window?.document)
