@@ -823,15 +823,12 @@ export const isEqual = (a, b, deep = true) =>
 export const equals = isEqual
 
 /**
- * Clone - Performs deep cloning of most common types.
+ * Clone - Performs deep cloning of most types.
  * @param {*} v
  * @param {boolean} [deep]
  * @param {boolean} [immutable]
  * @returns {*}
  */
-
-// todo - option to handle circular?
-// use memoise?
 
 export const clone = (v, deep = true, immutable = false) => {
     const maybeClone = v => (deep ? traverse(v) : v)
@@ -842,39 +839,37 @@ export const clone = (v, deep = true, immutable = false) => {
     const traverse = v => {
         // Return primitives and functions as is.
         if (typeof v != 'object' || isNull(v)) return v
+        
+        // Node has its own clone method
+        if (isNode(v)) return v.cloneNode(deep)
 
         // Handle circular references
         if (seen.has(v)) return seen.get(v)
 
-        let cloned =
-            isNode(v) ?
-                v.cloneNode(deep) // Node has its own method
-                // try constructor w/o arguments
-            :   attempt(
-                    () => v.constructor(),
-                    () => Object.create(Reflect.getPrototypeOf(v)),
-                )
+        let cloned = attempt(
+            // try constructor w/o arguments
+            () => new v.constructor(),
+            // good enough :-)
+            () => Object.create(Reflect.getPrototypeOf(v)),
+        )
 
         seen.set(v, cloned)
 
         // use native methods to add members for some types
         if (isMap(v))
-            v.forEach(([key, val]) =>
+            v.forEach((val, key) =>
                 cloned.set(maybeClone(key), maybeClone(val)),
             )
         else if (isSet(v)) v.forEach(val => cloned.add(maybeClone(val)))
         else if (isDate(v)) cloned.setTime(v.getTime())
 
+        // all other objects, incl. arrays, add members via keys
         return maybeFreeze(
-            isNode(v) ? cloned
-                // all other objects, incl. arrays
-            : (
-                Object.assign(
-                    cloned,
-                    ...Object.keys(v).map(key => ({
-                        [key]: maybeClone(v[key]),
-                    })),
-                )
+            Object.assign(
+                cloned,
+                ...Object.keys(v).map(key => ({
+                    [key]: maybeClone(v[key]),
+                })),
             ),
         )
     }

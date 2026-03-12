@@ -46,6 +46,9 @@ describe('ö.clone', () => {
         [1, 2],
         [3, 4],
     ]
+    let map = new Map(arr)
+    let set = new Set(...arr)
+    let date = new Date()
 
     class Test {
         prop = true
@@ -61,6 +64,15 @@ describe('ö.clone', () => {
 
         expect(ö.clone(arr)).toStrictEqual(arr)
         expect(ö.clone(arr)).not.toBe(arr)
+
+        expect(ö.clone(map)).toStrictEqual(map)
+        expect(ö.clone(map)).not.toBe(map)
+
+        expect(ö.clone(set)).toStrictEqual(set)
+        expect(ö.clone(set)).not.toBe(set)
+
+        expect(ö.clone(date)).toStrictEqual(date)
+        expect(ö.clone(date)).not.toBe(date)
     })
 
     it('should preserve prototype', () => {
