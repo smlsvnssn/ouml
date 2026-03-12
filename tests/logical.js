@@ -91,13 +91,11 @@ describe('ö.clone', () => {
         expect(() => (imm.test = 0)).toThrow('object is not extensible')
     })
 
-    it('should break on circular references', () => {
+    it('should handle circular references', () => {
         let a = { b: 0 }
         a.b = a
 
-        expect(() => ö.clone(a, true, false, true)).toThrow(
-            'Maximum call stack size exceeded',
-        )
+        expect(ö.clone(a, true, false)).toStrictEqual(a)
     })
 })
 

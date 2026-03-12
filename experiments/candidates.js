@@ -256,11 +256,65 @@ let a = [
     ö.log,
 )
 
-
 ö.time(() => ö.times(1000000, () => Math.random()), 'vanilla')
 
 ö.log(ö.seededRandom('hello'))
 ö.log(ö.seededRandom('hello'))
 //ö.log(ö.seededRandom(123456789012345))
 
-ö.log(ö.isNode(''))
+let test = {
+    a: {
+        b: {
+            c: {
+                d: {
+                    e: ö.rangeArray(10),
+                },
+            },
+        },
+    },
+}
+//test.a.b.c.d.e = test
+
+let aa = { b: 0 }
+aa.b = aa
+
+let xx = []
+xx.push(xx)
+
+//ö.log(ö.clone(aa, true, false))
+
+function deepClone(obj, hash = new WeakMap()) {
+    // Do not try to clone primitives or functions
+    if (Object(obj) !== obj || obj instanceof Function) return obj
+    if (hash.has(obj)) return hash.get(obj) // Cyclic reference
+    try {
+        // Try to run constructor (without arguments, as we don't know them)
+        var result = new obj.constructor()
+    } catch (e) {
+        // Constructor failed, create object without running the constructor
+        result = Object.create(Object.getPrototypeOf(obj))
+    }
+    // Optional: support for some standard constructors (extend as desired)
+    if (obj instanceof Map)
+        Array.from(obj, ([key, val]) =>
+            result.set(deepClone(key, hash), deepClone(val, hash)),
+        )
+    else if (obj instanceof Set)
+        Array.from(obj, key => result.add(deepClone(key, hash)))
+    // Register in hash
+    hash.set(obj, result)
+    // Clone and assign enumerable own properties recursively
+    return Object.assign(
+        result,
+        ...Object.keys(obj).map(key => ({ [key]: deepClone(obj[key], hash) })),
+    )
+}
+
+ö.time(() => ö.times(100000, () => ö.clone(test)), 'ö.clone')
+ö.time(() => ö.times(100000, () => deepClone(test)), 'dclone')
+ö.time(() => ö.times(100000, () => structuredClone(test)), 'structuredClone')
+
+ö.log(deepClone(xx))
+ö.log(ö.clone(xx))
+
+//ö.time(() => ö.times(1000000, () => structuredClone(test)), 'structuredClone')

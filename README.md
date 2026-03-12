@@ -408,9 +408,9 @@ Checks equality by value rather than reference. Compares prototypes, and uses `R
 
 #### ö.clone( v, deep? = true, immutable? = false ) → cloned value
 
-Performs cloning of most common types, including `Array` and typed arrays, `Map`, `Set`, `Date`, `Node` and objects. Defaults to deep cloning, set `deep` to `false` for shallow cloning. Tries to preserve `prototype` when cloning objects, but may fail in untested edge cases. Set `preservePrototype` to false to disable this (this is somewhat faster). Does not clone functions, and doesn't handle circular references. Use with some caution 🤫.
+Performs cloning of most common types, including `Array` and typed arrays, `Map`, `Set`, `Date`, `Node` and objects. Defaults to deep cloning, set `deep` to `false` for shallow cloning. Tries to preserve `prototype` when cloning objects, but may fail in untested edge cases. Handles circular references. Does not clone functions. Use with some caution 🤫.
 
-The native `structuredClone` is probably slower (by alot!) in most cases, errors on functions, and doesn't preserve prototype, but it handles circular references. Choose wisely!
+The native `structuredClone` is slower for small stuctures, faster for big, but it errors on functions, and doesn't preserve prototype. Choose wisely!
 
 #### ö.immutable( v, deep? = true ) → immutable value
 

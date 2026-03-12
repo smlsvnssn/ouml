@@ -834,31 +834,52 @@ export const equals = isEqual
 // use memoise?
 
 export const clone = (v, deep = true, immutable = false) => {
-    const maybeClone = v => (deep ? clone(v, deep, immutable) : v)
+    const maybeClone = v => (deep ? traverse(v) : v)
     const maybeFreeze = v => (immutable ? Object.freeze(v) : v)
 
-    // Return primitives and functions as is.
-    // no cloning of functions, too gory. They are passed by reference instead
-    if (typeof v != 'object' || isNull(v)) return v
+    let seen = new WeakMap()
 
-    // catch arraylike
-    if ('map' in v && isFunc(v.map))
-        return maybeFreeze(v.map(i => maybeClone(i)))
+    const traverse = v => {
+        // Return primitives and functions as is.
+        if (typeof v != 'object' || isNull(v)) return v
 
-    if (isMap(v)) return maybeFreeze(new Map(maybeClone(Array.from(v))))
+        // Handle circular references
+        if (seen.has(v)) return seen.get(v)
 
-    if (isSet(v)) return maybeFreeze(new Set(maybeClone(Array.from(v))))
+        let cloned =
+            isNode(v) ?
+                v.cloneNode(deep) // Node has its own method
+                // try constructor w/o arguments
+            :   attempt(
+                    () => v.constructor(),
+                    () => Object.create(Reflect.getPrototypeOf(v)),
+                )
 
-    if (isDate(v)) return maybeFreeze(new Date().setTime(v.getTime()))
+        seen.set(v, cloned)
 
-    if (isNode(v)) return v.cloneNode(deep)
+        // use native methods to add members for some types
+        if (isMap(v))
+            v.forEach(([key, val]) =>
+                cloned.set(maybeClone(key), maybeClone(val)),
+            )
+        else if (isSet(v)) v.forEach(val => cloned.add(maybeClone(val)))
+        else if (isDate(v)) cloned.setTime(v.getTime())
 
-    let o = {}
-    for (let key of Reflect.ownKeys(v)) o[key] = maybeClone(v[key])
+        return maybeFreeze(
+            isNode(v) ? cloned
+                // all other objects, incl. arrays
+            : (
+                Object.assign(
+                    cloned,
+                    ...Object.keys(v).map(key => ({
+                        [key]: maybeClone(v[key]),
+                    })),
+                )
+            ),
+        )
+    }
 
-    return maybeFreeze(
-        Object.assign(Object.create(Reflect.getPrototypeOf(v)), o),
-    )
+    return traverse(v)
 }
 
 /**
@@ -1615,7 +1636,7 @@ export const isNode = v => typeof Node !== 'undefined' && v instanceof Node
 
 export const isObj = v =>
     typeof v == 'object' &&
-    v !== null &&
+    !isNull(v) &&
     !isArr(v) &&
     !isDate(v) &&
     !isMap(v) &&
