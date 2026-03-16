@@ -78,6 +78,7 @@ describe('ö.clone', () => {
     it('should preserve prototype', () => {
         expect(ö.clone(obj)).toBeInstanceOf(Object)
         expect(ö.clone(arr)).toBeInstanceOf(Array)
+        expect(ö.clone(new Int8Array())).toBeInstanceOf(Int8Array)
         expect(ö.clone(cl)).toBeInstanceOf(Test)
 
         expect(Object.getPrototypeOf(ö.clone(Object.create(null)))).toBe(null)

@@ -98,15 +98,22 @@ export const rangeArray = (start, end, step) => [...range(start, end, step)]
  * Map - Same as a normal map, except it accepts a `string` as a shorthand for retrieving values from an object property, if given an iterable that contains objects.
  * @param {Iterable<any> | Object} iterable
  * @param {(string | mapCB)} f
- * @returns {Iterable<any> | Object}
+ * @returns {Iterable<any> | Object | *}
  */
 
 export const map = (iterable, f) => {
+    /**
+     * @param {mapCB | string} f
+     * */
     const getMapper = f =>
         isFunc(f) ? f
+            // @ts-ignore
         : isMap(iterable) ? ([key, val]) => [key, val?.[f]]
-        : v => v[f]
+            // @ts-ignore
+        : v => v?.[f]
 
+    /** @param {Iterable<any>} iterable */
+    // @ts-ignore
     const getMap = iterable => Array.from(iterable, getMapper(f))
 
     if (!isIterable(iterable) && !isObj(iterable))
@@ -118,6 +125,7 @@ export const map = (iterable, f) => {
 
     if (isSet(iterable)) return new Set(getMap(iterable))
 
+    // @ts-ignore
     if (isFunc(iterable?.map)) return iterable.map(getMapper(f))
 
     if (isIterable(iterable)) return getMap(iterable) // Other iterables: Just convert to array
@@ -127,6 +135,7 @@ export const map = (iterable, f) => {
                 Object.create(Reflect.getPrototypeOf(iterable)),
                 Object.fromEntries(Object.entries(iterable).map(getMapper(f))),
             )
+            // @ts-ignore
         :   iterable?.[f]
 }
 
@@ -267,6 +276,10 @@ export const partition = (iterable, f) =>
         [[], []],
     )
 
+/**
+ * @param {any[][]} arr
+ * @returns {number}
+ */
 const minLen = arr => {
     let len = Math.min(...arr.map(v => v.length))
     return len == Infinity ? 0 : len
@@ -301,6 +314,11 @@ export const transpose = unzip
 export const combinations = (iterable = [], k) => {
     let arr = Array.from(iterable)
 
+    /**
+     * @param {any[]} current
+     * @param {number} n
+     * @param {any[]} out
+     */
     const traverse = (current, n, out) => {
         if (current.length == k) return out.push(current.slice())
 
@@ -317,6 +335,7 @@ export const combinations = (iterable = [], k) => {
             [],
         )
 
+    /** @type any[][] */
     let out = []
     traverse([], 0, out)
 
@@ -333,8 +352,18 @@ export const combinations = (iterable = [], k) => {
 export const permutations = (iterable = []) => {
     let arr = Array.from(iterable)
 
+    /**
+     * @param {any[]} arr
+     * @param {*} a
+     * @param {*} b
+     */
     const swap = (arr, a, b, ib = arr[b]) => ((arr[b] = arr[a]), (arr[a] = ib))
 
+    /**
+     * @param {number} n
+     * @param {any[]} arr
+     * @param {any[][]} out
+     */
     const traverse = (n, arr, out) => {
         if (n === 1) return out.push(arr.slice())
 
@@ -348,6 +377,7 @@ export const permutations = (iterable = []) => {
 
     if (!arr.length) return []
 
+    /** @type any[][] */
     let out = []
     traverse(arr.length, arr, out)
 
@@ -468,17 +498,19 @@ export const correlation = (a, b) =>
 
 /**
  * GroupBy - Returns a `Map` with keys corresponding to `prop` values.
- * @param {Iterable} iterable
+ * @param {Iterable<*>} iterable
  * @param {(string | mapCB)} prop
  * @param {boolean} [asObject = false]
- * @returns {Map<*, Array> | Object.<string, Array>}
+ * @returns {Map<*, any[]> | Object.<string, any[]>}
  */
 
 export const groupBy = (iterable, prop, asObject = false) =>
     // @ts-ignore
     (asObject ? Object : Map).groupBy(
         iterable,
-        isFunc(prop) ? prop : v => v[prop],
+        isFunc(prop) ? prop : (
+            /** @param {Object.<string, any[]>} v */ v => v[prop]
+        ),
     )
 
 /**
@@ -491,7 +523,7 @@ export const groupBy = (iterable, prop, asObject = false) =>
 
 /**
  * MapToTree - Maps a flat array of objects to a tree structure.
- * @param {Array<Object>} arr
+ * @param {Array<Object.<string, any[]>>} arr
  * @param {(string | idPropCB)} idProp
  * @param {string} [parentProp = '']
  * @returns {any[]}
@@ -499,6 +531,9 @@ export const groupBy = (iterable, prop, asObject = false) =>
 
 export const mapToTree = (arr, idProp, parentProp = '') => {
     // Gather all parents...
+    /**
+     * @type {Map<string | null, any[]>}
+     */
     let parents = new Map()
     let rootKey = null
 
@@ -510,11 +545,13 @@ export const mapToTree = (arr, idProp, parentProp = '') => {
 
         // Not in node yet:
         // parents.getOrInsert(parentKey, []).push({ key, v })
+        // @ts-ignore
         if (parents.has(parentKey)) parents.get(parentKey).push({ key, v })
         else parents.set(parentKey, [{ key, v }])
     })
 
     // ...and map them out.
+    /** @returns {*} */
     const traverse = (parentKey = rootKey) =>
         parents.get(parentKey)?.map(node => {
             // did you see the base case? Pretty small eh?
@@ -546,6 +583,11 @@ export const reduceDeep = (
     initial,
     flatten = false,
 ) => {
+    /**
+     * @param {any[]} a
+     * @param {*} acc
+     * @returns {*}
+     */
     const traverse = (a, acc, firstRun = false) =>
         a.reduce((acc, v, i) => {
             if (firstRun && isnt(acc)) acc = v
@@ -613,7 +655,7 @@ export const filterDeep = (arr, f, childrenProp, prop, flatten = true) =>
 
 /**
  * FindDeep - Same as `ö.filterDeep`, except it returns first match.
- * @param {Array<Object>} arr
+ * @param {Array<Object.<string, any[]>>} arr
  * @param {mapCB} f
  * @param {string} [childrenProp = 'children']
  * @param {string} [prop]
@@ -749,12 +791,13 @@ const d = new WeakMap()
 /**
  * Data - Associates `anyVal` with data via a `WeakMap`.
  * @param {Object | HTMLElement} obj
- * @param {(string | Object)} key
+ * @param {(string)} key
  * @param {*} value
  * @returns {Object.<string, *> | *}
  */
 
 export const data = (obj, key, value) => {
+    // @ts-ignore
     let thisData = d.has(obj) ? d.get(obj) : parseDOMStringMap(obj?.dataset)
 
     if (is(value) || isObj(key))
@@ -831,29 +874,38 @@ export const equals = isEqual
  */
 
 export const clone = (v, deep = true, immutable = false) => {
+    /** @param {*} v */
     const maybeClone = v => (deep ? traverse(v) : v)
+
+    /** @param {*} v */
     const maybeFreeze = v => (immutable ? Object.freeze(v) : v)
 
     let seen = new WeakMap()
-
-    const traverse = v => {
+    /**
+     *  @param {*} v
+     * @returns {*}
+     */
+    const traverse = (v, isnode = isNode(v)) => {
         // Return primitives and functions as is.
         if (typeof v != 'object' || isNull(v)) return v
-        
-        // Node has its own clone method
-        if (isNode(v)) return v.cloneNode(deep)
 
         // Handle circular references
         if (seen.has(v)) return seen.get(v)
 
-        let cloned = attempt(
-            // try constructor w/o arguments
-            () => new v.constructor(),
-            // good enough :-)
-            () => Object.create(Reflect.getPrototypeOf(v)),
-        )
+        let cloned =
+            isnode ?
+                // Node has its own clone method
+                v.cloneNode(deep)
+            :   attempt(
+                    // try constructor w/o arguments
+                    () => new v.constructor(),
+                    // good enough :-)
+                    () => Object.create(Reflect.getPrototypeOf(v)),
+                )
 
         seen.set(v, cloned)
+
+        if (isnode) return cloned
 
         // use native methods to add members for some types
         if (isMap(v))
@@ -863,7 +915,7 @@ export const clone = (v, deep = true, immutable = false) => {
         else if (isSet(v)) v.forEach(val => cloned.add(maybeClone(val)))
         else if (isDate(v)) cloned.setTime(v.getTime())
 
-        // all other objects, incl. arrays, add members via keys
+        // all objects, add members via keys
         return maybeFreeze(
             Object.assign(
                 cloned,
@@ -919,7 +971,7 @@ export const toPiped =
  * PipeAsync
  * @param {*} v
  * @param  {...function} funcs
- * @returns {Promise}
+ * @returns {Promise<*>}
  */
 
 export const pipeAsync = async (v, ...funcs) =>
@@ -928,7 +980,7 @@ export const pipeAsync = async (v, ...funcs) =>
 /**
  * ToPipedAsync
  * @param  {...function} funcs
- * @returns {(v: *) => Promise}
+ * @returns {(v: *) => Promise<*>}
  */
 
 export const toPipedAsync =
@@ -939,7 +991,7 @@ export const toPipedAsync =
 /**
  * Curry - Returns a curried version of `f`.
  * @param {function} f
- * @returns {(...args: *) => (function | *)}
+ * @returns {(...args: *) => ((...newArgs: *) => * | *)}
  */
 
 export const curry =
@@ -953,7 +1005,7 @@ export const curry =
  * Memoise - Creates and returns memoised functions.
  * @param {function} f
  * @param {(...args: *) => (string | number)} [keymaker]
- * @returns {function}
+ * @returns {(...args: *) => *}
  */
 
 export const memoise = (f, keymaker) => {
@@ -1043,14 +1095,13 @@ export const randomNormal = (mean = 0, sigma = 1) => {
     //              ^ hand made spread constant :-)
 }
 
+const seenSeeds = new Set()
+let currentSeed = 0
 /**
  * SeededRandom - random number from seed.
  * @param {number | string} seed
  * @returns {number}
  */
-
-const seenSeeds = new Set()
-let currentSeed = 0
 export const seededRandom = seed => {
     if (isnt(seed)) return Math.random()
 
@@ -1097,6 +1148,11 @@ export const mod = (n, divisor) => {
     return ((n % divisor) + divisor) % divisor
 }
 
+/**
+ * @param {number} min
+ * @param {number} max
+ * @returns {number[]}
+ */
 const smallestFirst = (min, max) => (min > max ? [max, min] : [min, max])
 
 /**
@@ -1369,7 +1425,11 @@ export const wrapFirstWords = (
             `${startWrap}$&${endWrap}`,
         )
 
-const isCssVar = s => s.match(/^\-\-/)
+/**
+ * @param {string} s
+ * @returns {boolean}
+ */
+const isCssVar = s => !!s.match(/^\-\-/)
 
 /**
  * ToCamelCase - Returns regular sentence, kebab-case or snake_case string converted to camelCase.
@@ -1475,7 +1535,11 @@ export const when = (bool, v, f) => (bool ? v : (f ?? ''))
  * Async
  */
 
-let timeout, rejectPrev
+/** @type {NodeJS.Timeout} */
+let timeout
+
+/** @type {function} */
+let rejectPrev
 
 /**
  * Wait - Waits `t` milliseconds.
@@ -1583,52 +1647,74 @@ export const load = async (
  * Basic type checking
  */
 
+/** @param {*} v */
 export const isBool = v => typeof v == 'boolean'
 
+/** @param {*} v */
 export const isNum = v => typeof v == 'number'
 
+/** @param {*} v */
 export const isInt = v => Number.isInteger(v)
 
+/** @param {*} v */
 export const isBigInt = v => typeof v == 'bigint'
 
+/** @param {*} v */
 export const isStr = v => typeof v == 'string'
 
+/** @param {*} v */
 export const isSym = v => typeof v == 'symbol'
 
+/** @param {*} v */
 export const isnt = v => typeof v == 'undefined'
 export const isUndefined = isnt
 
+/** @param {*} v */
 export const is = v => !isnt(v)
 export const isDefined = is
 
 /**
+ * @param {*} v
  * @returns {v is null}
  */
-
 export const isNull = v => v === null
 
+/** @param {*} v */
 export const isArr = v => Array.isArray(v)
 export const isArray = isArr
 
 /**
+ * @param {*} v
  * @returns {v is function}
  */
-
 export const isFunc = v => v instanceof Function
 
+/** @param {*} v */
 export const isDate = v => v instanceof Date
 
+/** @param {*} v */
 export const isMap = v => v instanceof Map
 
+/** @param {*} v */
 export const isSet = v => v instanceof Set
 
+/** @param {*} v */
 export const isRegex = v => v instanceof RegExp
 
+/**
+ * @param {*} v
+ * @returns {v is Error}
+ */
 export const isError = v =>
     Error.isError ? Error.isError(v) : v instanceof Error
 
+/**
+ * @param {*} v
+ * @returns {v is Node}
+ */
 export const isNode = v => typeof Node !== 'undefined' && v instanceof Node
 
+/** @param {*} v */
 export const isObj = v =>
     typeof v == 'object' &&
     !isNull(v) &&
@@ -1638,16 +1724,17 @@ export const isObj = v =>
     !isSet(v) &&
     !isRegex(v)
 
+/** @param {*} v */
 export const isPlainObj = v =>
     isObj(v) && Reflect.getPrototypeOf(v) === Object.prototype
 
+/** @param {*} v */
 export const isNakedObj = v => isObj(v) && Reflect.getPrototypeOf(v) === null
 
 /**
  * @param {*} v
  * @returns {v is Iterable<any>}
  */
-
 export const isIterable = v =>
     v !== null && v[Symbol.iterator] instanceof Function
 
@@ -1706,11 +1793,15 @@ export const strToNum = str =>
  */
 
 export const throttle = (f, t = 50, debounce = false, immediately = false) => {
+    /** @type {NodeJS.Timeout} */
     let timeout
+
+    /** @type {number} */
     let lastRan
     let running = false
 
     return function () {
+        // @ts-ignore
         let context = this,
             args = arguments
 
@@ -1756,6 +1847,7 @@ export const onAnimationFrame = f => {
     let timeout = 0
 
     return function () {
+        // @ts-ignore
         let context = this,
             args = arguments
 
@@ -1843,7 +1935,7 @@ export const setCss = (prop, v, selector = ':root') =>
 export const attempt = (f, handler = e => e, ...args) => {
     try {
         return f(...args)
-    } catch (e) {
+    } catch (/** @type {any} */ e) {
         return isFunc(handler) ? handler(e) : handler
     }
 }
@@ -1859,7 +1951,7 @@ export const attempt = (f, handler = e => e, ...args) => {
 export const attemptAsync = async (f, handler = e => e, ...args) => {
     try {
         return await f(...args)
-    } catch (e) {
+    } catch (/** @type {any} */ e) {
         return isFunc(handler) ? await handler(e) : handler
     }
 }
