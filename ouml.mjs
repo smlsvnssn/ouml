@@ -873,6 +873,7 @@ export const equals = isEqual
  * @returns {*}
  */
 
+// TODO: Remove support for node and typed arrays? Too many checks, potentially slow. Measure. (No biggie, a few percent)
 export const clone = (v, deep = true, immutable = false) => {
     /** @param {*} v */
     const maybeClone = v => (deep ? traverse(v) : v)
@@ -897,8 +898,8 @@ export const clone = (v, deep = true, immutable = false) => {
                 // Node has its own clone method
                 v.cloneNode(deep)
             :   attempt(
-                    // try constructor w/o arguments
-                    () => new v.constructor(),
+                    // try constructor w/o arguments, except for typed arrays
+                    () => new v.constructor(isTypedArr(v) ? v : undefined),
                     // good enough :-)
                     () => Object.create(Reflect.getPrototypeOf(v)),
                 )
@@ -1095,32 +1096,37 @@ export const randomNormal = (mean = 0, sigma = 1) => {
     //              ^ hand made spread constant :-)
 }
 
-const seenSeeds = new Set()
-let currentSeed = 0
+
+const seenSeeds = new Map()
+
 /**
  * SeededRandom - random number from seed.
  * @param {number | string} seed
  * @returns {number}
  */
 export const seededRandom = seed => {
+    /** @param {number | string} seed */
+    const formatSeed = seed => {
+        seed =
+            isStr(seed) ?
+                +[...seed].reduce((acc, v) => (acc * v.charCodeAt(0)) / 100, 1)
+            :   seed
+
+        // apply some random weirdness
+        return {
+            currentSeed:
+                ((seed < 1 ? 1 / seed : seed) * Math.PI ** 8) % 2 ** 32 >>> 0,
+        }
+    }
+
     if (isnt(seed)) return Math.random()
 
     if (!seenSeeds.has(seed)) {
-        seenSeeds.add(seed)
-
-        if (isStr(seed))
-            seed = +[...seed].reduce(
-                (acc, v) => (acc * v.charCodeAt(0)) / 100,
-                1,
-            )
-
-        // apply some random weirdness
-        currentSeed =
-            ((seed < 1 ? 1 / seed : seed) * Math.PI ** 8) % 2 ** 32 >>> 0
+        seenSeeds.set(seed, formatSeed(seed))
     }
 
     // Mulberry32
-    let t = (currentSeed += 0x6d2b79f5)
+    let t = (seenSeeds.get(seed).currentSeed += 0x6d2b79f5)
     t = Math.imul(t ^ (t >>> 15), t | 1)
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296
@@ -1683,10 +1689,15 @@ export const isNull = v => v === null
 export const isArr = v => Array.isArray(v)
 export const isArray = isArr
 
+/** @param {*} v */
+// thx es-toolkit, nice solution
+export const isTypedArr = v => ArrayBuffer.isView(v) && !(v instanceof DataView)
+
 /**
  * @param {*} v
  * @returns {v is function}
  */
+//export const isFunc = v => typeof v == 'function' tomäjto tomato?
 export const isFunc = v => v instanceof Function
 
 /** @param {*} v */
@@ -1705,8 +1716,7 @@ export const isRegex = v => v instanceof RegExp
  * @param {*} v
  * @returns {v is Error}
  */
-export const isError = v =>
-    Error.isError ? Error.isError(v) : v instanceof Error
+export const isError = v => Error.isError?.(v) ?? v instanceof Error
 
 /**
  * @param {*} v
@@ -1773,8 +1783,8 @@ export const objToMap = obj => new Map(Object.entries(obj))
 
 export const strToNum = str =>
     parseFloat(
-        str
-            .replace(/[^\d-+.,eE]/g, '')
+        (str.match(/[\d-+.,eE]|Infinity/g) ?? [])
+            .join('')
             .replace(/^[eE]*/, '')
             .replace(',', '.'),
     )
@@ -1797,7 +1807,7 @@ export const throttle = (f, t = 50, debounce = false, immediately = false) => {
     let timeout
 
     /** @type {number} */
-    let lastRan
+    let prevTime
     let running = false
 
     return function () {
@@ -1805,23 +1815,26 @@ export const throttle = (f, t = 50, debounce = false, immediately = false) => {
         let context = this,
             args = arguments
 
-        if (!lastRan || (debounce && !running)) {
+        const onTimeout = () => {
+            if (Date.now() - prevTime >= t) {
+                f.apply(context, args)
+                prevTime = Date.now()
+                running = false
+            }
+        }
+
+        if (!prevTime || (debounce && !running)) {
             // first run or debounce rerun
             if (!debounce || immediately) f.apply(context, args)
-            lastRan = Date.now()
+            prevTime = Date.now()
         } else {
             clearTimeout(timeout)
             timeout = setTimeout(
-                () => {
-                    if (Date.now() - lastRan >= t) {
-                        f.apply(context, args)
-                        lastRan = Date.now()
-                        running = false
-                    }
-                },
-                debounce ? t : t - (Date.now() - lastRan),
+                onTimeout,
+                debounce ? t : t - (Date.now() - prevTime),
             )
         }
+
         running = true
     }
 }

@@ -821,7 +821,7 @@ Any iterable except strings work, but produce arraylike objects without a `lengt
 
 #### ö.strToNum( str ) → Number
 
-A slightly more competent `parseFloat`. Handles spaces, commas, and the like. Returns `NaN` for `+/-Infinity`, though. Feed it for example "Debt: -1 035,50$", and it returns `-1035.5`.
+A slightly more competent `parseFloat`. Handles spaces, commas, and the like. Feed it for example "Debt: -1 035,50$", and it returns `-1035.5`.
 
 ### DOM and browser
 

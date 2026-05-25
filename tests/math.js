@@ -70,6 +70,7 @@ describe('ö.seededRandom', () => {
             ö.times(5, () => ö.seededRandom(11111111111111111111111)),
         ).toEqual(seedZero)
     })
+
 })
 
 describe('ö.round', () => {

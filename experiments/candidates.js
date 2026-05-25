@@ -267,7 +267,7 @@ let test = {
         b: {
             c: {
                 d: {
-                    e: new Date(),
+                    e: [1,2,3],
                 },
             },
         },
@@ -275,7 +275,7 @@ let test = {
 }
 //test.a.b.c.d.e = test
 
-let aa = { b: 0 }
+let aa = { b: test }
 aa.b = aa
 
 let xx = []
@@ -283,8 +283,11 @@ xx.push(xx)
 
 //ö.log(ö.clone(aa, true, false))
 
+
+
 ö.time(() => ö.times(100000, () => ö.clone(test)), 'ö.clone')
-ö.time(() => ö.times(100000, () => structuredClone(test)), 'structuredClone')
+ö.time(() => ö.times(100000, () => clone2(test)), 'ö.clone2')
+//ö.time(() => ö.times(100000, () => structuredClone(test)), 'structuredClone')
 
 ö.log(JSON.stringify(ö.clone(test)))
 
