@@ -1096,7 +1096,6 @@ export const randomNormal = (mean = 0, sigma = 1) => {
     //              ^ hand made spread constant :-)
 }
 
-
 const seenSeeds = new Map()
 
 /**
@@ -1109,13 +1108,18 @@ export const seededRandom = seed => {
     const formatSeed = seed => {
         seed =
             isStr(seed) ?
-                +[...seed].reduce((acc, v) => (acc * v.charCodeAt(0)) / 100, 1)
+                +[...seed].reduce(
+                    (acc, v) => ((acc * v.charCodeAt(0)) / 100) % 2 ** 32,
+                    1,
+                )
             :   seed
 
-        // apply some random weirdness
+        // apply some random normalisation weirdness
         return {
             currentSeed:
-                ((seed < 1 ? 1 / seed : seed) * Math.PI ** 8) % 2 ** 32 >>> 0,
+                ((seed < 1 && seed > -1 ? 1 / seed : seed) * Math.PI ** 8) %
+                    2 ** 32 >>>
+                0,
         }
     }
 
