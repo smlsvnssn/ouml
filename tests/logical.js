@@ -49,18 +49,32 @@ describe('ö.clone', () => {
     let map = new Map(arr)
     let set = new Set(...arr)
     let date = new Date()
+    let typedArr = new Int8Array([1, 2, 3])
 
     class Test {
         prop = true
     }
 
+    class TestPrivates {
+        prop = true
+        #prop = true
+    }
+
     let cl = new Test()
+    let clp = new TestPrivates()
 
     it('should clone', () => {
         expect(ö.clone(1)).toBe(1)
 
         expect(ö.clone(obj)).toStrictEqual(obj)
         expect(ö.clone(obj)).not.toBe(obj)
+
+        expect(ö.clone(cl)).toStrictEqual(cl)
+        expect(ö.clone(cl)).not.toBe(cl)
+
+        // TODO: look into
+        expect(ö.clone(clp)).toStrictEqual(clp)
+        expect(ö.clone(clp)).not.toBe(clp)
 
         expect(ö.clone(arr)).toStrictEqual(arr)
         expect(ö.clone(arr)).not.toBe(arr)
@@ -73,6 +87,9 @@ describe('ö.clone', () => {
 
         expect(ö.clone(date)).toStrictEqual(date)
         expect(ö.clone(date)).not.toBe(date)
+
+        expect(ö.clone(typedArr)).toStrictEqual(typedArr)
+        expect(ö.clone(typedArr)).not.toBe(typedArr)
     })
 
     it('should preserve prototype', () => {

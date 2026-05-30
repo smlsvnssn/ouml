@@ -47,6 +47,8 @@ const isAllNum = input => everyInObj(input, isNum)
 
 const baseFR = 60
 const lowestFR = 15
+
+// TODO: Test this. Something's off. Slower animation on screen with lower framerate.
 // deltaTime as ratio of base framerate
 const getDeltaTime = (now, pt) => {
     let mspt = now - pt || 1000 / baseFR
@@ -54,14 +56,12 @@ const getDeltaTime = (now, pt) => {
     return (mspt * baseFR) / 1000 || 1
 }
 
-const validateSettings = settings => ({
+const validateSettings = s => ({
     ...defaultSettings,
-    ...settings,
-    ...(is(settings.stiffness) ?
-        { stiffness: clamp(settings.stiffness, 0, 1) }
-    :   {}),
-    ...(is(settings.damping) ? { damping: clamp(settings.damping, 0, 1) } : {}),
-    ...(is(settings.mass) ? { mass: clamp(settings.mass, 0.1, 1000) } : {}),
+    ...s,
+    ...(is(s.stiffness) ? { stiffness: clamp(s.stiffness, 0, 1) } : {}),
+    ...(is(s.damping) ? { damping: clamp(s.damping, 0, 1) } : {}),
+    ...(is(s.mass) ? { mass: clamp(s.mass, 0.1, 1000) } : {}),
 })
 
 class Spring {

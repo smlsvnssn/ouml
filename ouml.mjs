@@ -873,6 +873,7 @@ export const equals = isEqual
  * @returns {*}
  */
 
+// TODO: Remove support for node and typed arrays? Too many checks, potentially slow. Measure. (No biggie, a few percent)
 export const clone = (v, deep = true, immutable = false) => {
     /** @param {*} v */
     const maybeClone = v => (deep ? traverse(v) : v)
@@ -897,8 +898,8 @@ export const clone = (v, deep = true, immutable = false) => {
                 // Node has its own clone method
                 v.cloneNode(deep)
             :   attempt(
-                    // try constructor w/o arguments
-                    () => new v.constructor(),
+                    // try constructor w/o arguments, except for typed arrays
+                    () => new v.constructor(isTypedArr(v) ? v : undefined),
                     // good enough :-)
                     () => Object.create(Reflect.getPrototypeOf(v)),
                 )
@@ -1095,6 +1096,8 @@ export const randomNormal = (mean = 0, sigma = 1) => {
     //              ^ hand made spread constant :-)
 }
 
+// BUG, uses same currentseed for all seeds.
+// Todo: Move currentseed into a property of seen seed
 const seenSeeds = new Set()
 let currentSeed = 0
 /**
@@ -1683,10 +1686,15 @@ export const isNull = v => v === null
 export const isArr = v => Array.isArray(v)
 export const isArray = isArr
 
+/** @param {*} v */
+// thx es-toolkit, nice solution
+export const isTypedArr = v => ArrayBuffer.isView(v) && !(v instanceof DataView)
+
 /**
  * @param {*} v
  * @returns {v is function}
  */
+//export const isFunc = v => typeof v == 'function' tomäjto tomato?
 export const isFunc = v => v instanceof Function
 
 /** @param {*} v */
@@ -1705,8 +1713,7 @@ export const isRegex = v => v instanceof RegExp
  * @param {*} v
  * @returns {v is Error}
  */
-export const isError = v =>
-    Error.isError ? Error.isError(v) : v instanceof Error
+export const isError = v => Error.isError?.(v) ?? v instanceof Error
 
 /**
  * @param {*} v
@@ -1773,8 +1780,8 @@ export const objToMap = obj => new Map(Object.entries(obj))
 
 export const strToNum = str =>
     parseFloat(
-        str
-            .replace(/[^\d-+.,eE]/g, '')
+        (str.match(/[\d-+.,eE]|Infinity/g) ?? [])
+            .join('')
             .replace(/^[eE]*/, '')
             .replace(',', '.'),
     )
@@ -1797,7 +1804,7 @@ export const throttle = (f, t = 50, debounce = false, immediately = false) => {
     let timeout
 
     /** @type {number} */
-    let lastRan
+    let prevTime
     let running = false
 
     return function () {
@@ -1805,23 +1812,26 @@ export const throttle = (f, t = 50, debounce = false, immediately = false) => {
         let context = this,
             args = arguments
 
-        if (!lastRan || (debounce && !running)) {
+        const onTimeout = () => {
+            if (Date.now() - prevTime >= t) {
+                f.apply(context, args)
+                prevTime = Date.now()
+                running = false
+            }
+        }
+
+        if (!prevTime || (debounce && !running)) {
             // first run or debounce rerun
             if (!debounce || immediately) f.apply(context, args)
-            lastRan = Date.now()
+            prevTime = Date.now()
         } else {
             clearTimeout(timeout)
             timeout = setTimeout(
-                () => {
-                    if (Date.now() - lastRan >= t) {
-                        f.apply(context, args)
-                        lastRan = Date.now()
-                        running = false
-                    }
-                },
-                debounce ? t : t - (Date.now() - lastRan),
+                onTimeout,
+                debounce ? t : t - (Date.now() - prevTime),
             )
         }
+
         running = true
     }
 }
