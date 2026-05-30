@@ -71,10 +71,6 @@ describe('ö.seededRandom', () => {
         ).toEqual(seedZero)
     })
 
-    it('should handle several seeds', () => {
-        const result = value
-        expect(result).toBe(value)
-    })
 })
 
 describe('ö.round', () => {

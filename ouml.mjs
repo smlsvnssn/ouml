@@ -874,6 +874,7 @@ export const equals = isEqual
  */
 
 // TODO: Remove support for node and typed arrays? Too many checks, potentially slow. Measure. (No biggie, a few percent)
+// TODO: Remove support for node and typed arrays? Too many checks, potentially slow. Measure. (No biggie, a few percent)
 export const clone = (v, deep = true, immutable = false) => {
     /** @param {*} v */
     const maybeClone = v => (deep ? traverse(v) : v)
@@ -1096,34 +1097,41 @@ export const randomNormal = (mean = 0, sigma = 1) => {
     //              ^ hand made spread constant :-)
 }
 
-// BUG, uses same currentseed for all seeds.
-// Todo: Move currentseed into a property of seen seed
-const seenSeeds = new Set()
-let currentSeed = 0
+const seenSeeds = new Map()
+
 /**
  * SeededRandom - random number from seed.
  * @param {number | string} seed
  * @returns {number}
  */
 export const seededRandom = seed => {
+    /** @param {number | string} seed */
+    const formatSeed = seed => {
+        seed =
+            isStr(seed) ?
+                +[...seed].reduce(
+                    (acc, v) => ((acc * v.charCodeAt(0)) / 100) % 2 ** 32,
+                    1,
+                )
+            :   seed
+
+        // apply some random normalisation weirdness
+        return {
+            currentSeed:
+                ((seed < 1 && seed > -1 ? 1 / seed : seed) * Math.PI ** 8) %
+                    2 ** 32 >>>
+                0,
+        }
+    }
+
     if (isnt(seed)) return Math.random()
 
     if (!seenSeeds.has(seed)) {
-        seenSeeds.add(seed)
-
-        if (isStr(seed))
-            seed = +[...seed].reduce(
-                (acc, v) => (acc * v.charCodeAt(0)) / 100,
-                1,
-            )
-
-        // apply some random weirdness
-        currentSeed =
-            ((seed < 1 ? 1 / seed : seed) * Math.PI ** 8) % 2 ** 32 >>> 0
+        seenSeeds.set(seed, formatSeed(seed))
     }
 
     // Mulberry32
-    let t = (currentSeed += 0x6d2b79f5)
+    let t = (seenSeeds.get(seed).currentSeed += 0x6d2b79f5)
     t = Math.imul(t ^ (t >>> 15), t | 1)
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296
