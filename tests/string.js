@@ -91,8 +91,16 @@ describe('ö.capitalise', () => {
 
 describe('ö.randomChars', () => {
     it('should return a random string of length numChars', () => {
+        let biggie = ö.randomChars(10000)
         expect(ö.randomChars(10)).toHaveLength(10)
         expect(ö.randomChars(100)).toHaveLength(100)
+        expect(ö.randomChars(50)).toHaveLength(50)
+        expect(biggie).toHaveLength(10000)
+
+        biggie = biggie.split('')
+
+        expect(biggie).toContain('z')
+        expect(biggie).toContain('0')
     })
 })
 

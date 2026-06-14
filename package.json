@@ -24,17 +24,17 @@
     },
     "scripts": {
         "dev": "vite",
-        "test": "vitest --disable-console-intercept",
+        "test": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' vitest --disable-console-intercept",
         "coverage": "vitest run --coverage"
     },
     "devDependencies": {
         "@types/node": "^16.18.126",
         "@vitest/coverage-c8": "^0.33.0",
         "@vitest/coverage-v8": "^2.1.9",
-        "jsdom": "^25.0.1",
+        "jsdom": "latest",
         "prettier": "^3.5.3",
         "typescript": "^5.8.2",
-        "vite": "^3.2.11",
+        "vite": "latest",
         "vitest": "^3.0.9"
     },
     "repository": {
@@ -49,5 +49,8 @@
     "bugs": {
         "url": "https://github.com/smlsvnssn/ouml/issues"
     },
-    "homepage": "https://ouml.vercel.app/"
+    "homepage": "https://ouml.vercel.app/",
+    "dependencies": {
+        "happy-dom": "^20.9.0"
+    }
 }

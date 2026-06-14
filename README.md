@@ -641,7 +641,7 @@ Returns a range of characters (including end). Takes either string in format "a-
 
 #### ö.randomChars( numChars? = 10 ) → String
 
-Returns `numChars` random characters. Max for `numChars` is 100. Useful for producing unique values (Or, to be precise, with a 1/426 825 223 812 027 400 796 974 891 518 773 732 340 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 chance of being a dupe 🤯).
+Returns `numChars` random characters, in base 36 format.
 
 #### ö.stripTags( str ) → String
 
@@ -821,7 +821,7 @@ Any iterable except strings work, but produce arraylike objects without a `lengt
 
 #### ö.strToNum( str ) → Number
 
-A slightly more competent `parseFloat`. Handles spaces, commas, and the like. Feed it for example "Debt: -1 035,50$", and it returns `-1035.5`.
+A slightly more competent `parseFloat`. Handles spaces, commas, and the like. Feed it for example "Debt: -1 035,50$", and it returns `-1035.5`. Works with formatted numbers using spaces or underscores as delimiters. Comma or dot as delimiter uses the first comma or dot as radix, which wight not be what you want.
 
 ### DOM and browser
 

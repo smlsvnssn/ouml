@@ -156,7 +156,7 @@ export const unique = iterable => [...new Set(iterable)]
  */
 
 const shuffleArr = (arr, n = arr.length) => {
-    for (let i = 0; i < n - 2; i++) {
+    for (let i = 0; i < n - 1; i++) {
         let j = random(i + 1, arr.length)
         ;[arr[i], arr[j]] = [arr[j], arr[i]]
     }
@@ -223,7 +223,7 @@ export const chunk = (iterable, chunkSize = 1) => {
 const getSplitIndex = (arr, index) => {
     if (!isFunc(index)) return index
     for (let [i, v] of arr.entries()) if (!index(v, i, arr)) return i
-    return arr.length - 1 // defaults to returning whole array
+    return arr.length // defaults to returning whole array
 }
 
 /**
@@ -399,7 +399,10 @@ export const sum = iterable =>
  * @returns {number}
  */
 
-export const mean = iterable => sum(iterable) / Array.from(iterable).length
+export const mean = iterable => {
+    let arr = Array.from(iterable)
+    return sum(arr) / arr.length
+}
 
 /**
  * Product - Returns product of `arr`, with `Number` coercion.
@@ -416,8 +419,10 @@ export const product = iterable =>
  * @returns {number}
  */
 
-export const geometricMean = iterable =>
-    nthRoot(product(iterable), Array.from(iterable).length)
+export const geometricMean = iterable => {
+    let arr = Array.from(iterable)
+    return nthRoot(product(arr), arr.length)
+}
 
 /**
  * Median - Calculates median value of `arr`, with `Number` coercion.
@@ -429,7 +434,9 @@ export const median = iterable => {
     let arr = Array.from(iterable).sort((a, b) => Number(a) - Number(b))
     let m = Math.floor(arr.length / 2)
 
-    return m % 2 ? Number(arr[m]) : (Number(arr[m - 1]) + Number(arr[m])) / 2
+    return arr.length % 2 ?
+            Number(arr[m])
+        :   (Number(arr[m - 1]) + Number(arr[m])) / 2
 }
 
 /**
@@ -616,7 +623,8 @@ export const mapDeep = (arr, f, childrenProp, flatten = false) =>
     reduceDeep(
         arr,
         (acc, v, i) => (
-            isFunc(f) ? acc.push(f(v, i, arr)) : acc.push(v[f]), acc
+            isFunc(f) ? acc.push(f(v, i, arr)) : acc.push(v[f]),
+            acc
         ),
         childrenProp,
         [],
@@ -1118,8 +1126,8 @@ export const seededRandom = seed => {
         // apply some random normalisation weirdness
         return {
             currentSeed:
-                ((seed < 1 && seed > -1 ? 1 / seed : seed) * Math.PI ** 8) %
-                    2 ** 32 >>>
+                (((seed < 1 && seed > -1 ? 1 / seed : seed) * Math.PI ** 8) %
+                    2 ** 32) >>>
                 0,
         }
     }
@@ -1490,7 +1498,7 @@ export const delatinize = delatinise
  * @returns {string}
  */
 
-export const capitalise = s => s[0].toUpperCase() + s.slice(1)
+export const capitalise = s => s && s[0].toUpperCase() + s.slice(1)
 export const capitalize = capitalise
 
 /**
@@ -1520,9 +1528,7 @@ export const charRange = (start, end = start) => {
  */
 
 export const randomChars = (numChars = 10) =>
-    (BigInt(Math.random() * 2 ** 512) * BigInt(Math.random() * 2 ** 512))
-        .toString(36)
-        .substring(0, numChars)
+    times(numChars, () => random(36).toString(36)).join('')
 
 /**
  * StripTags - Strips HTML tags.
@@ -1559,6 +1565,8 @@ let rejectPrev
  * @param {boolean} [resetPrevCall = false]
  * @returns {Promise<any>}
  */
+
+// TODO wait uses module-level timeout and rejectPrev variables, so multiple concurrent wait calls with resetPrevCall will interfere with each other.
 
 export const wait = async (t = 1, f, resetPrevCall = false) => {
     // callback is optional
@@ -1649,7 +1657,7 @@ export const load = async (
     attemptAsync(
         async () => {
             let response = await fetch(url, settings)
-            return (await isJSON) ? response.json() : response.text()
+            return isJSON ? response.json() : response.text()
         },
         e => (error(e), errorMessage ?? e),
     )
@@ -1750,8 +1758,7 @@ export const isNakedObj = v => isObj(v) && Reflect.getPrototypeOf(v) === null
  * @param {*} v
  * @returns {v is Iterable<any>}
  */
-export const isIterable = v =>
-    v !== null && v[Symbol.iterator] instanceof Function
+export const isIterable = v => !!(v?.[Symbol.iterator] instanceof Function)
 
 /**
  * Env
@@ -1885,7 +1892,9 @@ export const onAnimationFrame = f => {
  */
 
 export const getLocal = item => {
-    let i = sessionStorage.getItem(item) ?? localStorage.getItem(item)
+    let i =
+        globalThis.sessionStorage.getItem(item) ??
+        globalThis.localStorage.getItem(item)
     return i && JSON.parse(i)
 }
 
@@ -1899,7 +1908,11 @@ export const getLocal = item => {
  */
 
 export const setLocal = (item, v, expire = false) => (
-    (expire ? sessionStorage : localStorage).setItem(item, JSON.stringify(v)), v
+    (expire ? globalThis.sessionStorage : globalThis.localStorage).setItem(
+        item,
+        JSON.stringify(v),
+    ),
+    v
 )
 
 /**
@@ -1933,10 +1946,8 @@ export const getCss = (prop, selector = ':root') => {
  */
 
 export const setCss = (prop, v, selector = ':root') =>
-    (
-        // @ts-ignore
-        document.querySelector(selector)?.style.setProperty(prop, v), v
-    )
+    // @ts-ignore
+    (document.querySelector(selector)?.style.setProperty(prop, v), v)
 
 /**
  * Errors and logging

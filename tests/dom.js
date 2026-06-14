@@ -1,11 +1,42 @@
-import { describe, expect, it } from 'vitest'
+import { describe, test, beforeAll, expect, it } from 'vitest'
 import * as ö from '../ouml.mjs'
+
+// mock for localstorage, since someting breaks in node experimental storage
+const store = {
+    local: {},
+    session: {},
+}
+const storage = type => ({
+    getItem: key => store[type][key] ?? null,
+    setItem: (key, value) => {
+        store[type][key] = String(value)
+    },
+    removeItem: key => {
+        delete store[type][key]
+    },
+    clear: () => {
+        Object.keys(store[type]).forEach(k => delete store[type][k])
+    },
+    get length() {
+        return Object.keys(store[type]).length
+    },
+    key: i => Object.keys(store[type])[i] ?? null,
+})
+
+globalThis.localStorage = storage('local')
+globalThis.sessionStorage = storage('session')
+
+test('jsdom is active', () => {
+    console.log('env:', typeof window, typeof localStorage)
+    expect(window).toBeDefined()
+    expect(localStorage).toBeDefined()
+})
 
 describe('ö.getLocal, ö.setLocal', () => {
     it('gets/sets values in localStorage', () => {
         let key = 'test'
         let testObj = { a: 1, b: 2 }
-
+        ö.log(sessionStorage)
         expect(ö.getLocal(key)).toBe(null)
         expect(ö.setLocal(key, testObj)).toBe(testObj)
 
@@ -50,7 +81,7 @@ describe('ö.getCss, ö.setCss', () => {
 
         document.querySelector(':root')?.style.setProperty(key, '0')
 
-        expect(ö.getCss(key)).toBe('0') 
+        expect(ö.getCss(key)).toBe('0')
         expect(ö.setCss(key, testValue)).toBe(testValue)
 
         expect(ö.getCss(key)).toEqual(testValue)
@@ -117,5 +148,3 @@ describe('ö.deepest', () => {
         expect(child.innerHTML).toEqual('Bye')
     })
 })
-
-
