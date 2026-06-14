@@ -229,19 +229,22 @@ const map2 = (a, f, acc = [], i = 0) =>
 //     (i) => ++i,
 // )
 
-ö.time(() => ö.times(1000000))
+ö.time(() => ö.times(1000000), 'ö.times')
 
-const times2 = (times, f = i => i, ...rest) =>
-    Array.from(Array(Math.abs(times)), (v, i) => f(i, ...rest))
+const times2 = (times, f = i => i) =>
+    Array.from(Array(Math.abs(times)), (v, i) => f(i))
 
-ö.time(() => times2(1000000))
+ö.time(() => times2(1000000), 'array.from')
 
-const times3 = (times, f = i => i, ...rest) =>
-    Array(Math.abs(times))
-        .fill()
-        .map((v, i) => f(i, ...rest))
+const times3 = (times, f = i => i) => {
+    const array = Array(times)
+    for (let i = 0; i < times; i++) {
+        array[i] = f(i)
+    }
+    return array
+}
 
-ö.time(() => times3(1000000))
+ö.time(() => times3(1000000), 'classic')
 
 let a = [
     [1, 2, 3],
@@ -257,6 +260,7 @@ let a = [
 )
 
 ö.time(() => ö.times(1000000, () => Math.random()), 'vanilla')
+ö.time(() => ö.times(1000000, () => ö.random()), 'ö random')
 
 ö.log(ö.seededRandom('hello'))
 ö.log(ö.seededRandom('hello'))
@@ -267,7 +271,7 @@ let test = {
         b: {
             c: {
                 d: {
-                    e: [1,2,3],
+                    e: [1, 2, 3],
                 },
             },
         },
@@ -283,10 +287,7 @@ xx.push(xx)
 
 //ö.log(ö.clone(aa, true, false))
 
-
-
 ö.time(() => ö.times(100000, () => ö.clone(test)), 'ö.clone')
-ö.time(() => ö.times(100000, () => clone2(test)), 'ö.clone2')
 //ö.time(() => ö.times(100000, () => structuredClone(test)), 'structuredClone')
 
 ö.log(JSON.stringify(ö.clone(test)))

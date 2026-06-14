@@ -72,22 +72,19 @@ describe('ö.times', () => {
         let result = ö.times(2, i => i)
 
         expect(result).toMatchObject([0, 1])
-    })
 
-    it('should handle rest arguments', () => {
-        let result = ö.times(2, (i, factor) => i * factor, 2)
-
-        expect(result).toMatchObject([0, 2])
+        result = ö.times(10, i => i)
+        expect(result).toHaveLength(10)
     })
 
     it('should handle negative input gracefully', () => {
-        let result = ö.times(-2, (i, factor) => i * factor, 2)
+        let result = ö.times(-2, i => i)
 
-        expect(result).toMatchObject([0, 2])
+        expect(result).toMatchObject([0, 1])
     })
 
     it('should handle 0 as input gracefully', () => {
-        let result = ö.times(0, (i, factor) => i * factor, 2)
+        let result = ö.times(0, i => i)
 
         expect(result).toMatchObject([])
     })

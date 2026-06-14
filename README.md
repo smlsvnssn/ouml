@@ -69,12 +69,12 @@ Yields `Object` with `x, y` coordinates. If `height` is omitted, `width` is assu
 for (let i of ö.grid(8)) drawChessboard(i.x, i.y)
 ```
 
-#### ö.times( times, f? = i => i, ...rest ) → Array
+#### ö.times( times, f? = i => i) → Array
 
-Calls a function `times` times, with `index` as argument. Additional arguments are passed on to `f` like so:
+Calls a function `times` times, with `index` as argument.
 
 ```js
-ö.times(100, (i, a, b) => i + a + b, 'a', 'b')
+ö.times(100, i => doStuffWith(i))
 ```
 
 Returns an array containing the return values of `f`, or an array containing index values if `f` is `undefined`.

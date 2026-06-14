@@ -49,21 +49,25 @@ export const range = function* (start, end, step = 1) {
 /**
  * @callback timesCB
  * @param {number} index
- * @param  {...any[]} rest
  */
 
 /**
  * Times - Calls a function `times` times, with `index` as argument.
  * @param {number} times
  * @param {timesCB} f
- * @param  {any[]} rest
  * @returns {any[]}
  */
 
-export const times = (times = 0, f = i => i, ...rest) =>
-    Array(Math.abs(Math.trunc(times)))
-        .fill(0)
-        .map((_, i) => f(i, ...rest))
+export const times = (times = 0, f = id) => {
+    let n = Math.abs(Math.trunc(times))
+    let a = Array(n)
+    for (let i = 0; i < n; i++) a[i] = f(i)
+    return a
+}
+// classic loop around 5 times faster
+// Array(Math.abs(Math.trunc(times)))
+//     .fill(0)
+//     .map((_, i) => f(i, ...rest))
 
 /**
  * Array/Iterable
@@ -1541,12 +1545,13 @@ export const stripTags = s => s.replace(/(<([^>]+)>)/gi, '')
 /**
  * When - an inline if.
  * @param {boolean} bool
- * @param {*} v
- * @param {*} [f]
+ * @param {*} whenTrue
+ * @param {*} [whenFalse]
  * @returns {(* | string)}
  */
 
-export const when = (bool, v, f) => (bool ? v : (f ?? ''))
+export const when = (bool, whenTrue, whenFalse = '') =>
+    bool ? whenTrue : whenFalse
 
 /**
  * Async
