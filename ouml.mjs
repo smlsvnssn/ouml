@@ -886,7 +886,7 @@ export const equals = isEqual
  */
 
 // TODO: Remove support for node and typed arrays? Too many checks, potentially slow. Measure. (No biggie, a few percent)
-// TODO: Remove support for node and typed arrays? Too many checks, potentially slow. Measure. (No biggie, a few percent)
+
 export const clone = (v, deep = true, immutable = false) => {
     /** @param {*} v */
     const maybeClone = v => (deep ? traverse(v) : v)
@@ -971,15 +971,18 @@ export const id = v => v
 export const pipe = (v, ...funcs) => funcs.reduce((x, f) => f(x), v)
 
 /**
- * ToPiped - Pipes function calls, and returns a function that takes the value to pipe.
+ * Flow - Pipes function calls, and returns a function that takes the value to pipe.
  * @param  {...function} funcs
  * @returns {(v: any) => any}
  */
 
-export const toPiped =
+export const flow =
     (...funcs) =>
     v =>
         pipe(v, ...funcs)
+
+/** @deprecated */
+export const toPiped = flow
 
 /**
  * PipeAsync
@@ -992,15 +995,18 @@ export const pipeAsync = async (v, ...funcs) =>
     await funcs.reduce(async (x, f) => f(await x), v)
 
 /**
- * ToPipedAsync
+ * flowAsync
  * @param  {...function} funcs
  * @returns {(v: *) => Promise<*>}
  */
 
-export const toPipedAsync =
+export const flowAsync =
     (...funcs) =>
     v =>
         pipeAsync(v, ...funcs)
+
+/** @deprecated */
+export const toPipedAsync = flowAsync
 
 /**
  * Curry - Returns a curried version of `f`.

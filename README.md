@@ -74,7 +74,8 @@ for (let i of ö.grid(8)) drawChessboard(i.x, i.y)
 Calls a function `times` times, with `index` as argument.
 
 ```js
-ö.times(100, i => doStuffWith(i))
+const doStuff = i => `Stuffed ${i + 1} stuff.`
+let result = ö.times(100, doStuff)
 ```
 
 Returns an array containing the return values of `f`, or an array containing index values if `f` is `undefined`.
@@ -410,11 +411,11 @@ Checks equality by value rather than reference. Compares prototypes, and uses `R
 
 Performs cloning of most common types, including `Array` and typed arrays, `Map`, `Set`, `Date`, `Node` and objects. Defaults to deep cloning, set `deep` to `false` for shallow cloning. Tries to preserve `prototype` when cloning objects, but may fail in untested edge cases. Handles circular references. Does not clone functions. Use with some caution 🤫.
 
-The native `structuredClone` is slower for small stuctures, faster for big, but it errors on functions, and doesn't preserve prototype. Choose wisely!
+The native `structuredClone` is slower for small structures, faster for big, but it errors on functions, and doesn't preserve prototype. Choose wisely!
 
 #### ö.immutable( v, deep? = true ) → immutable value
 
-Returns a freezed clone of `v`. Set `deep` to `false` to make only top level immutable.
+Returns an immutable clone of `v`. Set `deep` to `false` to make only top level immutable.
 
 #### ö.id( v ) → v
 
@@ -422,7 +423,7 @@ Identity, takes and returns `v`.
 
 #### ö.pipe( v, ...funcs ) → value
 
-Pipes function calls for a value. For multiple arguments, use closures. Usage:
+Pipes function calls for a value. Usage:
 
 ```js
 ö.pipe(
@@ -434,13 +435,13 @@ Pipes function calls for a value. For multiple arguments, use closures. Usage:
 ) // logs 42
 ```
 
-#### ö.toPiped( ...funcs ) → function( v ) → value
+#### ö.flow( ...funcs ) → function( v ) → value
 
 Pipes function calls, and returns a function that takes the value to pipe. The data last save for later version of pipe.
 Usage:
 
 ```js
-const myPipe = ö.toPiped(
+const myPipe = ö.flow(
     x => x * 6,
     x => x ** 2,
     x => x + 6,
@@ -453,7 +454,7 @@ myPipe(1) // logs 42
 
 Same as `ö.pipe`, but awaits functions and returns a `Promise`.
 
-#### ö.toPipedAsync( ...funcs ) → function( v ) → Promise
+#### ö.flowAsync( ...funcs ) → function( v ) → Promise
 
 Pipes function calls, and returns a function that takes the value to pipe. That function returns a `Promise`.
 

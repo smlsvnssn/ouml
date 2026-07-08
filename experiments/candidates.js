@@ -78,6 +78,11 @@ Cubic, Quadratic
 √ Rework colour functions to include oklch and new css features (browser only? Use create element hacks
 */
 
+const juxt =
+    (...fns) =>
+    (...args) =>
+        fns.map(f => f(...args))
+
 // export const q = document.querySelector.bind(document);
 // export const qa = document.querySelectorAll.bind(document);
 
