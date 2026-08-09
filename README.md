@@ -258,11 +258,17 @@ Returns (population) [standard deviation](https://en.wikipedia.org/wiki/Standard
 
 Returns the (population) [Pearson correlation coefficient](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient) between `a` and `b`. `a` and `b` should have the same length.
 
-#### ö.groupBy( iterable, prop | f, asObject? = false ) → Map | Object
+#### ö.groupBy( iterable, prop | f = v => v, asObject? = false ) → Map | Object
 
 Returns a `Map` with keys corresponding to `prop` values, holding grouped values as arrays. Optionally returns an `object` if `asObject` is set to true.
 
-If `prop` is a string, takes an iterable of `object`s with a common property. If `prop` is a function, takes a function returning keys for grouping based on `iterable` contents. The function receives `value, index, array` as arguments.
+If `prop` is a string, takes an iterable of `object`s with a common property. If `prop` is a function, takes a function returning keys for grouping based on `iterable` contents. The function receives `value, index, array` as arguments. `prop` defaults to `v => v`, grouping on the raw value.
+
+#### ö.frequencies( iterable, prop | f = v => v ) → Map
+
+Returns a `Map` with keys corresponding to `prop` values, counting the frequency of `prop` values. 
+
+If `prop` is a string, takes an iterable of `object`s with a common property. If `prop` is a function, takes a function returning keys based on `iterable` contents. The function receives `value, index, array` as arguments. `prop` defaults to `v => v`, counting the raw value.
 
 ### Tree structures
 
@@ -441,13 +447,13 @@ Pipes function calls, and returns a function that takes the value to pipe. The d
 Usage:
 
 ```js
-const myPipe = ö.flow(
+const thing = ö.flow(
     x => x * 6,
     x => x ** 2,
     x => x + 6,
     ö.log,
 )
-myPipe(1) // logs 42
+thing(1) // logs 42
 ```
 
 #### ö.pipeAsync( v, ...funcs ) → Promise

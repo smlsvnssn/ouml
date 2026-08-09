@@ -83,6 +83,8 @@ const juxt =
     (...args) =>
         fns.map(f => f(...args))
 
+const xor = (a, b) => Boolean(a) != Boolean(b)
+
 // export const q = document.querySelector.bind(document);
 // export const qa = document.querySelectorAll.bind(document);
 
@@ -183,13 +185,13 @@ const hash = (str, seed = 0) => {
 
     return format(h2) + format(h1)
 }
-
-const bubblePipe = val =>
-    function next(f) {
-        if (f === undefined) return val
-        val = typeof f === 'function' ? f(val) : val
-        return next
-    }
+const nextBubble = function next(f) {
+    if (f === undefined) return val
+    val = typeof f === 'function' ? f(val) : val
+    return next
+}
+const bubblePipe = val => nextBubble
+    
 
 //bubblePipe(1)(Math.cos)(Math.sin)(ö.log)()
 

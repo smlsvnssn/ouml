@@ -396,6 +396,8 @@ export const permutations = (iterable = []) => {
 
 export const sum = iterable =>
     Array.from(iterable).reduce((a, v) => a + Number(v), 0)
+// Not in node yet:
+//Math.sumPrecise(Array.from(iterable))
 
 /**
  * Mean - Calculates mean value of `arr`, with `Number` coercion.
@@ -510,12 +512,12 @@ export const correlation = (a, b) =>
 /**
  * GroupBy - Returns a `Map` with keys corresponding to `prop` values.
  * @param {Iterable<*>} iterable
- * @param {(string | mapCB)} prop
+ * @param {(string | mapCB)} [prop = id]
  * @param {boolean} [asObject = false]
  * @returns {Map<*, any[]> | Object.<string, any[]>}
  */
 
-export const groupBy = (iterable, prop, asObject = false) =>
+export const groupBy = (iterable, prop = id, asObject = false) =>
     // @ts-ignore
     (asObject ? Object : Map).groupBy(
         iterable,
@@ -523,6 +525,22 @@ export const groupBy = (iterable, prop, asObject = false) =>
             /** @param {Object.<string, any[]>} v */ v => v[prop]
         ),
     )
+
+/**
+ * Frequencies - Returns a `Map` with `prop` values as keys, counting the frequency of values.
+ * @param {Iterable<*>} iterable
+ * @param {(string | mapCB)} [prop = id]
+ * @returns {Map<*, any[]> | number}
+ */
+
+export const frequencies = (iterable, prop = id) =>
+    Array.from(iterable).reduce((acc, v, i, a) => {
+        let p = isFunc(prop) ? prop(v, i, a) : (v => v[prop])(v)
+
+        acc.set(p, acc.getOrInsert(p, 0) + 1)
+
+        return acc
+    }, new Map())
 
 /**
  * @callback idPropCB
@@ -554,11 +572,11 @@ export const mapToTree = (arr, idProp, parentProp = '') => {
                 idProp(v, i, arr) // Should return [ownKey, parentKey]
             :   [v[idProp], v?.[parentProp] ?? rootKey]
 
-        // Not in node yet:
-        // parents.getOrInsert(parentKey, []).push({ key, v })
+        // Not in node yet: (Now, as of Node 26)
+        parents.getOrInsert(parentKey, []).push({ key, v })
         // @ts-ignore
-        if (parents.has(parentKey)) parents.get(parentKey).push({ key, v })
-        else parents.set(parentKey, [{ key, v }])
+        //if (parents.has(parentKey)) parents.get(parentKey).push({ key, v })
+        //else parents.set(parentKey, [{ key, v }])
     })
 
     // ...and map them out.
@@ -895,8 +913,9 @@ export const clone = (v, deep = true, immutable = false) => {
     const maybeFreeze = v => (immutable ? Object.freeze(v) : v)
 
     let seen = new WeakMap()
+
     /**
-     *  @param {*} v
+     * @param {*} v
      * @returns {*}
      */
     const traverse = (v, isnode = isNode(v)) => {
@@ -1983,7 +2002,7 @@ export const attempt = (f, handler = e => e, ...args) => {
 /**
  * AttemptAsync - Tries a function and returns result, or result of handler.
  * @param {function} f
- * @param {(e: Error) => * | *} [handler]
+ * @param {(e: Error) => * } [handler]
  * @param {any[]} args
  * @returns {Promise<any>}
  */

@@ -693,6 +693,18 @@ describe('ö.groupBy', () => {
         })
     })
 
+    it('should work with prop not set', () => {
+        let result = ö.groupBy('001122')
+
+        expect(result).toEqual(
+            new Map([
+                ['0', ['0', '0']],
+                ['1', ['1', '1']],
+                ['2', ['2', '2']],
+            ]),
+        )
+    })
+
     it('should handle any iterable', () => {
         let result = ö.groupBy('001122', v => v)
 
@@ -701,6 +713,45 @@ describe('ö.groupBy', () => {
                 ['0', ['0', '0']],
                 ['1', ['1', '1']],
                 ['2', ['2', '2']],
+            ]),
+        )
+    })
+})
+
+describe('ö.frequencies', () => {
+    it('should count an array of objects by the value of "prop"', () => {
+        let m = [{ a: 1 }, { a: 1 }, { a: 2 }]
+
+        expect(ö.frequencies(m, 'a')).toMatchObject(
+            new Map([
+                [1, 2],
+                [2, 1],
+            ]),
+        )
+    })
+
+    it('should work with prop not set', () => {
+        let result = ö.frequencies('parallell')
+
+        expect(result).toEqual(
+            new Map([
+                ['a', 2],
+                ['e', 1],
+                ['l', 4],
+                ['p', 1],
+                ['r', 1],
+            ]),
+        )
+    })
+
+    it('should handle any iterable', () => {
+        let result = ö.frequencies('001122', v => v)
+
+        expect(result).toEqual(
+            new Map([
+                ['0', 2],
+                ['1', 2],
+                ['2', 2],
             ]),
         )
     })
