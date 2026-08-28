@@ -76,7 +76,19 @@ Cubic, Quadratic
 √ rewrite övents as svelte actions?
 (√ kinda) partition as separate modules?
 √ Rework colour functions to include oklch and new css features (browser only? Use create element hacks
+
+Refactor all math functions on arrays (sum, product, max etc) to take either an iterable as arg or multiple arguments (clojure style), i.e sum([1, 2, 3]) and sum(1, 2, 3) should both work. 
+Define apply, clojure style
+Define logic fns for and, or, lt, gt etc, with the same signature
 */
+
+// allows both iterable as unary arg and variadic args
+const maybeVariadic =
+    f =>
+    (...args) =>
+        f(args.length == 1 && ö.isIterable(args.at(0)) ? Array.from(args.at(0)) : args)
+
+// let sum = maybeVariadic(iterable => iterable.reduce((a, v) => a + Number(v), 0))
 
 const juxt =
     (...fns) =>
@@ -191,7 +203,6 @@ const nextBubble = function next(f) {
     return next
 }
 const bubblePipe = val => nextBubble
-    
 
 //bubblePipe(1)(Math.cos)(Math.sin)(ö.log)()
 
@@ -261,6 +272,7 @@ let a = [
 ö.pipe(
     a,
     ö.transpose,
+    ö.log,
     ö.transpose,
     transposedTwice => ö.equals(transposedTwice, a),
     ö.log,
@@ -294,7 +306,7 @@ xx.push(xx)
 
 //ö.log(ö.clone(aa, true, false))
 
-ö.time(() => ö.times(100000, () => ö.clone(test)), 'ö.clone')
+//ö.time(() => ö.times(100000, () => ö.clone(test)), 'ö.clone')
 //ö.time(() => ö.times(100000, () => structuredClone(test)), 'structuredClone')
 
 ö.log(JSON.stringify(ö.clone(test)))

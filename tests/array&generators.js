@@ -731,15 +731,32 @@ describe('ö.frequencies', () => {
     })
 
     it('should work with prop not set', () => {
-        let result = ö.frequencies('parallell')
+        let result = ö.frequencies(
+            'llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch',
+        )
 
         expect(result).toEqual(
             new Map([
-                ['a', 2],
+                ['a', 3],
+                ['b', 1],
+                ['c', 2],
+                ['d', 1],
                 ['e', 1],
                 ['l', 4],
+                ['f', 1],
+                ['g', 7],
+                ['h', 2],
+                ['i', 3],
+                ['l', 11],
+                ['n', 4],
+                ['o', 6],
                 ['p', 1],
                 ['r', 1],
+                ['r', 4],
+                ['s', 1],
+                ['t', 1],
+                ['w', 4],
+                ['y', 5],
             ]),
         )
     })

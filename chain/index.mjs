@@ -62,15 +62,12 @@ const warn = (i, key, error, isThrowing) => {
  * @returns {Proxy}
  */
 
+// Todo: Enable dot syntax for global objects, with arbitrary depth.
+// Hypothesis: Use a different mode for lookup if key matches a global object, but is called without args. Might lead to ambiguity, may require lookahead.
+
 export const chain = (initial, isThrowing = false, isAsync = false) => {
     let v = ö.clone(initial)
     let q = []
-
-    const queue = (key, f, catcher) => {
-        q.push({ key, f, catcher })
-
-        return p
-    }
 
     const caseRunQueue =
         isAsync ?
@@ -111,7 +108,7 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
                         else warn(i, key, error, isThrowing)
                     }
                 }
-
+                
                 return v
             }
 
@@ -145,6 +142,8 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
         apply: (_, __, args) =>
             args.length ? caseFunction(...args) : caseRunQueue(),
     })
+
+    const queue = (key, f, catcher) => (q.push({ key, f, catcher }), p)
 
     return p
 }

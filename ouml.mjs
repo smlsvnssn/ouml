@@ -206,6 +206,7 @@ export const rotate = (iterable, steps = 1) => {
 
 /**
  * Chunk - Partitions an array into chunks of n length
+ * @todo Take a "step" param, like clojure's partition, to create sliding windows
  * @param {Iterable<any>} iterable
  * @param {number} [chunkSize = 1]
  * @returns {any[][]} */
@@ -374,7 +375,7 @@ export const permutations = (iterable = []) => {
         traverse(n - 1, arr, out)
 
         for (let i = 0; i < n - 1; i++) {
-            n % 2 ? swap(arr, 0, n - 1) : swap(arr, i, n - 1)
+            swap(arr, n % 2 ? 0 : i, n - 1)
             traverse(n - 1, arr, out)
         }
     }
@@ -469,11 +470,11 @@ export const min = iterable => Math.min(...iterable)
  */
 
 export const covariance = (a, b) => {
-    let meanA = mean(a),
-        meanB = a == b ? meanA : mean(b)
-
     let aa = Array.from(a),
         ab = a == b ? aa : Array.from(b)
+
+    let meanA = mean(aa),
+        meanB = aa == ab ? meanA : mean(ab)
 
     if (aa.length != ab.length)
         error('Arguments a and b should be of the same length.')
@@ -510,34 +511,34 @@ export const correlation = (a, b) =>
     covariance(a, b) / (standardDeviation(a) * standardDeviation(b)) || 0
 
 /**
- * GroupBy - Returns a `Map` with keys corresponding to `prop` values.
+ * GroupBy - Returns a `Map` with keys corresponding to `key` values.
  * @param {Iterable<*>} iterable
- * @param {(string | mapCB)} [prop = id]
+ * @param {(string | mapCB)} [key = id]
  * @param {boolean} [asObject = false]
  * @returns {Map<*, any[]> | Object.<string, any[]>}
  */
 
-export const groupBy = (iterable, prop = id, asObject = false) =>
+export const groupBy = (iterable, key = id, asObject = false) =>
     // @ts-ignore
     (asObject ? Object : Map).groupBy(
         iterable,
-        isFunc(prop) ? prop : (
-            /** @param {Object.<string, any[]>} v */ v => v[prop]
+        isFunc(key) ? key : (
+            /** @param {Object.<string, any[]>} v */ v => v[key]
         ),
     )
 
 /**
- * Frequencies - Returns a `Map` with `prop` values as keys, counting the frequency of values.
+ * Frequencies - Returns a `Map` with `key` values as keys, counting the frequency of values.
  * @param {Iterable<*>} iterable
- * @param {(string | mapCB)} [prop = id]
+ * @param {(string | mapCB)} [key = id]
  * @returns {Map<*, any[]> | number}
  */
 
-export const frequencies = (iterable, prop = id) =>
+export const frequencies = (iterable, key = id) =>
     Array.from(iterable).reduce((acc, v, i, a) => {
-        let p = isFunc(prop) ? prop(v, i, a) : (v => v[prop])(v)
+        let k = isFunc(key) ? key(v, i, a) : (v => v[key])(v)
 
-        acc.set(p, acc.getOrInsert(p, 0) + 1)
+        acc.set(k, acc.getOrInsert(k, 0) + 1)
 
         return acc
     }, new Map())
@@ -583,7 +584,7 @@ export const mapToTree = (arr, idProp, parentProp = '') => {
     /** @returns {*} */
     const traverse = (parentKey = rootKey) =>
         parents.get(parentKey)?.map(node => {
-            // did you see the base case? Pretty small eh?
+            // did you see the ^base case? Pretty small eh?
             let children = traverse(node.key)
             return children ? { ...node.v, children } : { ...node.v }
         })

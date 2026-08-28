@@ -13,12 +13,11 @@ const add = observer => {
 
 const remove = () => (current = queue.pop())
 
-const notifyObservers = (observers, key) => {
+const notifyObservers = (observers, key) =>
     observers.forEach(o => {
         if (o.stopped) observers.delete(o)
         else if (!o.paused) o.update(key)
     })
-}
 
 const makeObservable = (v, isPrimitive) => {
     let observers = new Set()
@@ -134,6 +133,9 @@ export const observe = (getter, callback) => {
         },
         stop() {
             o.stopped = true
+        },
+        [Symbol.dispose]() {
+            o.stop()
         },
     }
 

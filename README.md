@@ -258,17 +258,23 @@ Returns (population) [standard deviation](https://en.wikipedia.org/wiki/Standard
 
 Returns the (population) [Pearson correlation coefficient](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient) between `a` and `b`. `a` and `b` should have the same length.
 
-#### ö.groupBy( iterable, prop | f = v => v, asObject? = false ) → Map | Object
+#### ö.groupBy( iterable, key | f = v => v, asObject? = false ) → Map | Object
 
-Returns a `Map` with keys corresponding to `prop` values, holding grouped values as arrays. Optionally returns an `object` if `asObject` is set to true.
+Returns a `Map` with keys corresponding to `key` values, holding grouped values as arrays. Optionally returns an `object` if `asObject` is set to true.
 
-If `prop` is a string, takes an iterable of `object`s with a common property. If `prop` is a function, takes a function returning keys for grouping based on `iterable` contents. The function receives `value, index, array` as arguments. `prop` defaults to `v => v`, grouping on the raw value.
+If `key` is a string, takes an iterable of `object`s with a common property matching `key`. If `key` is a function, takes a function returning keys for grouping based on `iterable` contents. The function receives `value, index, array` as arguments. `key` defaults to `v => v`, grouping on the raw value.
 
-#### ö.frequencies( iterable, prop | f = v => v ) → Map
+#### ö.frequencies( iterable, key | f = v => v ) → Map
 
-Returns a `Map` with keys corresponding to `prop` values, counting the frequency of `prop` values. 
+Returns a `Map` with keys corresponding to `key` values, counting the frequency of `key` values.
 
-If `prop` is a string, takes an iterable of `object`s with a common property. If `prop` is a function, takes a function returning keys based on `iterable` contents. The function receives `value, index, array` as arguments. `prop` defaults to `v => v`, counting the raw value.
+If `key` is a string, takes an iterable of `object`s with a common property matching `key`. If `key` is a function, takes a function returning keys based on `iterable` contents. The function receives `value, index, array` as arguments. `key` defaults to `v => v`, counting the raw value.
+
+```js
+ö.frequencies('llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch')
+
+// returns Map {['a', 3], ['b', 1], ['c', 2], ['d', 1], ['e', 1], ['l', 4], ['f', 1], ['g', 7], ['h', 2], ['i', 3], ['l', 11], ['n', 4], ['o', 6], ['p', 1], ['r', 1], ['r', 4], ['s', 1], ['t', 1], ['w', 4], ['y', 5]}
+```
 
 ### Tree structures
 
@@ -911,7 +917,7 @@ It takes a url, loads it as json using an `ö` method, handles the error case, g
 
 ### Usage
 
-`chain` chains method calls, but with some quirks and gotchas. For example, properties on objects can be retrieved by calling the property name as a function. Methods on objects in the global scope can be accessed by an underscore, for example `Object_groupBy()`. Also, if a method in the chain creates an error, the step is skipped by default (and the error is logged), prioritising a return value. You can override this by setting `isThrowing` to true, or handle the error with a `.try()`.
+`chain` chains method calls, but with some quirks and gotchas. For example, properties on objects can be retrieved by calling the property name as a function. Methods on objects in the global scope can be accessed by an underscore, for example `Object_groupBy()`. Also, if a method in the chain throws an error, the step is skipped by default (and the error is logged), prioritising a return value. You can override this by setting `isThrowing` to true, or handle the error with a `.try()`.
 Use like so:
 
 ```js
@@ -1171,6 +1177,16 @@ x.value = 666 // logs 666
 o.stop()
 ```
 
+Or, using `using`:
+
+```js
+{
+    let x = observable(0)
+    using o = observe(x, ö.log)
+    x.value = 666 // logs 666
+}
+```
+
 #### o.pause()
 
 Pauses the observer.
@@ -1182,6 +1198,10 @@ You'll never guess.
 #### o.stop()
 
 Stops the observer from receiving updates, and unsubscribes the observer from observables.
+
+#### o[Symbol.dispose]()
+
+Enables autocleanup, same as o.stop().
 
 #### o.update()
 
