@@ -4,30 +4,33 @@ TypelessScript™
 
 import * as ö from '../ouml.mjs'
 
-const lookup = (key, v, isThrowing) => {
-    // methods in v?
-    if (ö.isFunc(v[key])) return (...args) => v[key](...args)
+const getParent = (v, path) =>
+    path.slice(0, -1).reduce((acc, key) => acc?.[key], v)
 
-    // props in v?
-    if (Object.hasOwn(v, key))
-        return newVal => (ö.is(newVal) ? ((v[key] = newVal), newVal) : v[key])
+const lookup = (path, v, isThrowing) => {
+    let parent = getParent(v, path)
+    let key = path.at(-1)
+
+    // methods in v?
+    if (ö.isFunc(parent?.[key])) return (...args) => parent[key](...args)
+
+    // props in v? (get/set)
+    if (parent && Object.hasOwn(parent, key))
+        return val => (ö.is(val) ? ((parent[key] = val), val) : parent[key])
 
     // methods in ö?
-    if (ö.isFunc(ö[key])) return (...args) => ö[key](v, ...args)
-
-    let keys = key.split('_')
-
-    // methods in globalThis?
-    if (keys.length == 1 && ö.isFunc(globalThis[key]))
-        return (...args) => globalThis[key](v, ...args)
+    if (path.length == 1 && ö.isFunc(ö[path.at(0)]))
+        return (...args) => ö[path.at(0)](v, ...args)
 
     // methods in global objects?
-    if (keys.length == 2 && ö.isFunc(globalThis[keys.at(0)]?.[keys.at(1)]))
-        return (...args) => globalThis[keys.at(0)][keys.at(1)](v, ...args)
+    let globalPath = getParent(globalThis, path)
 
-    let errorMsg = `No method or property found for ${key} on type ${
-        v.constructor.name
-    }, and no method for ${keys.join('.')} found in ö or in global scope.`
+    if (ö.isFunc(globalPath?.[key]))
+        return (...args) => globalPath[key](v, ...args)
+
+    let errorMsg = `No method or property found for ${path.join('.')} on type ${
+        parent?.constructor.name
+    }, and no method for ${path.join('.')} found in ö or in global scope.`
 
     if (isThrowing) throw new Error(errorMsg)
 
@@ -108,7 +111,7 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
                         else warn(i, key, error, isThrowing)
                     }
                 }
-                
+
                 return v
             }
 
@@ -124,10 +127,15 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
 
     const caseFunction = f => queue(f.name || 'anonymous', f)
 
-    const caseDefault =
-        key =>
-        (...args) =>
-            queue(key, v => lookup(key, v, isThrowing)(...args))
+    // enables pathfinding with dot syntax, using a second proxy for "lookahead"
+    const caseDefault = (key, path = [key]) =>
+        new Proxy(() => {}, {
+            get: (_, key) => caseDefault(_, (path.push(key), path)),
+            apply: (_, __, args) =>
+                queue(path.join('.'), v =>
+                    lookup(path, v, isThrowing)(...args),
+                ),
+        })
 
     let p = new Proxy(() => {}, {
         // prettier-ignore

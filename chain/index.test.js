@@ -12,12 +12,17 @@ afterEach(() => {
 
 describe('chain', () => {
     it('should produce expected values', () => {
-        let result = chain(11)
+        let o = { my: { deep: { path: 11 } } }
+
+        let result = chain(o)
+            .my.deep.path()
             .f(v => [...Array(v).keys()])
             .map(v => v ** v)
             .sum()
             .toString()
             .length()
+            .Math.pow(3)
+            .Math.cbrt()
             .return()
 
         expect(result).toBe(11)
@@ -111,10 +116,10 @@ Type:  String
         expect(() => result()).toThrow('Chain failed')
     })
 
-    it('should find global methods, and methods on global objects with underscore', () => {
-        let result = chain('-11').Number().Math_abs().value
+    it('should find global methods, and methods on global objects', () => {
+        let result = chain('-11').Number().Math.abs().Math.pow(2).value
 
-        expect(result).toBe(11)
+        expect(result).toBe(121)
     })
 
     it('should support alternate syntax', () => {

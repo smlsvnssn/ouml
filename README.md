@@ -885,7 +885,10 @@ Here's an example:
 ```js
 import { chain } from 'ouml/chain'
 
-let guessWhat = chain(11)
+let o = { my: { deep: { path: 11 } } }
+
+let guessWhat = chain(o)
+    .my.deep.path()
     .f(v => [...Array(v).keys()])
     .map(v => v ** v)
     .sum()
@@ -894,7 +897,7 @@ let guessWhat = chain(11)
     .return()
 ```
 
-It takes the number 11, makes an array of integers using the `.f()` directive, maps the values to the power of themselves, sums them using an `ö` method, converts the resulting number to a string, gets the length of the string, and returns it.
+It finds the number 11 in an object, makes an array of integers using the `.f()` directive, maps the values to the power of themselves, sums them using an `ö` method, converts the resulting number to a string, gets the length of the string, and returns it.
 
 Here's another:
 
@@ -917,7 +920,10 @@ It takes a url, loads it as json using an `ö` method, handles the error case, g
 
 ### Usage
 
-`chain` chains method calls, but with some quirks and gotchas. For example, properties on objects can be retrieved by calling the property name as a function. Methods on objects in the global scope can be accessed by an underscore, for example `Object_groupBy()`. Also, if a method in the chain throws an error, the step is skipped by default (and the error is logged), prioritising a return value. You can override this by setting `isThrowing` to true, or handle the error with a `.try()`.
+`chain` chains method calls, but with some quirks and gotchas. For example, properties on objects can be retrieved by calling the property name as a function. Anything in the global scope can be accessed, for example `Array.from()`. Also, if a method in the chain throws an error, the step is skipped by default (and the error is logged), prioritising a return value. You can override this by setting `isThrowing` to true, or handle the error with a `.try()`.
+
+Lookup of properties and methods is performed in the following order: Methods on current value, properties on current value, methods in `ö`, methods in global scope.
+
 Use like so:
 
 ```js
@@ -925,10 +931,13 @@ import { chain, chainAsync } from 'ouml/chain'
 
 let processedValue = chain('AnyValueOfAnyType')
     .anyMethodOnCurrentType()
+    .anyMethodOn.childObject()
     .anyPropertyOnCurrentValue()
+    .anyPropertyOn.childObject()
     .anyMethodInÖ()
     .anyMethodInGlobalScope()
-    .AnyObjectInGlobalScope_anyMethod()
+    .AnyObjectInGlobalScope.anyMethod()
+    .AnyObjectInGlobalScope.anyMethod.atAnyDepth()
     .f(anyFunction)
     .peek() // Logs current value and type
     .returnIf(anyFunctionReturningABoolean)
@@ -1010,9 +1019,9 @@ This doesn't play that nicely with Prettier, if you happen to use that, but it's
 
 Lets you call a method of the current value. Methods are called "as is", so for exemple a `.map(v => v)` on an array takes a function, `.toUpperCase()` on a string takes no argument, and `.toUpperCase()` on a number is skipped along with a warning to the console, since no such method exists on a number.
 
-#### .anyPropertyOnCurrentValue( newVal? ) → Proxy
+#### .anyPropertyOnCurrentValue( val? ) → Proxy
 
-Lets you access properties on the current value as a method call, for example `.length()` to get the length of a string or an array. If `newVal` is provided, sets the property to `newVal`, and passes `newVal` along the chain.
+Lets you access properties on the current value as a method call, for example `.length()` to get the length of a string or an array. If `val` is provided, sets the property to `val`, and passes `val` along the chain.
 
 #### .anyMethodInÖ( ...args? ) → Proxy
 
@@ -1022,11 +1031,9 @@ Lets you pass any `ö` method into the chain. The current value is passed as the
 
 Lets you pass any global method into the chain. The current value is passed as the first argument, so if you would normally call `fetch('http://some.url')`, in a chain you need only call `.fetch()`.
 
-#### .anyObjectInGlobalScope_anyMethod( ...args? ) → Proxy
+#### .anyObjectInGlobalScope.anyMethod( ...args? ) → Proxy
 
-Lets you pass any method on a global object into the chain. The current value is passed as the first argument, so if you would normally call `JSON.parse(someString)` or `Array.from(someIterable)`, in a chain you need only call `.JSON_parse()` or `.Array_from()`.
-
-If you have defined any methods in the global scope that have underscores in their names, use `.f(v => my_global_method(v))` instead, since underscores get parsed out by the proxy.
+Lets you pass any method on a global object into the chain. The current value is passed as the first argument, so if you would normally call `JSON.parse(someString)` or `Array.from(someIterable)`, in a chain you need only call `.JSON.parse()` or `.Array.from()`.
 
 # Öbservable
 
