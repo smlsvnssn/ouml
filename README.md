@@ -889,7 +889,7 @@ let o = { my: { deep: { path: 11 } } }
 
 let guessWhat = chain(o)
     .my.deep.path()
-    .f(v => [...Array(v).keys()])
+    .f(v => Array(v).keys())
     .map(v => v ** v)
     .sum()
     .toString()
@@ -922,6 +922,8 @@ It takes a url, loads it as json using an `ö` method, handles the error case, g
 
 `chain` chains method calls, but with some quirks and gotchas. For example, properties on objects can be retrieved by calling the property name as a function. Anything in the global scope can be accessed, for example `Array.from()`. Also, if a method in the chain throws an error, the step is skipped by default (and the error is logged), prioritising a return value. You can override this by setting `isThrowing` to true, or handle the error with a `.try()`.
 
+All operations on the initial value are non-mutating, input gets deep cloned before the chain runs.
+
 Lookup of properties and methods is performed in the following order: Methods on current value, properties on current value, methods in `ö`, methods in global scope.
 
 Use like so:
@@ -931,9 +933,9 @@ import { chain, chainAsync } from 'ouml/chain'
 
 let processedValue = chain('AnyValueOfAnyType')
     .anyMethodOnCurrentType()
-    .anyMethodOn.childObject()
+    .childObject.anyMethod()
     .anyPropertyOnCurrentValue()
-    .anyPropertyOn.childObject()
+    .childObject.anyProperty()
     .anyMethodInÖ()
     .anyMethodInGlobalScope()
     .AnyObjectInGlobalScope.anyMethod()
@@ -963,7 +965,7 @@ Chain exports two methods:
 
 #### chain( value?, isThrowing? = false, isAsync? = false ) → Proxy
 
-Chain wraps a value, and creates a `Proxy` that handles the chaining. `chain` evaluates lazily, so nothing is calculated until `.return()` or `.value` is called. Errors are skipped by default, set `isThrowing` to true to throw errors instead. Optionally, set `isAsync` to `true` to handle async values, or use:
+Chain wraps a value, and creates a `Proxy` that handles the chaining. `chain` evaluates lazily, so nothing is calculated until `.return()` is called. Errors are skipped by default, set `isThrowing` to true to throw errors instead. Optionally, set `isAsync` to `true` to handle async values, or use:
 
 #### chainAsync( value, isThrowing? = false ) → Proxy
 
@@ -977,13 +979,9 @@ The chain proxy defines a few special cases, that look and behave like methods:
 
 Executes call chain, and returns computed value.
 
-#### .value → value
-
-Same as `.return()`, executes call chain, and returns computed value.
-
 #### () → value
 
-A method call with no arguments has the same effect as `.return()` or `.value`, executes call chain, and returns computed value.
+A method call with no arguments has the same effect as `.return()`, executes call chain, and returns computed value.
 
 #### .end() → function( value ) → value
 
@@ -1019,9 +1017,9 @@ This doesn't play that nicely with Prettier, if you happen to use that, but it's
 
 Lets you call a method of the current value. Methods are called "as is", so for exemple a `.map(v => v)` on an array takes a function, `.toUpperCase()` on a string takes no argument, and `.toUpperCase()` on a number is skipped along with a warning to the console, since no such method exists on a number.
 
-#### .anyPropertyOnCurrentValue( val? ) → Proxy
+#### .anyPropertyOnCurrentValue() → Proxy
 
-Lets you access properties on the current value as a method call, for example `.length()` to get the length of a string or an array. If `val` is provided, sets the property to `val`, and passes `val` along the chain.
+Lets you access properties on the current value as a method call, for example `.length()` to get the length of a string or an array.
 
 #### .anyMethodInÖ( ...args? ) → Proxy
 

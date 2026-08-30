@@ -16,7 +16,7 @@ describe('chain', () => {
 
         let result = chain(o)
             .my.deep.path()
-            .f(v => [...Array(v).keys()])
+            .f(v => Array(v).keys())
             .map(v => v ** v)
             .sum()
             .toString()
@@ -61,7 +61,8 @@ describe('chain', () => {
             .sum()
             .toString()
             .peek()
-            .length().value
+            .length()
+            .return()
 
         expect(log).toHaveBeenLastCalledWith(`
 Peeking into chain after step 4, running toString():
@@ -77,7 +78,8 @@ Type:  String
             .testFail()
             .sum()
             .toString()
-            .length().value
+            .length()
+            .return()
 
         expect(warn)
             .toHaveBeenLastCalledWith(`ö says: No method or property found for testFail on type Array, and no method for testFail found in ö or in global scope. Skipping.
@@ -85,12 +87,14 @@ Type:  String
     })
 
     it('should handle a try/catch clause', () => {
-        let result = chain(11).try(
-            () => {
-                throw 'err'
-            },
-            (val, error) => [val * 2, error],
-        ).value
+        let result = chain(11)
+            .try(
+                () => {
+                    throw 'err'
+                },
+                (val, error) => [val * 2, error],
+            )
+            .return()
 
         expect(result).toEqual([22, 'err'])
     })
@@ -100,7 +104,8 @@ Type:  String
             chain(11, true)
                 .f(v => [...Array(v).keys()])
                 .map(v => v ** v)
-                .testFail().value
+                .testFail()
+                .return()
 
         expect(() => result()).toThrow('Chain failed')
     })
@@ -117,7 +122,7 @@ Type:  String
     })
 
     it('should find global methods, and methods on global objects', () => {
-        let result = chain('-11').Number().Math.abs().Math.pow(2).value
+        let result = chain('-11').Number().Math.abs().Math.pow(2).return()
 
         expect(result).toBe(121)
     })
@@ -137,7 +142,7 @@ describe('chainAsync', () => {
             .map(v => `# ${v} #`)
             .join('')
             .f(v => v.split('').reverse())
-            .join('').value
+            .join('')()
 
         expect(result).toBe('# C ## B ## A #')
     })
@@ -157,26 +162,12 @@ describe('chainAsync', () => {
 
     it('should handle an escape clause', async () => {
         const errorMessage = 'error'
-        // const nameOfPriciestProduct = await chainAsync(
-        //     'https://dummyjson.com/products',
-        // )
-        //     .load(true, errorMessage)
-        //     .returnIf(v => v === errorMessage)
-        //     .products()
-        //     .sort((a, b) => a.price > b.price)
-        //     .at(0)
-        //     .title()
-        //     .return()
-
-        // expect(nameOfPriciestProduct).toBe('Essence Mascara Lash Princess')
 
         const e = await chainAsync('/')
             .load(true, errorMessage)
             .returnIf(v => v === errorMessage)
             .products()
-            .sort((a, b) => a.price > b.price)
             .at(0)
-            .title()
             .return()
 
         expect(e).toBe('error')

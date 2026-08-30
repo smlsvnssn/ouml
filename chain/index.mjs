@@ -14,17 +14,16 @@ const lookup = (path, v, isThrowing) => {
     // methods in v?
     if (ö.isFunc(parent?.[key])) return (...args) => parent[key](...args)
 
-    // props in v? (get/set)
-    if (parent && Object.hasOwn(parent, key))
-        return val => (ö.is(val) ? ((parent[key] = val), val) : parent[key])
+    // props in v? // removed setter behaviour in 0.4.1, bad design decision, redundant
+    if (parent && Object.hasOwn(parent, key)) return () => parent[key]
 
     // methods in ö?
-    if (path.length == 1 && ö.isFunc(ö[path.at(0)]))
-        return (...args) => ö[path.at(0)](v, ...args)
+    if (path.length == 1 && ö.isFunc(ö[key]))
+        return (...args) => ö[key](v, ...args)
 
-    // methods in global objects?
     let globalPath = getParent(globalThis, path)
 
+    // methods in global objects?
     if (ö.isFunc(globalPath?.[key]))
         return (...args) => globalPath[key](v, ...args)
 
@@ -65,9 +64,6 @@ const warn = (i, key, error, isThrowing) => {
  * @returns {Proxy}
  */
 
-// Todo: Enable dot syntax for global objects, with arbitrary depth.
-// Hypothesis: Use a different mode for lookup if key matches a global object, but is called without args. Might lead to ambiguity, may require lookahead.
-
 export const chain = (initial, isThrowing = false, isAsync = false) => {
     let v = ö.clone(initial)
     let q = []
@@ -76,18 +72,18 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
         isAsync ?
             async () => {
                 for (let [i, { key, f, catcher }] of q.entries()) {
-                    if (key === 'peek') {
-                        peek(i, q[i - 1].key, v)
+                    if (key == 'peek') {
+                        peek(i, q.at(i - 1).key, v)
                         continue
                     }
                     try {
-                        if (key === 'returnIf')
+                        if (key == 'returnIf')
                             if (await f(v)) break
                             else continue
 
                         v = await f(v)
                     } catch (error) {
-                        if (key === 'try') v = await catcher(v, error)
+                        if (key == 'try') v = await catcher(v, error)
                         else warn(i, key, error, isThrowing)
                     }
                 }
@@ -96,18 +92,18 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
             }
         :   () => {
                 for (let [i, { key, f, catcher }] of q.entries()) {
-                    if (key === 'peek') {
-                        peek(i, q[i - 1].key, v)
+                    if (key == 'peek') {
+                        peek(i, q.at(i - 1).key, v)
                         continue
                     }
                     try {
-                        if (key === 'returnIf')
+                        if (key == 'returnIf')
                             if (f(v)) break
                             else continue
 
                         v = f(v)
                     } catch (error) {
-                        if (key === 'try') v = catcher(v, error)
+                        if (key == 'try') v = catcher(v, error)
                         else warn(i, key, error, isThrowing)
                     }
                 }
@@ -115,10 +111,7 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
                 return v
             }
 
-    const caseInternal =
-        key =>
-        (f, catcher = v => v) =>
-            queue(key, f, catcher)
+    const caseInternal = key => (f, catcher) => queue(key, f, catcher)
 
     const caseEnd = () => initial => {
         v = ö.clone(initial)
@@ -128,9 +121,9 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
     const caseFunction = f => queue(f.name || 'anonymous', f)
 
     // enables pathfinding with dot syntax, using a second proxy for "lookahead"
-    const caseDefault = (key, path = [key]) =>
+    const caseLookupPath = (key, path = [key]) =>
         new Proxy(() => {}, {
-            get: (_, key) => caseDefault(_, (path.push(key), path)),
+            get: (_, key) => caseLookupPath(_, (path.push(key), path)),
             apply: (_, __, args) =>
                 queue(path.join('.'), v =>
                     lookup(path, v, isThrowing)(...args),
@@ -140,18 +133,18 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
     let p = new Proxy(() => {}, {
         // prettier-ignore
         get: (_, key) =>
-             key.match(/returnIf|try|peek/) ?     caseInternal(key)
-           : key === "value" ?                    caseRunQueue()
-           : key === "return" ?                   caseRunQueue
-           : key === "end" ?                      caseEnd
-           : key === "f" ?                        caseFunction
-           :                                      caseDefault(key),
+             key.match(/^returnIf|try|peek$/) ?  caseInternal(key)
+         //: key == "value" ?                    caseRunQueue() // removed in 0.4.1, too common as property value, collision risk
+           : key == "return" ?                   caseRunQueue
+           : key == "end" ?                      caseEnd
+           : key == "f" ?                        caseFunction
+           :                                     caseLookupPath(key),
 
         apply: (_, __, args) =>
             args.length ? caseFunction(...args) : caseRunQueue(),
     })
 
-    const queue = (key, f, catcher) => (q.push({ key, f, catcher }), p)
+    const queue = (key, f, catcher = v => v) => (q.push({ key, f, catcher }), p)
 
     return p
 }
