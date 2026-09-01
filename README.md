@@ -933,19 +933,19 @@ Use like so:
 import chain { _, chainAsync } from 'ouml/chain'
 
 let processedValue = chain('AnyValueOfAnyType')
-    .anyMethodOnCurrentType()
-    .childObject.anyMethod()
-    .anyPropertyOnCurrentValue()
-    .childObject.anyProperty()
-    .anyMethodInÖ()
-    .anyMethodInGlobalScope()
-    .AnyObjectInGlobalScope.anyMethod()
-    .AnyArgumentPositionUsing('Optional', 'import', _)
+    .methodOnCurrentType()
+    .childObject.method()
+    .propertyOnCurrentValue()
+    .childObject.property()
+    .methodInÖ()
+    .methodInGlobalScope()
+    .ObjectInGlobalScope.anyMethod()
+    .Any.argument.position.using('Optional', 'import', _)
     ['brackets and indices'][0][Symbol('and symbols')]()
-    .f(anyUnaryFunctionInLocalScope)
-    .f(v => anyMultiArgFunctionInLocalScope(1, 2, v))
+    .f(unaryFunctionInLocalScope)
+    .f(v => multiArgFunctionInLocalScope(1, 2, v))
     .peek() // Logs current value and type
-    .returnIf(anyFunctionReturningABoolean)
+    .returnIf(predicate)
     .try(tryFunction, catchFunction)
     .return()
 ```
@@ -957,7 +957,7 @@ import { chain } from 'ouml/chain'
 
 const doStuffAndThings = chain().f(coolStuff).f(wonderfulThings).end()
 
-let processedValue = doStuffAndThings('anyValue')
+let processedValue = doStuffAndThings('value')
 ```
 
 A quick note on performance: `chain` does string matching, proxying and other fun stuff that adds some overhead. It adds a small hit performance-wise, and might not be the best option in a game loop 😇. It's mainly a proof of concept, but since it produces some really nice, terse and readable code, it might come in handy in some situations!
@@ -974,7 +974,7 @@ Chain exports two methods and a symbol:
 
 Same as `chain`, but results in a `Promise` once the chain is executed.
 
-#### \_ (underscore)
+#### \_ i.e. underscore
 
 Symbol acting as a placeholder for the value passed along the chain, if the value needs to be inserted in a different position than as the first argument. Optional import. Don't want to block `_`in your namespace? Use for example `import { _ as ß }` to map it to something better.
 
