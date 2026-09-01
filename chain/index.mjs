@@ -2,12 +2,29 @@
 TypelessScript™
 */
 
+/**
+ * @todo quick rewrite as class, performance test (not so quick, postponing)
+ * @todo Change skipping behaviour? Stoopid? Better to throw by default?
+ */
+
 import * as ö from '../ouml.mjs'
+
+const dummyFn = () => {}
 
 const getParent = (v, path) =>
     path.slice(0, -1).reduce((acc, key) => acc?.[key], v)
 
-const lookup = (path, v, isThrowing) => {
+/**
+ * Placeholder for value argument if value is not in head position. Optional import.
+ * @constant {Symbol} _
+ */
+export const _ = Symbol('chain value placeholder')
+
+// check for placeholder symbol in args
+const insertValueAtPlaceholder = (v, args, i = args.indexOf(_)) =>
+    i >= 0 ? [...args.slice(0, i), v, ...args.slice(i + 1)] : [v, ...args]
+
+const lookup = (v, path, pathString, isThrowing) => {
     let parent = getParent(v, path)
     let key = path.at(-1)
 
@@ -19,21 +36,22 @@ const lookup = (path, v, isThrowing) => {
 
     // methods in ö?
     if (path.length == 1 && ö.isFunc(ö[key]))
-        return (...args) => ö[key](v, ...args)
+        return (...args) => ö[key](...insertValueAtPlaceholder(v, args))
 
     let globalPath = getParent(globalThis, path)
 
     // methods in global objects?
     if (ö.isFunc(globalPath?.[key]))
-        return (...args) => globalPath[key](v, ...args)
+        return (...args) =>
+            globalPath[key](...insertValueAtPlaceholder(v, args))
 
-    let errorMsg = `No method or property found for ${path.join('.')} on type ${
+    let errorMsg = `No method or property found for ${pathString} on type ${
         parent?.constructor.name
-    }, and no method for ${path.join('.')} found in ö or in global scope.`
+    }, and no method for ${pathString} found in ö or in global scope.`
 
     if (isThrowing) throw new Error(errorMsg)
 
-    ö.warn(`${errorMsg} Skipping.`) // todo: Change skipping behaviour? Stoopid? Better to throw by default?
+    ö.warn(`${errorMsg} Skipping.`)
 
     // on warn, just return value
     return () => v
@@ -122,19 +140,25 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
 
     // enables pathfinding with dot syntax, using a second proxy for "lookahead"
     const caseLookupPath = (key, path = [key]) =>
-        new Proxy(() => {}, {
+        new Proxy(dummyFn, {
             get: (_, key) => caseLookupPath(_, (path.push(key), path)),
-            apply: (_, __, args) =>
-                queue(path.join('.'), v =>
-                    lookup(path, v, isThrowing)(...args),
-                ),
+            apply: (_, __, args) => {
+                // explicitly calling .toString() on keys to stringify potential symbols
+                let pathString = path.map(v => v.toString()).join('.')
+
+                return queue(pathString, v =>
+                    lookup(v, path, pathString, isThrowing)(...args),
+                )
+            },
         })
 
-    let p = new Proxy(() => {}, {
+    let trapKeys = new Proxy(dummyFn, {
         // prettier-ignore
         get: (_, key) =>
-             key.match(/^returnIf|try|peek$/) ?  caseInternal(key)
-         //: key == "value" ?                    caseRunQueue() // removed in 0.4.1, too common as property value, collision risk
+            (key.toString())
+                .match(/^returnIf|try|peek$/) ?  caseInternal(key)
+         // removed in 0.4.1, too common as property value, collision risk
+         //: key == "value" ?                    caseRunQueue() 
            : key == "return" ?                   caseRunQueue
            : key == "end" ?                      caseEnd
            : key == "f" ?                        caseFunction
@@ -144,9 +168,12 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
             args.length ? caseFunction(...args) : caseRunQueue(),
     })
 
-    const queue = (key, f, catcher = v => v) => (q.push({ key, f, catcher }), p)
+    const queue = (key, f, catcher = v => v) => {
+        q.push({ key, f, catcher })
+        return trapKeys
+    }
 
-    return p
+    return trapKeys
 }
 
 export default chain

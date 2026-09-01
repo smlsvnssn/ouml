@@ -80,13 +80,19 @@ Cubic, Quadratic
 Refactor all math functions on arrays (sum, product, max etc) to take either an iterable as arg or multiple arguments (clojure style), i.e sum([1, 2, 3]) and sum(1, 2, 3) should both work. 
 Define apply, clojure style
 Define logic fns for and, or, lt, gt etc, with the same signature
+
+Iterable convenience/intent metods: insert, move, remove = filter?, removeIndex?, swap, replace = with(all? )
 */
 
 // allows both iterable as unary arg and variadic args
 const maybeVariadic =
     f =>
     (...args) =>
-        f(args.length == 1 && ö.isIterable(args.at(0)) ? Array.from(args.at(0)) : args)
+        f(
+            args.length == 1 && ö.isIterable(args.at(0)) ?
+                Array.from(args.at(0))
+            :   args,
+        )
 
 // let sum = maybeVariadic(iterable => iterable.reduce((a, v) => a + Number(v), 0))
 
@@ -312,3 +318,4 @@ xx.push(xx)
 ö.log(JSON.stringify(ö.clone(test)))
 
 //ö.time(() => ö.times(1000000, () => structuredClone(test)), 'structuredClone')
+

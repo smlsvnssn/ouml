@@ -889,7 +889,8 @@ let o = { my: { deep: { path: 11 } } }
 
 let guessWhat = chain(o)
     .my.deep.path()
-    .f(v => Array(v).keys())
+    .Array()
+    .keys()
     .map(v => v ** v)
     .sum()
     .toString()
@@ -897,7 +898,7 @@ let guessWhat = chain(o)
     .return()
 ```
 
-It finds the number 11 in an object, makes an array of integers using the `.f()` directive, maps the values to the power of themselves, sums them using an `ö` method, converts the resulting number to a string, gets the length of the string, and returns it.
+It finds the number 11 in an object, makes an iterable of integers, maps the values to the power of themselves, sums them using an `ö` method, converts the resulting number to a string, gets the length of the string, and returns it.
 
 Here's another:
 
@@ -920,7 +921,7 @@ It takes a url, loads it as json using an `ö` method, handles the error case, g
 
 ### Usage
 
-`chain` chains method calls, but with some quirks and gotchas. For example, properties on objects can be retrieved by calling the property name as a function. Anything in the global scope can be accessed, for example `Array.from()`. Also, if a method in the chain throws an error, the step is skipped by default (and the error is logged), prioritising a return value. You can override this by setting `isThrowing` to true, or handle the error with a `.try()`.
+`chain` chains method calls, passing the value along as the first argument, but with some quirks and gotchas. For example, properties on objects can be retrieved by calling the property name as a function. Anything in the global scope can be accessed, for example `Array.from()`. Also, if a method in the chain throws an error, the step is skipped by default (and the error is logged), prioritising a return value. You can override this by setting `isThrowing` to true, or handle the error with a `.try()`.
 
 All operations on the initial value are non-mutating, input gets deep cloned before the chain runs.
 
@@ -929,7 +930,7 @@ Lookup of properties and methods is performed in the following order: Methods on
 Use like so:
 
 ```js
-import { chain, chainAsync } from 'ouml/chain'
+import chain { _, chainAsync } from 'ouml/chain'
 
 let processedValue = chain('AnyValueOfAnyType')
     .anyMethodOnCurrentType()
@@ -939,8 +940,10 @@ let processedValue = chain('AnyValueOfAnyType')
     .anyMethodInÖ()
     .anyMethodInGlobalScope()
     .AnyObjectInGlobalScope.anyMethod()
-    .AnyObjectInGlobalScope.anyMethod.atAnyDepth()
-    .f(anyFunction)
+    .AnyArgumentPositionUsing('Optional', 'import', _)
+    ['brackets and indices'][0][Symbol('and symbols')]()
+    .f(anyUnaryFunctionInLocalScope)
+    .f(v => anyMultiArgFunctionInLocalScope(1, 2, v))
     .peek() // Logs current value and type
     .returnIf(anyFunctionReturningABoolean)
     .try(tryFunction, catchFunction)
@@ -959,17 +962,36 @@ let processedValue = doStuffAndThings('anyValue')
 
 A quick note on performance: `chain` does string matching, proxying and other fun stuff that adds some overhead. It adds a small hit performance-wise, and might not be the best option in a game loop 😇. It's mainly a proof of concept, but since it produces some really nice, terse and readable code, it might come in handy in some situations!
 
-### Methods
+### Methods and symbols
 
-Chain exports two methods:
+Chain exports two methods and a symbol:
 
-#### chain( value?, isThrowing? = false, isAsync? = false ) → Proxy
+#### chain( value?, isThrowing? = false, isAsync? = false ) ← Proxy
 
-Chain wraps a value, and creates a `Proxy` that handles the chaining. `chain` evaluates lazily, so nothing is calculated until `.return()` is called. Errors are skipped by default, set `isThrowing` to true to throw errors instead. Optionally, set `isAsync` to `true` to handle async values, or use:
+`chain` (default) wraps a value, and creates a `Proxy` that handles the chaining. `chain` evaluates lazily, so nothing is calculated until `.return()` is called. Errors are skipped by default, set `isThrowing` to true to throw errors instead. Optionally, set `isAsync` to `true` to handle async values, or use:
 
 #### chainAsync( value, isThrowing? = false ) → Proxy
 
 Same as `chain`, but results in a `Promise` once the chain is executed.
+
+#### \_ (underscore)
+
+Symbol acting as a placeholder for the value passed along the chain, if the value needs to be inserted in a different position than as the first argument. Optional import. Don't want to block `_`in your namespace? Use for example `import { _ as ß }` to map it to something better.
+
+A contrived example:
+
+```js
+import chain { _ } from 'ouml/chain'
+
+let myPrototype = {}
+
+let myObject = chain({})
+    .addLogic()
+    .decorateWithDecorators()
+    .instantiateStuff()
+    .Object.create(myPrototype, _)
+    .return()
+```
 
 ### "Methods"
 

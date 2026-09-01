@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, afterEach } from 'vitest'
 import * as ö from '../ouml.mjs'
-import chain, { chainAsync } from './index.mjs'
+import chain, { _, chainAsync } from './index.mjs'
 
 const log = vi.spyOn(console, 'log')
 const warn = vi.spyOn(console, 'warn')
@@ -16,9 +16,10 @@ describe('chain', () => {
 
         let result = chain(o)
             .my.deep.path()
-            .f(v => Array(v).keys())
+            .f(v => [...Array(v).keys()])
             .map(v => v ** v)
             .sum()
+            .peek()
             .toString()
             .length()
             .Math.pow(3)
@@ -38,6 +39,42 @@ describe('chain', () => {
 
         expect(result).toBeInstanceOf(Function)
         expect(result.return()).toBe(11)
+    })
+
+    it('should accept _ as placeholder for value argument', () => {
+        let result = chain(11)
+            .f(v => [...Array(v).keys()])
+            .map(v => v ** v)
+            .sum()
+            .toString()
+            .length()
+            .Math.max(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, _)
+
+        expect(result).toBeInstanceOf(Function)
+        expect(result.return()).toBe(11)
+    })
+
+    it('should accept [bracket] syntax, and work with array indices and symbols', () => {
+        let result = chain({ blubby: [[0, [11]]] })
+            .blubby[0][1][0]()
+            .Array()
+            .keys()
+            .map(v => v ** v)
+            .sum()
+            .toString()
+            [Symbol.iterator]()
+            .peek()
+            .take(11)
+            .toArray()
+            .length()()
+
+        expect(result).toBe(11)
+
+        expect(log).toHaveBeenLastCalledWith(`
+Peeking into chain after step 7, running Symbol(Symbol.iterator)():
+Value: {}
+Type:  Iterator
+`)
     })
 
     it('should support key .end(), returning a function taking a value at the end of the chain (data last) ', () => {
