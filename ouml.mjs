@@ -198,10 +198,9 @@ export const sample = (iterable, samples = 1) => {
 export const rotate = (iterable, steps = 1) => {
     let arr = Array.from(iterable)
 
-    return [
-        ...arr.slice(steps % arr.length),
-        ...arr.slice(0, steps % arr.length),
-    ]
+    return arr
+        .slice(steps % arr.length)
+        .concat(arr.slice(0, steps % arr.length))
 }
 
 /**
@@ -418,7 +417,7 @@ export const mean = iterable => {
  */
 
 export const product = iterable =>
-    Array.from(iterable).reduce((a, v) => a * Number(v), 1)
+    Array.from(iterable).reduce((a, v) => a * Number(v))
 
 /**
  * Geometric mean - Calculates the geometric mean of `arr`, with `Number` coercion.

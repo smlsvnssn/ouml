@@ -5,6 +5,7 @@ TypelessScript™
 /**
  * @todo quick rewrite as class, performance test (not so quick, postponing)
  * @todo Change skipping behaviour? Stoopid? Better to throw by default?
+ * @todo Add "new" keyword, for creating map, set, date etc wo function. Signature: .new(Set, arg2, arg3)
  */
 
 import * as ö from '../ouml.mjs'
@@ -22,7 +23,7 @@ export const _ = Symbol('chain value placeholder')
 
 // check for placeholder symbol in args
 const insertValueAtPlaceholder = (v, args, i = args.indexOf(_)) =>
-    i >= 0 ? [...args.slice(0, i), v, ...args.slice(i + 1)] : [v, ...args]
+    i >= 0 ? args.toSpliced(i, 1, v) : args.toSpliced(0, 0, v)
 
 const lookup = (v, path, pathString, isThrowing) => {
     let parent = getParent(v, path)
@@ -138,6 +139,9 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
 
     const caseFunction = f => queue(f.name || 'anonymous', f)
 
+    const caseNew = (f, ...args) =>
+        queue('new ' + f.name || 'anonymous', v => new f(v, ...args))
+
     // enables pathfinding with dot syntax, using a second proxy for "lookahead"
     const caseLookupPath = (key, path = [key]) =>
         new Proxy(dummyFn, {
@@ -161,6 +165,7 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
          //: key == "value" ?                    caseRunQueue() 
            : key == "return" ?                   caseRunQueue
            : key == "end" ?                      caseEnd
+           : key == "new" ?                      caseNew
            : key == "f" ?                        caseFunction
            :                                     caseLookupPath(key),
 

@@ -91,6 +91,25 @@ Type:  Iterator
         expect(getIt(11)).toBe(11)
     })
 
+    it('should support key .new(), returning a new instance of f, with v + args as aruments', () => {
+        function Test(v, arg1, arg2) {
+            ;((this.v = v), (this.arg1 = arg1), (this.arg2 = arg2))
+        }
+
+        let result = chain(0).new(Test, 1, 2).peek().return()
+
+        expect(result).toBeInstanceOf(Test)
+        expect(result.v).toBe(0)
+        expect(result.arg1).toBe(1)
+        expect(result.arg2).toBe(2)
+
+        result = chain([1,2,3,3]).new(Set).peek().return()
+
+        expect(result).toBeInstanceOf(Set)
+        expect(result.size).toBe(3)
+
+    })
+
     it('should support peeking', () => {
         let result = chain(11)
             .f(v => [...Array(v).keys()])

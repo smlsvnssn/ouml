@@ -1,17 +1,7 @@
 import { it } from 'node:test'
 import * as ö from 'ouml'
-import {
-    isFunc,
-    isStr,
-    is,
-    mapToTree,
-    range,
-    clone,
-    times,
-    max,
-    sum,
-    mean,
-} from 'ouml'
+import { isFunc, isStr, is, mapToTree, range, clone, times, id } from 'ouml'
+
 /* 
 TODO:
 
@@ -35,9 +25,9 @@ https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
 √ standard deviation
 
 Math
-  factorization?
-  √ seeded random
- 
+factorization?
+√ seeded random
+
 */
 
 /*
@@ -54,15 +44,15 @@ https://developer.mozilla.org/en-US/docs/Web/API/Window/matchMedia
 
 
 if (process.versions.bun) {
-  // this code will only run when the file is run with Bun
+    // this code will only run when the file is run with Bun
 }
-
+    
 export function isNode(): boolean {
-  return typeof process !== 'undefined' && process?.versions?.node != null;
+    return typeof process !== 'undefined' && process?.versions?.node != null;
 }
 
 export function isBrowser(): boolean {
-  return typeof window !== 'undefined' && window?.document != null;
+    return typeof window !== 'undefined' && window?.document != null;
 }
 
 Extend lerp to accept any-dimensional numbers, and optional easing functions (https://github.com/AndrewRayCode/easing-utils)
@@ -78,11 +68,43 @@ Cubic, Quadratic
 √ Rework colour functions to include oklch and new css features (browser only? Use create element hacks
 
 Refactor all math functions on arrays (sum, product, max etc) to take either an iterable as arg or multiple arguments (clojure style), i.e sum([1, 2, 3]) and sum(1, 2, 3) should both work. 
-Define apply, clojure style
 Define logic fns for and, or, lt, gt etc, with the same signature
 
-Iterable convenience/intent metods: insert, move, remove = filter?, removeIndex?, swap, replace = with(all? )
 */
+
+// Iterable convenience/intent methods: insert, move, remove = filter?, removeIndex?, swap, replace = with(all? )
+const insert = (iterable, v, i = -1) => {
+    let arr = Array.from(iterable)
+    if (i == -1 || i == arr.length) return (arr.push(v), arr)
+    if (i < 0) i = arr.length + 1 + i
+    return arr.toSpliced(i, 0, v)
+}
+
+const remove = (iterable, i = -1) => {
+    let arr = Array.from(iterable)
+    if (i == -1 || i == arr.length) return (arr.pop(v), arr)
+    return arr.toSpliced(i, 1)
+}
+
+const move = (iterable, from, to) => {
+    let arr = Array.from(iterable)
+    item = arr.splice(from, 1).at(0)
+    return arr.toSpliced(to, 0, item)
+}
+
+const swap = (iterable, a, b) => {
+    let arr = Array.from(iterable)
+    if (a < 0) a = arr.length + a
+    if (b < 0) b = arr.length + b
+    let ib = arr[b]
+    arr[b] = arr[a]
+    arr[a] = ib
+    return arr
+}
+
+const first = iterable => Array.from(iterable).at(0)
+const last = iterable => Array.from(iterable).at(-1)
+const rest = iterable => Array.from(iterable).slice(1)
 
 // allows both iterable as unary arg and variadic args
 const maybeVariadic =
@@ -91,10 +113,60 @@ const maybeVariadic =
         f(
             args.length == 1 && ö.isIterable(args.at(0)) ?
                 Array.from(args.at(0))
-            :   args,
+            :   args,   
         )
 
-// let sum = maybeVariadic(iterable => iterable.reduce((a, v) => a + Number(v), 0))
+// partial (like clojure)
+const partial = (f, ...args) => ö.curry(f)(...args)
+
+const compare = f => maybeVariadic(arr => arr.every(f))
+const reduce = (f, acc) =>
+    maybeVariadic(arr => (ö.is(acc) ? arr.reduce(f, acc) : arr.reduce(f)))
+// Massive wierdness in array.reduce: Setting initial to undefined != not setting initial. How is that check even done? args.length?
+
+const gt = compare((v, i, a) => v > (a[i - 1] ?? -Infinity))
+
+const lt = compare((v, i, a) => v < (a[i - 1] ?? Infinity))
+
+const gte = compare((v, i, a) => v >= (a[i - 1] ?? -Infinity))
+
+const lte = compare((v, i, a) => v <= (a[i - 1] ?? Infinity))
+
+const eq = compare((v, i, a) => v === (a[i - 1] ?? a[0]))
+
+const and = compare(id)
+
+const or = maybeVariadic(arr => arr.some(id))
+
+const not = maybeVariadic(arr => arr.map(v => !v))
+
+/**
+ * Array methods taking numbers (wrap in maybeVariadic):
+ * sum
+ * mean
+ * product
+ * geometricMean
+ * median
+ * max
+ * min
+ * variance
+ * standardDeviation
+ */
+
+let sum = reduce((a, v) => a + Number(v), 0)
+let divide = reduce((a, v) => a / Number(v))
+let subtract = reduce((a, v) => a - Number(v))
+
+ö.log('REDUCE: ', sum(new Set([...'123'])))
+ö.log('REDUCE: ', sum('123'))
+ö.log('REDUCE: ', divide(256, 8, 4))
+ö.log('REDUCE: ', subtract(256, 256, 256))
+ö.log('COMPARE: ', not([0, 3, 3, 0]))
+ö.log('CURRY: ', ö.curry(Object.create))
+ö.log('CURRY: ', ö.curry(Object.create)(null)({ apa: {} }))
+
+const fifi = (a, b, c) => a + b + c
+ö.log('PARTIAL: ', partial(fifi, 1, 2)(3))
 
 const juxt =
     (...fns) =>
@@ -215,13 +287,13 @@ const bubblePipe = val => nextBubble
 //ö.log(bubblePipe(1)())
 
 /* ö.time(() => {
-    let s =
-        "jkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb"
-    ö.times(100, () => {
-        ö.log(hash(s))
-        s = s.slice(1)
-    })
-}) */
+                    let s =
+                    "jkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb"
+                    ö.times(100, () => {
+                        ö.log(hash(s))
+                        s = s.slice(1)
+                        })
+                        }) */
 
 const loop = (f, until, i = 0, increment = i => i + 1) =>
     !until(i) ? null : (f(i), loop(f, until, increment(i)))
@@ -319,3 +391,19 @@ xx.push(xx)
 
 //ö.time(() => ö.times(1000000, () => structuredClone(test)), 'structuredClone')
 
+let arr = [...Array(10000).keys()]
+
+ö.time(
+    () =>
+        ö.times(100000, () => {
+            let v = arr.slice()
+        }),
+    'toSpliced',
+)
+ö.time(
+    () =>
+        ö.times(100000, () => {
+            let v = Array.from(arr)
+        }),
+    'pop',
+)

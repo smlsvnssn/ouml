@@ -214,6 +214,28 @@ Members in iterable are allowed to be duplicates:
 ö.permutations([1, 1]) // returns [[1, 1], [1, 1]]
 ```
 
+#### ö.frequencies( iterable, key? = v => v ) → Map
+
+Returns a `Map` with keys corresponding to `key` values, counting the frequency of `key` values.
+
+If `key` is a string, takes an iterable of `object`s with a common property matching `key`. If `key` is a function, takes a function returning keys based on `iterable` contents. The function receives `value, index, array` as arguments. `key` defaults to `v => v`, counting the raw value.
+
+```js
+ö.frequencies('llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch')
+
+// returns Map {['a', 3], ['b', 1], ['c', 2], ['d', 1], ['e', 1], ['l', 4], ['f', 1], ['g', 7], ['h', 2], ['i', 3], ['l', 11], ['n', 4], ['o', 6], ['p', 1], ['r', 1], ['r', 4], ['s', 1], ['t', 1], ['w', 4], ['y', 5]}
+```
+
+#### ö.groupBy( iterable, key | f = v => v, asObject? = false ) → Map | Object
+
+Returns a `Map` with keys corresponding to `key` values, holding grouped values as arrays. Optionally returns an `object` if `asObject` is set to true.
+
+If `key` is a string, takes an iterable of `object`s with a common property matching `key`. If `key` is a function, takes a function returning keys for grouping based on `iterable` contents. The function receives `value, index, array` as arguments. `key` defaults to `v => v`, grouping on the raw value.
+
+### Array / Iterable analysis
+
+Methods for analysing arrays or array-like objects. Inputs are coerced to `Array`, members are coerced to `Number`, so for example `sum('123')` works. All methods accepting a single iterable also accept multiple inputs, so for example `sum('1', '2', '3')` also works. All methods are non-mutating.
+
 #### ö.sum( iterable ) → Number
 
 Sums `iterable`, with `Number` coercion.
@@ -257,24 +279,6 @@ Returns (population) [standard deviation](https://en.wikipedia.org/wiki/Standard
 #### ö.correlation( a, b ) → Number
 
 Returns the (population) [Pearson correlation coefficient](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient) between `a` and `b`. `a` and `b` should have the same length.
-
-#### ö.groupBy( iterable, key | f = v => v, asObject? = false ) → Map | Object
-
-Returns a `Map` with keys corresponding to `key` values, holding grouped values as arrays. Optionally returns an `object` if `asObject` is set to true.
-
-If `key` is a string, takes an iterable of `object`s with a common property matching `key`. If `key` is a function, takes a function returning keys for grouping based on `iterable` contents. The function receives `value, index, array` as arguments. `key` defaults to `v => v`, grouping on the raw value.
-
-#### ö.frequencies( iterable, key | f = v => v ) → Map
-
-Returns a `Map` with keys corresponding to `key` values, counting the frequency of `key` values.
-
-If `key` is a string, takes an iterable of `object`s with a common property matching `key`. If `key` is a function, takes a function returning keys based on `iterable` contents. The function receives `value, index, array` as arguments. `key` defaults to `v => v`, counting the raw value.
-
-```js
-ö.frequencies('llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch')
-
-// returns Map {['a', 3], ['b', 1], ['c', 2], ['d', 1], ['e', 1], ['l', 4], ['f', 1], ['g', 7], ['h', 2], ['i', 3], ['l', 11], ['n', 4], ['o', 6], ['p', 1], ['r', 1], ['r', 4], ['s', 1], ['t', 1], ['w', 4], ['y', 5]}
-```
 
 ### Tree structures
 
@@ -482,6 +486,7 @@ curried(1)(2)(3) // returns 6
 // or
 const partial = curried(1, 2)
 partial(3) // also 6
+
 ```
 
 #### ö.memoise/ö.memoize( f, keymaker? ) → f
@@ -883,7 +888,7 @@ Chain a.k.a TypelessScript lets you chain any method calls, on any type, kind of
 Here's an example:
 
 ```js
-import { chain } from 'ouml/chain'
+import chain from 'ouml/chain'
 
 let o = { my: { deep: { path: 11 } } }
 
@@ -930,9 +935,9 @@ Lookup of properties and methods is performed in the following order: Methods on
 Use like so:
 
 ```js
-import chain { _, chainAsync } from 'ouml/chain'
+import chain, { _, chainAsync } from 'ouml/chain'
 
-let processedValue = chain('AnyValueOfAnyType')
+let processedValue = chain('value')
     .methodOnCurrentType()
     .childObject.method()
     .propertyOnCurrentValue()
@@ -944,6 +949,7 @@ let processedValue = chain('AnyValueOfAnyType')
     ['brackets and indices'][0][Symbol('and symbols')]()
     .f(unaryFunctionInLocalScope)
     .f(v => multiArgFunctionInLocalScope(1, 2, v))
+    .new(Constructor, ...args)
     .peek() // Logs current value and type
     .returnIf(predicate)
     .try(tryFunction, catchFunction)
@@ -953,8 +959,6 @@ let processedValue = chain('AnyValueOfAnyType')
 Or like so, saving the chain for later, providing the value last:
 
 ```js
-import { chain } from 'ouml/chain'
-
 const doStuffAndThings = chain().f(coolStuff).f(wonderfulThings).end()
 
 let processedValue = doStuffAndThings('value')
@@ -981,7 +985,7 @@ Symbol acting as a placeholder for the value passed along the chain, if the valu
 A contrived example:
 
 ```js
-import chain { _ } from 'ouml/chain'
+import chain, { _ } from 'ouml/chain'
 
 let myPrototype = {}
 
@@ -1016,6 +1020,10 @@ Guard clause, lets you exit the call chain early. The function receives the curr
 #### .try( tryFunction, catchFunction? ) → Proxy
 
 Error handler, lets you try a function, and run `catchFunction` if it throws. `tryFunction` receives the current value as argument, `catchFunction` receives `value, error` as arguments. `catchFunction` defaults to `v => v`, simply passing the previous value along.
+
+#### .new( Constructor, ...args? ) → Proxy
+
+Instantiation, lets you create new instances of `Constructor` with chain value as first argument, optionally with extra args.
 
 #### .peek() → Proxy
 
