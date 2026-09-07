@@ -89,7 +89,8 @@ export const clone = (v, deep = true, immutable = false) => {
         return maybeFreeze(
             Object.assign(
                 cloned,
-                ...Object.keys(v).map(key => ({
+                // includes Symbol keys
+                ...Reflect.ownKeys(v).map(key => ({
                     [key]: maybeClone(v[key]),
                 })),
             ),
@@ -307,6 +308,13 @@ export const times = (times = 0, f = id) => {
  */
 
 /**
+ * Faster if array isn't mutated in function
+ * @param {Iterable<*> | any[]} iterable @returns {any[]}
+ * */
+const iterableToArr = iterable =>
+    isArray(iterable) ? iterable : Array.from(iterable)
+
+/**
  * RangeArray - Returns an `Array` populated with given range.
  * @param {number} start
  * @param {number} [end = start]
@@ -376,6 +384,20 @@ export const map = (iterable, f) => {
             // @ts-ignore
         :   iterable?.[f]
 }
+
+/**
+ * First item in iterable.
+ * @param {Iterable<any>} iterable
+ * @returns {*}
+ */
+export const first = iterable => iterableToArr(iterable).at(0)
+
+/**
+ * Last item in iterable.
+ * @param {Iterable<any>} iterable
+ * @returns {*}
+ */
+export const last = iterable => iterableToArr(iterable).at(-1)
 
 /**
  * Insert - Inserts value at specified index, and returns array.
@@ -715,13 +737,6 @@ export const frequencies = (iterable, key = id) =>
 /**
  * Iterable analysis and helpers
  */
-
-/**
- * Faster if array isn't mutated in function
- * @param {Iterable<*> | any[]} iterable @returns {any[]}
- * */
-const iterableToArr = iterable =>
-    isArray(iterable) ? iterable : Array.from(iterable)
 
 /**
  * allows both iterable as unary arg and variadic args

@@ -107,6 +107,14 @@ describe('ö.map', () => {
         expect(result).toMatchObject([0, 1, 2])
     })
 
+    it("shouldn't mutate", () => {
+        let cp = ö.clone(testArr)
+
+        ö.map(testArr, v => !v)
+
+        expect(testArr).toEqual(cp)
+    })
+
     it('should return prop values from an array of objects given a symbol arg', () => {
         let result = ö.map(testArr, s)
 
@@ -179,12 +187,43 @@ describe('ö.map', () => {
     })
 })
 
+describe('ö.first', () => {
+    it('should get first item', () => {
+        expect(ö.first([1, 2, 3])).toBe(1)
+        expect(ö.first([])).toBe(undefined)
+    })
+
+    it('should handle any iterable', () => {
+        expect(ö.first('123')).toBe('1')
+    })
+})
+
+describe('ö.last', () => {
+    it('should get last item', () => {
+        expect(ö.last([1, 2, 3])).toBe(3)
+        expect(ö.last([])).toBe(undefined)
+    })
+
+    it('should handle any iterable', () => {
+        expect(ö.last('123')).toBe('3')
+    })
+})
+
 describe('ö.insert', () => {
     it('should insert item at index and return array, and handle negative index', () => {
         expect(ö.insert([1, 1, 1], 2)).toMatchObject([1, 1, 1, 2])
         expect(ö.insert([1, 1, 1], 2, 0)).toMatchObject([2, 1, 1, 1])
         expect(ö.insert([1, 1, 1])).toMatchObject([1, 1, 1, undefined])
         expect(ö.insert([1, 1, 1], 2, 1)).toMatchObject([1, 2, 1, 1])
+    })
+
+    it("shouldn't mutate", () => {
+        let test = [1, 2, 3, 4]
+        let cp = ö.clone(test)
+
+        ö.insert(test, 'x', 0)
+
+        expect(test).toEqual(cp)
     })
 
     it('should handle any iterable', () => {
@@ -198,6 +237,15 @@ describe('ö.remove', () => {
         expect(ö.remove([1, 1, 2], 2)).toMatchObject([1, 1])
         expect(ö.remove([2, 1, 1], 0)).toMatchObject([1, 1])
         expect(ö.remove([1, 2, 1], 1)).toMatchObject([1, 1])
+    })
+
+    it("shouldn't mutate", () => {
+        let test = [1, 2, 3, 4]
+        let cp = ö.clone(test)
+
+        ö.remove(test, 0)
+
+        expect(test).toEqual(cp)
     })
 
     it('should handle any iterable', () => {
@@ -215,6 +263,15 @@ describe('ö.move', () => {
         expect(ö.move([1, 2, 1], -2, -1)).toMatchObject([1, 1, 2])
     })
 
+    it("shouldn't mutate", () => {
+        let test = [1, 2, 3, 4]
+        let cp = ö.clone(test)
+
+        ö.move(test, 0, 1)
+
+        expect(test).toEqual(cp)
+    })
+
     it('should handle any iterable', () => {
         expect(ö.move('121', 1, -1)).toMatchObject([1, 1, 2].map(String))
     })
@@ -228,6 +285,15 @@ describe('ö.swap', () => {
         expect(ö.swap([2, 1, 0], 0, -2)).toMatchObject([1, 2, 0])
         expect(ö.swap([0, 2, 1], 1, 2)).toMatchObject([0, 1, 2])
         expect(ö.swap([0, 2, 1], -2, -1)).toMatchObject([0, 1, 2])
+    })
+
+    it("shouldn't mutate", () => {
+        let test = [1, 2, 3, 4]
+        let cp = ö.clone(test)
+
+        ö.swap(test, 0, 1)
+
+        expect(test).toEqual(cp)
     })
 
     it('should handle any iterable', () => {
@@ -258,6 +324,15 @@ describe('ö.shuffle', () => {
         expect(result.sort()).toEqual(arr.sort())
     })
 
+    it("shouldn't mutate", () => {
+        let test = [1, 2, 3, 4]
+        let cp = ö.clone(test)
+
+        ö.shuffle(test)
+
+        expect(test).toEqual(cp)
+    })
+
     it('should handle any iterable', () => {
         let result = ö.shuffle('001122')
 
@@ -271,6 +346,16 @@ describe('ö.sample', () => {
         let result = ö.sample(arr)
 
         expect(result).toBeTypeOf('number')
+    })
+
+    it("shouldn't mutate", () => {
+        let test = [1, 2, 3, 4]
+        let cp = ö.clone(test)
+
+        ö.sample(test)
+        ö.sample(test, 3)
+
+        expect(test).toEqual(cp)
     })
 
     it('should return array of "samples" length if "samples" is more than one', () => {
@@ -308,6 +393,15 @@ describe('ö.rotate', () => {
         let result = ö.rotate(arr)
 
         expect(result).toEqual([1, 2, 3, 4, 0])
+    })
+
+    it("shouldn't mutate", () => {
+        let test = [1, 2, 3, 4]
+        let cp = ö.clone(test)
+
+        ö.rotate(test, 2)
+
+        expect(test).toEqual(cp)
     })
 
     it('should rotate array n steps to the left', () => {
@@ -356,6 +450,15 @@ describe('ö.chunk', () => {
         expect(result).toEqual([[1, 2, 3], [4, 5, 6], [7, 8, 9], [0]])
     })
 
+    it("shouldn't mutate", () => {
+        let test = [1, 2, 3, 4]
+        let cp = ö.clone(test)
+
+        ö.chunk(test, 2)
+
+        expect(test).toEqual(cp)
+    })
+
     it('should handle a chunk size larger than the array length', () => {
         let arr = [1, 2]
         let result = ö.chunk(arr, 5)
@@ -394,6 +497,15 @@ describe('ö.split, ö.take, ö.drop', () => {
             [1, 2, 3, 4, 5],
             [6, 7, 8, 9, 0],
         ])
+    })
+
+    it("shouldn't mutate", () => {
+        let test = [1, 2, 3, 4]
+        let cp = ö.clone(test)
+
+        ö.split(test, 2)
+
+        expect(test).toEqual(cp)
     })
 
     it('should return an array of two arrays, split by predicate', () => {
@@ -480,6 +592,15 @@ describe('ö.partition', () => {
         ])
     })
 
+    it("shouldn't mutate", () => {
+        let test = [1, 2, 3, 4]
+        let cp = ö.clone(test)
+
+        ö.partition(test, v => v % 2 == 0)
+
+        expect(test).toEqual(cp)
+    })
+
     it('should handle a predicate only returning true', () => {
         let arr = [1, 2]
         let predicate = v => v < 3
@@ -539,6 +660,18 @@ describe('ö.zip', () => {
         ])
     })
 
+    it("shouldn't mutate", () => {
+        let test = [
+            [1, 2, 3, 4],
+            [4, 5, 6, 7],
+        ]
+        let cp = ö.clone(test)
+
+        ö.zip(...test)
+
+        expect(test).toEqual(cp)
+    })
+
     it('should return a "zipped" array given one iterable', () => {
         expect(ö.zip(str)).toEqual([['0'], ['1'], ['2'], ['3'], ['4'], ['5']])
     })
@@ -588,6 +721,15 @@ describe('ö.combinations', () => {
         ])
     })
 
+    it("shouldn't mutate", () => {
+        let test = [1, 2, 3, 4]
+        let cp = ö.clone(test)
+
+        ö.combinations(test)
+
+        expect(test).toEqual(cp)
+    })
+
     it('should return all combinations if k is undefined', () => {
         expect(ö.combinations([1, 2, 3])).toEqual([
             [1],
@@ -621,6 +763,15 @@ describe('ö.permutations', () => {
             [2, 3, 1],
             [3, 2, 1],
         ])
+    })
+
+    it("shouldn't mutate", () => {
+        let test = [1, 2, 3, 4]
+        let cp = ö.clone(test)
+
+        ö.permutations(test)
+
+        expect(test).toEqual(cp)
     })
 
     it('should accept duplicate items', () => {

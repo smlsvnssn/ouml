@@ -158,11 +158,11 @@ describe('observe', () => {
 
     expect(arr).toSatisfy(isObservable)
     expect(result.updatedKey).toBe('3')
-    expect(result.value).toEqual([1, 2, 3, 4])
+    expect(result.value).toEqual(observable([1, 2, 3, 4]))
 
     arr.splice(1)
 
-    expect(result.value).toEqual([1])
+    expect(result.value).toEqual(observable([1]))
   })
 
   it('should trigger on property deletion', () => {

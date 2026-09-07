@@ -100,6 +100,14 @@ Oh, and it's a `map` for `Object`s! In the rare case that you would mant to map 
 
 Mapping functions for `Map`s and `Object`s receive an array in the form of `[key, val]` as a value argument, and must return an array in the same format.
 
+#### ö.first( iterable ) → value
+
+Gets first value in iterable.
+
+#### ö.last( iterable ) → value
+
+Gets last value in iterable.
+
 #### ö.insert( iterable, value, index? = -1 ) → Array
 
 Inserts value at specified index, and returns array. Accepts negative index.
