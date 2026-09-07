@@ -384,7 +384,7 @@ export const map = (iterable, f) => {
  * @param {number} [index = -1]
  * @returns {any[]}
  */
-const insert = (iterable, value, index = -1) => {
+export const insert = (iterable, value, index = -1) => {
     let arr = Array.from(iterable)
     if (index == -1 || index == arr.length) return (arr.push(value), arr)
     if (index < 0) index = arr.length + 1 + index
@@ -397,7 +397,7 @@ const insert = (iterable, value, index = -1) => {
  * @param {number} [index = -1]
  * @returns {any[]}
  */
-const remove = (iterable, index = -1) => {
+export const remove = (iterable, index = -1) => {
     let arr = Array.from(iterable)
     if (index == -1 || index == arr.length) return (arr.pop(), arr)
     return arr.toSpliced(index, 1)
@@ -410,9 +410,10 @@ const remove = (iterable, index = -1) => {
  * @param {number} to
  * @returns {any[]}
  */
-const move = (iterable, from, to) => {
+export const move = (iterable, from, to) => {
     let arr = Array.from(iterable)
     let item = arr.splice(from, 1).at(0)
+    if (to < 0) to = arr.length + 1 + to
     return arr.toSpliced(to, 0, item)
 }
 
@@ -423,7 +424,7 @@ const move = (iterable, from, to) => {
  * @param {number} b
  * @returns {any[]}
  */
-const swap = (iterable, a, b) => {
+export const swap = (iterable, a, b) => {
     let arr = Array.from(iterable)
     if (a < 0) a = arr.length + a
     if (b < 0) b = arr.length + b
@@ -1111,9 +1112,9 @@ export const intersect = (a, b) => [...new Set(a).intersection(new Set(b))]
  */
 
 export const subtract = (a, b, ...args) =>
-    isIterable(a) && isIterable(b) ?
-        [...new Set(a).difference(new Set(b))]
-    :   subtr([a, b, ...args])
+    isIterable(a) && isIterable(b) ? [...new Set(a).difference(new Set(b))]
+    : isIterable(a) ? subtr(a)
+    : subtr([a, b, ...args])
 
 /**
  * Exclude - Symmetric difference, returns elements that are members of `a` or `b`, but not both.

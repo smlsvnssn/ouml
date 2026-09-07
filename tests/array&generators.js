@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import * as ö from '../ouml.mjs'
 
+/**
+ * @todo Add tests for mutation, for all immutable array methods
+ */
+
 describe('ö.grid', () => {
     it('should yield objects with {x, y} values', () => {
         const result = ö.grid(1, 1).next().value
@@ -172,6 +176,62 @@ describe('ö.map', () => {
         let result = ö.map({ a: 1, b: 2 }, 'a')
 
         expect(result).toStrictEqual(1)
+    })
+})
+
+describe('ö.insert', () => {
+    it('should insert item at index and return array, and handle negative index', () => {
+        expect(ö.insert([1, 1, 1], 2)).toMatchObject([1, 1, 1, 2])
+        expect(ö.insert([1, 1, 1], 2, 0)).toMatchObject([2, 1, 1, 1])
+        expect(ö.insert([1, 1, 1])).toMatchObject([1, 1, 1, undefined])
+        expect(ö.insert([1, 1, 1], 2, 1)).toMatchObject([1, 2, 1, 1])
+    })
+
+    it('should handle any iterable', () => {
+        expect(ö.insert('111', '2')).toMatchObject([1, 1, 1, 2].map(String))
+    })
+})
+
+describe('ö.remove', () => {
+    it('should remove item at index and return array, and handle negative index', () => {
+        expect(ö.remove([1, 1, 2])).toMatchObject([1, 1])
+        expect(ö.remove([1, 1, 2], 2)).toMatchObject([1, 1])
+        expect(ö.remove([2, 1, 1], 0)).toMatchObject([1, 1])
+        expect(ö.remove([1, 2, 1], 1)).toMatchObject([1, 1])
+    })
+
+    it('should handle any iterable', () => {
+        expect(ö.remove('121', 1)).toMatchObject([1, 1].map(String))
+    })
+})
+
+describe('ö.move', () => {
+    it('should move item at index to new index and return array, and handle negative indices', () => {
+        expect(ö.move([0, 1, 2], -1, 0)).toMatchObject([2, 0, 1])
+        expect(ö.move([0, 1, 2], 2, 0)).toMatchObject([2, 0, 1])
+        expect(ö.move([2, 1, 1], 0, -1)).toMatchObject([1, 1, 2])
+        expect(ö.move([2, 1, 1], 0, -2)).toMatchObject([1, 2, 1])
+        expect(ö.move([1, 2, 1], 1, 2)).toMatchObject([1, 1, 2])
+        expect(ö.move([1, 2, 1], -2, -1)).toMatchObject([1, 1, 2])
+    })
+
+    it('should handle any iterable', () => {
+        expect(ö.move('121', 1, -1)).toMatchObject([1, 1, 2].map(String))
+    })
+})
+
+describe('ö.swap', () => {
+    it('should swap item at a with item at b and return array, and handle negative indices', () => {
+        expect(ö.swap([0, 1, 2], -1, 0)).toMatchObject([2, 1, 0])
+        expect(ö.swap([0, 1, 2], 2, 0)).toMatchObject([2, 1, 0])
+        expect(ö.swap([2, 1, 0], 0, -1)).toMatchObject([0, 1, 2])
+        expect(ö.swap([2, 1, 0], 0, -2)).toMatchObject([1, 2, 0])
+        expect(ö.swap([0, 2, 1], 1, 2)).toMatchObject([0, 1, 2])
+        expect(ö.swap([0, 2, 1], -2, -1)).toMatchObject([0, 1, 2])
+    })
+
+    it('should handle any iterable', () => {
+        expect(ö.swap('021', 1, -1)).toMatchObject([0, 1, 2].map(String))
     })
 })
 
@@ -585,14 +645,40 @@ describe('ö.permutations', () => {
 })
 
 let iterableOfNumbers = '1234'
+describe('maybeVariadic (helper method)', () => {
+    it('should allow both an iterable and an argument list', () => {
+        expect(ö.sum(iterableOfNumbers)).toBe(10)
+        expect(ö.sum(...iterableOfNumbers)).toBe(10)
+        expect(ö.sum(1, 2, 3, 4)).toBe(10)
+    })
+})
+
 describe('ö.sum', () => {
     it('should sum an iterable', () =>
         expect(ö.sum(iterableOfNumbers)).toBe(10))
 })
 
+describe('ö.subtract', () => {
+    it('should subtract an iterable', () => {
+        expect(ö.subtract(iterableOfNumbers)).toBe(-8)
+        expect(ö.subtract(1, 2, 3, 4)).toBe(-8)
+    })
+})
+
+describe('ö.divide', () => {
+    it('should divide an iterable', () => {
+        expect(ö.divide([64, 8, 4, 2])).toBe(1)
+        expect(ö.divide(64, 8, 4, 2)).toBe(1)
+        expect(ö.divide(0)).toBe(0)
+        expect(ö.divide(0, 0)).toBe(NaN)
+    })
+})
+
 describe('ö.mean', () => {
-    it('should return the mean of an iterable', () =>
-        expect(ö.mean(iterableOfNumbers)).toBe(2.5))
+    it('should return the mean of an iterable', () => {
+        expect(ö.mean(iterableOfNumbers)).toBe(2.5)
+        expect(ö.mean(...iterableOfNumbers)).toBe(2.5)
+    })
 })
 
 describe('ö.product', () => {
@@ -633,6 +719,68 @@ describe('ö.max', () => {
 describe('ö.min', () => {
     it('should return smallest value in an iterable', () =>
         expect(ö.min(iterableOfNumbers)).toBe(1))
+})
+
+describe('ö.gt', () => {
+    it('should return true if values are in ascending order', () => {
+        expect(ö.gt(iterableOfNumbers)).toBe(true)
+        expect(ö.gt(4, 3, 2, 1)).toBe(false)
+    })
+})
+
+describe('ö.gte', () => {
+    it('should return true if values are in ascending order', () => {
+        expect(ö.gte(iterableOfNumbers)).toBe(true)
+        expect(ö.gte(4, 3, 2, 1)).toBe(false)
+        expect(ö.gte(1, 2, 2, 3, 4)).toBe(true)
+    })
+})
+
+describe('ö.lt', () => {
+    it('should return true if values are in descending order', () => {
+        expect(ö.lt(iterableOfNumbers)).toBe(false)
+        expect(ö.lt(4, 3, 2, 1)).toBe(true)
+    })
+})
+
+describe('ö.lte', () => {
+    it('should return true if values are in descending order', () => {
+        expect(ö.lte(iterableOfNumbers)).toBe(false)
+        expect(ö.lte(4, 3, 2, 1)).toBe(true)
+        expect(ö.lte(4, 3, 2, 2, 1)).toBe(true)
+    })
+})
+
+describe('ö.eq', () => {
+    it('should return true if values are strictly equal', () => {
+        expect(ö.eq(iterableOfNumbers)).toBe(false)
+        expect(ö.eq(4, 3, 2, 1)).toBe(false)
+        expect(ö.eq(1, 1, 1)).toBe(true)
+        expect(ö.eq(1, '1', 1)).toBe(false)
+    })
+})
+
+describe('ö.and', () => {
+    it('should return true if all values are truthy', () => {
+        expect(ö.and(iterableOfNumbers)).toBe(true)
+        expect(ö.and(4, 3, 2, 1)).toBe(true)
+        expect(ö.and(1, 1, 1)).toBe(true)
+        expect(ö.and(1, '0', 1)).toBe(true)
+        expect(ö.and(1, '', 1)).toBe(false)
+        expect(ö.and(false, 1)).toBe(false)
+    })
+})
+
+describe('ö.or', () => {
+    it('should return true if any values are truthy', () => {
+        expect(ö.or(iterableOfNumbers)).toBe(true)
+        expect(ö.or(4, 3, 2, 1)).toBe(true)
+        expect(ö.or(1, 1, 1)).toBe(true)
+        expect(ö.or(1, '0', 1)).toBe(true)
+        expect(ö.or(1, '', 1)).toBe(true)
+        expect(ö.or(false, 1)).toBe(true)
+        expect(ö.or(false, 0)).toBe(false)
+    })
 })
 
 describe('ö.covariance', () => {

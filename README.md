@@ -302,7 +302,7 @@ And, returns true if all items in iterable are truthy.
 
 #### ö.or( iterable | ...args ) → Boolean
 
-Or, returns true any item in iterable is truthy.
+Or, returns true if any item in iterable is truthy.
 
 #### ö.mean( iterable | ...args ) → Number
 
