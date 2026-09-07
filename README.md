@@ -31,8 +31,8 @@ Includes modules [chain](#chain), a method for chaining calls on any type, [öbs
 Import them from
 
 ```js
-import chain, { chainAsync } from 'ouml/chain'
-import { observable, isObservable, observe } from 'ouml/öbservable'
+import chain, { chainAsync, _ } from 'ouml/chain'
+import observable, { isObservable, observe } from 'ouml/öbservable'
 import {
     resize,
     enterview,
@@ -88,7 +88,7 @@ Methods for manipulating arrays or array-like objects. Inputs are coerced to `Ar
 
 Returns an `Array` populated with given range.
 
-#### ö.map( iterable | obj, f | str ) → Iterable | obj.key
+#### ö.map( iterable | obj, f | str ) → Iterable | obj
 
 Same as a normal map, except it accepts a `string` as a shorthand for retrieving values from an object property, if given an iterable that contains objects. Oh, and it accepts all iterables, and returns `String`, `Map`, `Set` and `TypedArray` as appropriate. It's a `map` for `Map`! Edge case iterables such as `NodeList` get converted to an array.
 
@@ -99,6 +99,22 @@ Oh, and it's a `map` for `Object`s! In the rare case that you would mant to map 
 ```
 
 Mapping functions for `Map`s and `Object`s receive an array in the form of `[key, val]` as a value argument, and must return an array in the same format.
+
+#### ö.insert( iterable, value, index? = -1 ) → Array
+
+Inserts value at specified index, and returns array. Accepts negative index.
+
+#### ö.remove( iterable, index? = -1 ) → Array
+
+Removes value at specified index, and returns array. Accepts negative index.
+
+#### ö.move( iterable, from, to ) → Array
+
+Moves value to specified index, and returns array. Accepts negative indices.
+
+#### ö.swap( iterable, a, b ) → Array
+
+Swaps values at specified indices, and returns array. Accepts negative indices.
 
 #### ö.unique( iterable ) → Array
 
@@ -236,43 +252,79 @@ If `key` is a string, takes an iterable of `object`s with a common property matc
 
 Methods for analysing arrays or array-like objects. Inputs are coerced to `Array`, members are coerced to `Number`, so for example `sum('123')` works. All methods accepting a single iterable also accept multiple inputs, so for example `sum('1', '2', '3')` also works. All methods are non-mutating.
 
-#### ö.sum( iterable ) → Number
+#### ö.sum( iterable | ...args ) → Number
 
 Sums `iterable`, with `Number` coercion.
 
-#### ö.mean( iterable ) → Number
+#### ö.subtract( iterable | ...args ) → Number
 
-Calculates mean value of `iterable`, with `Number` coercion.
+Subtracts numbers in `iterable`, with `Number` coercion. Overloaded, if given two iterables, returns the set difference of the iterables.
 
-#### ö.product( iterable ) → Number
+#### ö.product( iterable | ...args ) → Number
 
 Returns product of `iterable`, with `Number` coercion. Reaches `Number.MAX_VALUE` rather quickly for large arrays, so use with some caution.
 
-#### ö.geometricMean( iterable ) → Number
+#### ö.divide( iterable | ...args ) → Number
 
-Calculates the geometric mean of `iterable`, with `Number` coercion. May return `Infinity` for large arrays or large numbers, since it uses `ö.product`.
+Divides numbers in `iterable`, with `Number` coercion.
 
-#### ö.median( iterable ) → Number
-
-Calculates median value of `iterable`, with `Number` coercion.
-
-#### ö.max( iterable ) → Number
+#### ö.max( iterable | ...args ) → Number
 
 Returns largest value in `iterable`.
 
-#### ö.min( iterable ) → Number
+#### ö.min( iterable | ...args ) → Number
 
 Returns smallest value in `iterable`.
+
+#### ö.gt( iterable | ...args ) → Boolean
+
+Greater than, returns true if iterable is in ascending order.
+
+#### ö.gte( iterable | ...args ) → Boolean
+
+Greater than or equal, returns true if iterable is in ascending order.
+
+#### ö.lt( iterable | ...args ) → Boolean
+
+Less than, returns true if iterable is in descending order.
+
+#### ö.lte( iterable | ...args ) → Boolean
+
+Less than or equal, returns true if iterable is in descending order.
+
+#### ö.eq( iterable | ...args ) → Boolean
+
+Equal, returns true if items in iterable are strictly equal.
+
+#### ö.and( iterable | ...args ) → Boolean
+
+And, returns true if all items in iterable are truthy.
+
+#### ö.or( iterable | ...args ) → Boolean
+
+Or, returns true any item in iterable is truthy.
+
+#### ö.mean( iterable | ...args ) → Number
+
+Calculates mean value of `iterable`, with `Number` coercion.
+
+#### ö.geometricMean( iterable | ...args ) → Number
+
+Calculates the geometric mean of `iterable`, with `Number` coercion. May return `Infinity` for large arrays or large numbers, since it uses `ö.product`.
+
+#### ö.median( iterable | ...args ) → Number
+
+Calculates median value of `iterable`, with `Number` coercion.
 
 #### ö.covariance( a, b ) → Number
 
 Returns (population) [covariance](https://en.wikipedia.org/wiki/Covariance) of `a` and `b`, with `Number` coercion. `a` and `b` should have the same length.
 
-#### ö.variance( iterable ) → Number
+#### ö.variance( iterable | ...args ) → Number
 
 Returns (population) [variance](https://en.wikipedia.org/wiki/Variance) of `iterable`.
 
-#### ö.standardDeviation( iterable ) → Number
+#### ö.standardDeviation( iterable | ...args ) → Number
 
 Returns (population) [standard deviation](https://en.wikipedia.org/wiki/Standard_deviation) of `iterable`.
 
@@ -380,7 +432,7 @@ Example:
 
 #### ö.subtract( a, b ) → Array
 
-<svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="0.5" y="0.5" width="9" height="9" stroke="white"/><rect x="5.5" y="5.5" width="9" height="9" stroke="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 0H0V10H5V5H10V0Z" fill="black"/></svg> Difference, returns members of `a` but not members of `b`, i.e. subtracts `b` from `a`.
+<svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="0.5" y="0.5" width="9" height="9" stroke="white"/><rect x="5.5" y="5.5" width="9" height="9" stroke="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 0H0V10H5V5H10V0Z" fill="black"/></svg> Difference, returns members of `a` but not members of `b`, i.e. subtracts `b` from `a`. Overloaded, if given one iterable of numbers, or multiple numbers, returns the result of subtracting the numeric values.
 Example:
 
 ```js
@@ -484,9 +536,18 @@ const curried = ö.curry(f)
 
 curried(1)(2)(3) // returns 6
 // or
-const partial = curried(1, 2)
-partial(3) // also 6
+const fPartial = curried(1, 2)
+fPartial(3) // also 6
+```
 
+#### ö.partial( f, ...args ) → function
+
+Returns `f` with `args` applied. Like `curry`, but less weird.
+
+```js
+const f = (a, b, c) => a + b + c
+const fPartial = ö.partial(f, 1, 2)
+fPartial(3) // returns 6
 ```
 
 #### ö.memoise/ö.memoize( f, keymaker? ) → f
@@ -989,12 +1050,7 @@ import chain, { _ } from 'ouml/chain'
 
 let myPrototype = {}
 
-let myObject = chain({})
-    .addLogic()
-    .decorateWithDecorators()
-    .instantiateStuff()
-    .Object.create(myPrototype, _)
-    .return()
+let myObject = chain({}).Object.create(myPrototype, _).return()
 ```
 
 ### "Methods"

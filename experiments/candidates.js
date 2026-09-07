@@ -1,40 +1,23 @@
 import { it } from 'node:test'
 import * as ö from 'ouml'
-import { isFunc, isStr, is, mapToTree, range, clone, times, id } from 'ouml'
+import {
+    isFunc,
+    isArray,
+    isStr,
+    is,
+    mapToTree,
+    range,
+    clone,
+    times,
+    id,
+} from 'ouml'
 
 /* 
 TODO:
 
-Array:
-√ zip/unzip?
-
-√ partition
-
-√ charRange
-
-√ take
-√ takeWhile
-√ drop
-√ dropWhile
-√ split
-√ splitWhile
-
-√ correlation coefficient?
-https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
-√ covariance
-√ standard deviation
 
 Math
 factorization?
-√ seeded random
-
-*/
-
-/*
-
-maybe:
-√ combinations
-√ permutations
 multiply and convolve for arrays
 
 
@@ -43,18 +26,6 @@ let mql = window.matchMedia("(max-width: 600px)");
 https://developer.mozilla.org/en-US/docs/Web/API/Window/matchMedia
 
 
-if (process.versions.bun) {
-    // this code will only run when the file is run with Bun
-}
-    
-export function isNode(): boolean {
-    return typeof process !== 'undefined' && process?.versions?.node != null;
-}
-
-export function isBrowser(): boolean {
-    return typeof window !== 'undefined' && window?.document != null;
-}
-
 Extend lerp to accept any-dimensional numbers, and optional easing functions (https://github.com/AndrewRayCode/easing-utils)
 db? Server part for secrets and relay?
 
@@ -62,10 +33,6 @@ db? Server part for secrets and relay?
 Beziers?
 Cubic, Quadratic
 
-√ include .observable in ö?
-√ rewrite övents as svelte actions?
-(√ kinda) partition as separate modules?
-√ Rework colour functions to include oklch and new css features (browser only? Use create element hacks
 
 Refactor all math functions on arrays (sum, product, max etc) to take either an iterable as arg or multiple arguments (clojure style), i.e sum([1, 2, 3]) and sum(1, 2, 3) should both work. 
 Define logic fns for and, or, lt, gt etc, with the same signature
@@ -73,38 +40,18 @@ Define logic fns for and, or, lt, gt etc, with the same signature
 */
 
 // Iterable convenience/intent methods: insert, move, remove = filter?, removeIndex?, swap, replace = with(all? )
-const insert = (iterable, v, i = -1) => {
-    let arr = Array.from(iterable)
-    if (i == -1 || i == arr.length) return (arr.push(v), arr)
-    if (i < 0) i = arr.length + 1 + i
-    return arr.toSpliced(i, 0, v)
-}
 
-const remove = (iterable, i = -1) => {
-    let arr = Array.from(iterable)
-    if (i == -1 || i == arr.length) return (arr.pop(v), arr)
-    return arr.toSpliced(i, 1)
-}
 
-const move = (iterable, from, to) => {
-    let arr = Array.from(iterable)
-    item = arr.splice(from, 1).at(0)
-    return arr.toSpliced(to, 0, item)
-}
 
-const swap = (iterable, a, b) => {
-    let arr = Array.from(iterable)
-    if (a < 0) a = arr.length + a
-    if (b < 0) b = arr.length + b
-    let ib = arr[b]
-    arr[b] = arr[a]
-    arr[a] = ib
-    return arr
-}
 
-const first = iterable => Array.from(iterable).at(0)
-const last = iterable => Array.from(iterable).at(-1)
-const rest = iterable => Array.from(iterable).slice(1)
+
+
+const first = iterable => toArr(iterable).at(0)
+const last = iterable => toArr(iterable).at(-1)
+
+// rest should really be w/o last item, O(1) instead of 0(n)
+// Maybe pointless in js?
+// const rest = iterable => toArr(iterable).slice(1)
 
 // allows both iterable as unary arg and variadic args
 const maybeVariadic =
@@ -112,8 +59,8 @@ const maybeVariadic =
     (...args) =>
         f(
             args.length == 1 && ö.isIterable(args.at(0)) ?
-                Array.from(args.at(0))
-            :   args,   
+                toArr(args.at(0))
+            :   args,
         )
 
 // partial (like clojure)
@@ -138,7 +85,7 @@ const and = compare(id)
 
 const or = maybeVariadic(arr => arr.some(id))
 
-const not = maybeVariadic(arr => arr.map(v => !v))
+//const not = maybeVariadic(arr => arr.map(v => !v))
 
 /**
  * Array methods taking numbers (wrap in maybeVariadic):
@@ -155,12 +102,12 @@ const not = maybeVariadic(arr => arr.map(v => !v))
 
 let sum = reduce((a, v) => a + Number(v), 0)
 let divide = reduce((a, v) => a / Number(v))
-let subtract = reduce((a, v) => a - Number(v))
+let difference = reduce((a, v) => a - Number(v))
 
 ö.log('REDUCE: ', sum(new Set([...'123'])))
 ö.log('REDUCE: ', sum('123'))
 ö.log('REDUCE: ', divide(256, 8, 4))
-ö.log('REDUCE: ', subtract(256, 256, 256))
+ö.log('REDUCE: ', difference(256, 256, 256))
 ö.log('COMPARE: ', not([0, 3, 3, 0]))
 ö.log('CURRY: ', ö.curry(Object.create))
 ö.log('CURRY: ', ö.curry(Object.create)(null)({ apa: {} }))
@@ -177,8 +124,6 @@ const xor = (a, b) => Boolean(a) != Boolean(b)
 
 // export const q = document.querySelector.bind(document);
 // export const qa = document.querySelectorAll.bind(document);
-
-ö.log(typeof window)
 
 const zigzag = (x, n, xn = Math.floor(x / n), p = Math.pow(-1, xn)) =>
     Math.round(n * (-(p / 2) + p * (x / n - xn) + 0.5))
@@ -286,15 +231,6 @@ const bubblePipe = val => nextBubble
 
 //ö.log(bubblePipe(1)())
 
-/* ö.time(() => {
-                    let s =
-                    "jkfjfjfjfjfjfjfjfjvjgfnjvfbjvfb"
-                    ö.times(100, () => {
-                        ö.log(hash(s))
-                        s = s.slice(1)
-                        })
-                        }) */
-
 const loop = (f, until, i = 0, increment = i => i + 1) =>
     !until(i) ? null : (f(i), loop(f, until, increment(i)))
 
@@ -315,15 +251,6 @@ const map2 = (a, f, acc = [], i = 0) =>
 
 ö.time(() => map3(ö.times(3000), v => v * 2), 1)
 ö.time(() => map2(ö.times(3000), v => v * 2), 2)
-// 1: 47.631ms
-// 2: 0.864ms
-
-// loop(
-//     (i) => ö.log(i),
-//     (i) => i < 4737,
-//     -2,
-//     (i) => ++i,
-// )
 
 ö.time(() => ö.times(1000000), 'ö.times')
 

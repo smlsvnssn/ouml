@@ -84,7 +84,7 @@ const warn = (i, key, error, isThrowing) => {
  */
 
 export const chain = (initial, isThrowing = false, isAsync = false) => {
-    let v = ö.clone(initial)
+    let value = ö.clone(initial)
     let q = []
 
     const caseRunQueue =
@@ -92,48 +92,48 @@ export const chain = (initial, isThrowing = false, isAsync = false) => {
             async () => {
                 for (let [i, { key, f, catcher }] of q.entries()) {
                     if (key == 'peek') {
-                        peek(i, q.at(i - 1).key, v)
+                        peek(i, q.at(i - 1).key, value)
                         continue
                     }
                     try {
                         if (key == 'returnIf')
-                            if (await f(v)) break
+                            if (await f(value)) break
                             else continue
 
-                        v = await f(v)
+                        value = await f(value)
                     } catch (error) {
-                        if (key == 'try') v = await catcher(v, error)
+                        if (key == 'try') v = await catcher(value, error)
                         else warn(i, key, error, isThrowing)
                     }
                 }
 
-                return v
+                return value
             }
         :   () => {
                 for (let [i, { key, f, catcher }] of q.entries()) {
                     if (key == 'peek') {
-                        peek(i, q.at(i - 1).key, v)
+                        peek(i, q.at(i - 1).key, value)
                         continue
                     }
                     try {
                         if (key == 'returnIf')
-                            if (f(v)) break
+                            if (f(value)) break
                             else continue
 
-                        v = f(v)
+                        value = f(value)
                     } catch (error) {
-                        if (key == 'try') v = catcher(v, error)
+                        if (key == 'try') value = catcher(value, error)
                         else warn(i, key, error, isThrowing)
                     }
                 }
 
-                return v
+                return value
             }
 
     const caseInternal = key => (f, catcher) => queue(key, f, catcher)
 
     const caseEnd = () => initial => {
-        v = ö.clone(initial)
+        value = ö.clone(initial)
         return caseRunQueue()
     }
 

@@ -1,6 +1,239 @@
 // @ts-check
 
 /**
+ * Logical
+ */
+
+/**
+ * IsEqual - Checks equality by value rather than reference.
+ * Based on https://www.30secondsofcode.org/js/s/equals
+ * @param {*} a
+ * @param {*} b
+ * @param {boolean} deep
+ * @returns {boolean}
+ */
+
+export const isEqual = (a, b, deep = true) =>
+    a === b ? true
+        // are same date?
+    : isDate(a) && isDate(b) ? a.getTime() === b.getTime()
+        // are lexically same functions? (Closures not compared)
+    : isFunc(a) && isFunc(b) ? '' + a === '' + b
+        // are nonobjects?
+    : !a || !b || typeof a !== 'object' || typeof b !== 'object' ? a === b
+        // have same prototype?
+    : Reflect.getPrototypeOf(a) !== Reflect.getPrototypeOf(b) ? false
+        // have same length ?
+    : Reflect.ownKeys(a).length !== Reflect.ownKeys(b).length ? false
+        // have same properties and values? (Recursively if deep)
+    : Reflect.ownKeys(a).every(k =>
+            deep ? isEqual(a[k], b[k]) : a[k] === b[k],
+        )
+
+export const equals = isEqual
+
+/**
+ * Clone - Performs deep cloning of most types.
+ * @param {*} v
+ * @param {boolean} [deep]
+ * @param {boolean} [immutable]
+ * @returns {*}
+ */
+
+// TODO: Remove support for node and typed arrays? Too many checks, potentially slow. Measure. (No biggie, a few percent)
+
+export const clone = (v, deep = true, immutable = false) => {
+    /** @param {*} v */
+    const maybeClone = v => (deep ? traverse(v) : v)
+
+    /** @param {*} v */
+    const maybeFreeze = v => (immutable ? Object.freeze(v) : v)
+
+    let seen = new WeakMap()
+
+    /**
+     * @param {*} v
+     * @returns {*}
+     */
+    const traverse = (v, isnode = isNode(v)) => {
+        // Return primitives and functions as is.
+        if (typeof v != 'object' || isNull(v)) return v
+
+        // Handle circular references
+        if (seen.has(v)) return seen.get(v)
+
+        let cloned =
+            isnode ?
+                // Node has its own clone method
+                v.cloneNode(deep)
+            :   attempt(
+                    // try constructor w/o arguments, except for typed arrays
+                    () => new v.constructor(isTypedArr(v) ? v : undefined),
+                    // good enough :-)
+                    () => Object.create(Reflect.getPrototypeOf(v)),
+                )
+
+        seen.set(v, cloned)
+
+        if (isnode) return cloned
+
+        // use native methods to add members for some types
+        if (isMap(v))
+            v.forEach((val, key) =>
+                cloned.set(maybeClone(key), maybeClone(val)),
+            )
+        else if (isSet(v)) v.forEach(val => cloned.add(maybeClone(val)))
+        else if (isDate(v)) cloned.setTime(v.getTime())
+
+        // all objects, add members via keys
+        return maybeFreeze(
+            Object.assign(
+                cloned,
+                ...Object.keys(v).map(key => ({
+                    [key]: maybeClone(v[key]),
+                })),
+            ),
+        )
+    }
+
+    return traverse(v)
+}
+
+/**
+ * Immutable - Returns a freezed clone of `v`.
+ * @param {*} v
+ * @param {boolean} deep
+ * @returns {*}
+ */
+
+export const immutable = (v, deep = true) => clone(v, deep, true)
+
+/**
+ * Identity
+ * @template T
+ * @param {T} v
+ * @returns {T}
+ */
+
+export const id = v => v
+
+/**
+ * Pipe - Pipes function calls for a value.
+ * @param {*} v
+ * @param  {...function} funcs
+ * @returns {*}
+ */
+
+export const pipe = (v, ...funcs) => funcs.reduce((x, f) => f(x), v)
+
+/**
+ * Flow - Pipes function calls, and returns a function that takes the value to pipe.
+ * @param  {...function} funcs
+ * @returns {(v: any) => any}
+ */
+
+export const flow =
+    (...funcs) =>
+    v =>
+        pipe(v, ...funcs)
+
+/** @deprecated */
+export const toPiped = flow
+
+/**
+ * PipeAsync
+ * @param {*} v
+ * @param  {...function} funcs
+ * @returns {Promise<*>}
+ */
+
+export const pipeAsync = async (v, ...funcs) =>
+    await funcs.reduce(async (x, f) => f(await x), v)
+
+/**
+ * flowAsync
+ * @param  {...function} funcs
+ * @returns {(v: *) => Promise<*>}
+ */
+
+export const flowAsync =
+    (...funcs) =>
+    v =>
+        pipeAsync(v, ...funcs)
+
+/** @deprecated */
+export const toPipedAsync = flowAsync
+
+/**
+ * Curry - Returns a curried version of `f`.
+ * @param {function} f
+ * @returns {(...args: *) => ((...newArgs: *) => * | *)}
+ */
+
+export const curry =
+    f =>
+    (...args) =>
+        f.length > args.length ?
+            (...newArgs) => curry(f)(...args, ...newArgs)
+        :   f(...args)
+
+/**
+ * Partial - Returns `f` with args applied.
+ * @param {function} f
+ * @param {...*} args
+ * @returns {(...newArgs: *) => * }
+ */
+export const partial = (f, ...args) => curry(f)(...args)
+
+/**
+ * Memoise - Creates and returns memoised functions.
+ * @param {function} f
+ * @param {(...args: *) => (string | number)} [keymaker]
+ * @returns {(...args: *) => *}
+ */
+
+export const memoise = (f, keymaker) => {
+    let cache = new Map()
+
+    return (...args) => {
+        let key =
+            isFunc(keymaker) ? keymaker(...args)
+            : args.length > 1 ? args.join('-')
+            : args[0]
+
+        if (cache.has(key)) return cache.get(key)
+
+        let result = f(...args)
+        cache.set(key, result)
+
+        return result
+    }
+}
+
+// for the yankees
+export const memoize = memoise
+
+/**
+ * CreateEnum - Creates and returns an enumerable.
+ * @template T
+ * @param {T} v This lies a bit. TODO: Find solution
+ * @param {Array<string>} rest
+ * @returns {Readonly<T>}
+ */
+
+export const createEnum = (v, ...rest) => {
+    if (rest.length == 0 && isObj(v)) return Object.freeze(v)
+
+    let enu = Object.create(null)
+    for (let val of isArr(v) ? [...v, ...rest] : [v, ...rest])
+        enu[val] = Symbol(String(val))
+
+    return Object.freeze(enu)
+}
+
+export const Enum = createEnum
+
+/**
  * Generators
  */
 
@@ -81,7 +314,8 @@ export const times = (times = 0, f = id) => {
  * @returns {number[]}
  */
 
-export const rangeArray = (start, end, step) => [...range(start, end, step)]
+export const rangeArray = (start, end, step) =>
+    range(start, end, step).toArray()
 
 /**
  * @callback reduceCB
@@ -141,6 +375,62 @@ export const map = (iterable, f) => {
             )
             // @ts-ignore
         :   iterable?.[f]
+}
+
+/**
+ * Insert - Inserts value at specified index, and returns array.
+ * @param {Iterable<any>} iterable
+ * @param {*} value
+ * @param {number} [index = -1]
+ * @returns {any[]}
+ */
+const insert = (iterable, value, index = -1) => {
+    let arr = Array.from(iterable)
+    if (index == -1 || index == arr.length) return (arr.push(value), arr)
+    if (index < 0) index = arr.length + 1 + index
+    return arr.toSpliced(index, 0, value)
+}
+
+/**
+ * Remove - Removes value at specified index, and returns array.
+ * @param {Iterable<any>} iterable
+ * @param {number} [index = -1]
+ * @returns {any[]}
+ */
+const remove = (iterable, index = -1) => {
+    let arr = Array.from(iterable)
+    if (index == -1 || index == arr.length) return (arr.pop(), arr)
+    return arr.toSpliced(index, 1)
+}
+
+/**
+ * Move - Moves value from/to specified indices, and returns array.
+ * @param {Iterable<any>} iterable
+ * @param {number} from
+ * @param {number} to
+ * @returns {any[]}
+ */
+const move = (iterable, from, to) => {
+    let arr = Array.from(iterable)
+    let item = arr.splice(from, 1).at(0)
+    return arr.toSpliced(to, 0, item)
+}
+
+/**
+ * Swap - Swaps values at specified indices, and returns array.
+ * @param {Iterable<any>} iterable
+ * @param {number} a
+ * @param {number} b
+ * @returns {any[]}
+ */
+const swap = (iterable, a, b) => {
+    let arr = Array.from(iterable)
+    if (a < 0) a = arr.length + a
+    if (b < 0) b = arr.length + b
+    let ib = arr[b]
+    arr[b] = arr[a]
+    arr[a] = ib
+    return arr
 }
 
 /**
@@ -389,127 +679,6 @@ export const permutations = (iterable = []) => {
 }
 
 /**
- * Sum - Sums `arr`, with `Number` coercion.
- * @param {Iterable<number>} iterable
- * @returns {number}
- */
-
-export const sum = iterable =>
-    Array.from(iterable).reduce((a, v) => a + Number(v), 0)
-// Not in node yet:
-//Math.sumPrecise(Array.from(iterable))
-
-/**
- * Mean - Calculates mean value of `arr`, with `Number` coercion.
- * @param {Iterable<number>} iterable
- * @returns {number}
- */
-
-export const mean = iterable => {
-    let arr = Array.from(iterable)
-    return sum(arr) / arr.length
-}
-
-/**
- * Product - Returns product of `arr`, with `Number` coercion.
- * @param {Iterable<number>} iterable
- * @returns {number}
- */
-
-export const product = iterable =>
-    Array.from(iterable).reduce((a, v) => a * Number(v))
-
-/**
- * Geometric mean - Calculates the geometric mean of `arr`, with `Number` coercion.
- * @param {Iterable<number>} iterable
- * @returns {number}
- */
-
-export const geometricMean = iterable => {
-    let arr = Array.from(iterable)
-    return nthRoot(product(arr), arr.length)
-}
-
-/**
- * Median - Calculates median value of `arr`, with `Number` coercion.
- * @param {Iterable<number>} iterable
- * @returns {number}
- */
-
-export const median = iterable => {
-    let arr = Array.from(iterable).sort((a, b) => Number(a) - Number(b))
-    let m = Math.floor(arr.length / 2)
-
-    return arr.length % 2 ?
-            Number(arr[m])
-        :   (Number(arr[m - 1]) + Number(arr[m])) / 2
-}
-
-/**
- * Max - Returns largest value in `arr`.
- * @param {Iterable<number>} iterable
- * @returns {number}
- */
-
-export const max = iterable => Math.max(...iterable)
-
-/**
- * Min - Returns smallest value in `arr`.
- * @param {Iterable<number>} iterable
- * @returns {number}
- */
-
-export const min = iterable => Math.min(...iterable)
-
-/**
- * Covariance - returns covariance of a and b
- * @param {Iterable<number>} a
- * @param {Iterable<number>} b
- * @returns {number}
- */
-
-export const covariance = (a, b) => {
-    let aa = Array.from(a),
-        ab = a == b ? aa : Array.from(b)
-
-    let meanA = mean(aa),
-        meanB = aa == ab ? meanA : mean(ab)
-
-    if (aa.length != ab.length)
-        error('Arguments a and b should be of the same length.')
-
-    return mean(aa.map((v, i) => (+v - meanA) * (+ab[i] - meanB)))
-}
-
-/**
- * Variance - returns variance of iterable
- * @param {Iterable<number>} iterable
- * @returns {number}
- */
-
-export const variance = iterable => covariance(iterable, iterable)
-
-/**
- * Standard deviation - returns stddev of iterable
- * https://en.wikipedia.org/wiki/Standard_deviation
- * @param {Iterable<number>} iterable
- * @returns {number}
- */
-
-export const standardDeviation = iterable => Math.sqrt(variance(iterable))
-
-/**
- * Correlation - returns Pearson correlation coefficient of a and b
- * https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
- * @param {Iterable<number>} a
- * @param {Iterable<number>} b
- * @returns {number}
- */
-
-export const correlation = (a, b) =>
-    covariance(a, b) / (standardDeviation(a) * standardDeviation(b)) || 0
-
-/**
  * GroupBy - Returns a `Map` with keys corresponding to `key` values.
  * @param {Iterable<*>} iterable
  * @param {(string | mapCB)} [key = id]
@@ -541,6 +710,219 @@ export const frequencies = (iterable, key = id) =>
 
         return acc
     }, new Map())
+
+/**
+ * Iterable analysis and helpers
+ */
+
+/**
+ * Faster if array isn't mutated in function
+ * @param {Iterable<*> | any[]} iterable @returns {any[]}
+ * */
+const iterableToArr = iterable =>
+    isArray(iterable) ? iterable : Array.from(iterable)
+
+/**
+ * allows both iterable as unary arg and variadic args
+ * @param {(args: any[]) =>  *} f
+ * @returns { (args: *) =>  *}
+ */
+const maybeVariadic =
+    f =>
+    (...args) =>
+        f(
+            args.length == 1 && isIterable(args.at(0)) ?
+                iterableToArr(args.at(0))
+            :   args,
+        )
+
+/** @param {mapCB} f */
+const compare = f => maybeVariadic(arr => arr.every(f))
+
+/** @param {reduceCB} f @param {*} [acc] */
+const reduce = (f, acc) =>
+    maybeVariadic(arr => (is(acc) ? arr.reduce(f, acc) : arr.reduce(f)))
+
+/**
+ * Sum - Sums `arr`, with `Number` coercion.
+ * @param {Iterable<number>} iterable
+ * @returns {number}
+ */
+
+export const sum = reduce((acc, v) => acc + Number(v), 0)
+// Not in node yet: Math.sumPrecise(Array.from(iterable))
+
+/**
+ * Subtract - subtracts `arr`, with `Number` coercion. Overload of .subtract
+ * @todo Is this a good solution?
+ * @param {Iterable<number>} iterable
+ * @returns {number}
+ *
+ */
+
+const subtr = reduce((acc, v) => acc - Number(v))
+
+/**
+ * Product - Returns product of `arr`, with `Number` coercion.
+ * @param {Iterable<number>} iterable
+ * @returns {number}
+ */
+
+export const product = reduce((acc, v) => acc * Number(v))
+
+/**
+ * Divide - Divides terms in `arr`, with `Number` coercion.
+ * @param {Iterable<number>} iterable
+ * @returns {number}
+ */
+
+export const divide = reduce((acc, v) => acc / Number(v))
+
+/**
+ * Mean - Calculates mean value of `arr`, with `Number` coercion.
+ * @param {Iterable<number>} iterable
+ * @returns {number}
+ */
+
+export const mean = maybeVariadic(arr => sum(arr) / arr.length)
+
+/**
+ * Geometric mean - Calculates the geometric mean of `arr`, with `Number` coercion.
+ * @param {Iterable<number>} iterable
+ * @returns {number}
+ */
+
+export const geometricMean = maybeVariadic(arr =>
+    nthRoot(product(arr), arr.length),
+)
+
+/**
+ * Median - Calculates median value of `arr`, with `Number` coercion.
+ * @param {Iterable<number>} iterable
+ * @returns {number}
+ */
+
+export const median = maybeVariadic(arr => {
+    arr = arr.toSorted((a, b) => Number(a) - Number(b))
+    let m = Math.floor(arr.length / 2)
+
+    return arr.length % 2 ?
+            Number(arr[m])
+        :   (Number(arr[m - 1]) + Number(arr[m])) / 2
+})
+
+/**
+ * Max - Returns largest value in `arr`.
+ * @param {Iterable<number>} iterable
+ * @returns {number}
+ */
+
+export const max = maybeVariadic(arr => Math.max(...arr))
+
+/**
+ * Min - Returns smallest value in `arr`.
+ * @param {Iterable<number>} iterable
+ * @returns {number}
+ */
+
+export const min = maybeVariadic(arr => Math.min(...arr))
+
+/**
+ * Greater than for iterables of numbers.
+ * @param {Iterable<number>} iterable
+ * @returns {boolean}
+ */
+export const gt = compare((v, i, a) => v > (a[i - 1] ?? -Infinity))
+
+/**
+ * Less than for iterables of numbers.
+ * @param {Iterable<number>} iterable
+ * @returns {boolean}
+ */
+export const lt = compare((v, i, a) => v < (a[i - 1] ?? Infinity))
+
+/**
+ * Greater than or equal for iterables of numbers.
+ * @param {Iterable<number>} iterable
+ * @returns {boolean}
+ */
+export const gte = compare((v, i, a) => v >= (a[i - 1] ?? -Infinity))
+
+/**
+ * Less than or equal for iterables of numbers.
+ * @param {Iterable<number>} iterable
+ * @returns {boolean}
+ */
+export const lte = compare((v, i, a) => v <= (a[i - 1] ?? Infinity))
+
+/**
+ * Equals for iterables of numbers.
+ * @param {Iterable<number>} iterable
+ * @returns {boolean}
+ */
+export const eq = compare((v, i, a) => v === (a[i - 1] ?? a[0]))
+
+/**
+ * Logical and for iterables.
+ * @param {Iterable<*>} iterable
+ * @returns {boolean}
+ */
+export const and = compare(id)
+
+/**
+ * Logical or for iterables.
+ * @param {Iterable<*>} iterable
+ * @returns {boolean}
+ */
+export const or = maybeVariadic(arr => arr.some(id))
+
+/**
+ * Covariance - returns covariance of a and b
+ * @param {Iterable<number>} a
+ * @param {Iterable<number>} b
+ * @returns {number}
+ */
+
+export const covariance = (a, b) => {
+    let aa = iterableToArr(a),
+        ab = a == b ? aa : iterableToArr(b)
+
+    let meanA = mean(aa),
+        meanB = aa == ab ? meanA : mean(ab)
+
+    if (aa.length != ab.length)
+        error('Arguments a and b should be of the same length.')
+
+    return mean(aa.map((v, i) => (+v - meanA) * (+ab[i] - meanB)))
+}
+
+/**
+ * Variance - returns variance of iterable
+ * @param {Iterable<number>} iterable
+ * @returns {number}
+ */
+
+export const variance = maybeVariadic(arr => covariance(arr, arr))
+
+/**
+ * Standard deviation - returns stddev of iterable
+ * https://en.wikipedia.org/wiki/Standard_deviation
+ * @param {Iterable<number>} iterable
+ * @returns {number}
+ */
+
+export const standardDeviation = maybeVariadic(arr => Math.sqrt(variance(arr)))
+
+/**
+ * Correlation - returns Pearson correlation coefficient of a and b
+ * https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
+ * @param {Iterable<number>} a
+ * @param {Iterable<number>} b
+ * @returns {number}
+ */
+
+export const correlation = (a, b) =>
+    covariance(a, b) / (standardDeviation(a) * standardDeviation(b)) || 0
 
 /**
  * @callback idPropCB
@@ -724,10 +1106,14 @@ export const intersect = (a, b) => [...new Set(a).intersection(new Set(b))]
  * Subtract - Difference, returns members of `a` but not members of `b`, i.e. subtracts `b` from `a`.
  * @param {Iterable<any>} a
  * @param {Iterable<any>} b
+ * @param {*} args
  * @returns {any[]}
  */
 
-export const subtract = (a, b) => [...new Set(a).difference(new Set(b))]
+export const subtract = (a, b, ...args) =>
+    isIterable(a) && isIterable(b) ?
+        [...new Set(a).difference(new Set(b))]
+    :   subtr([a, b, ...args])
 
 /**
  * Exclude - Symmetric difference, returns elements that are members of `a` or `b`, but not both.
@@ -862,231 +1248,6 @@ export const deepest = (element, selector = '*') => {
 
     return deepestElement
 }
-
-/**
- * Logical
- */
-
-/**
- * IsEqual - Checks equality by value rather than reference.
- * Based on https://www.30secondsofcode.org/js/s/equals
- * @param {*} a
- * @param {*} b
- * @param {boolean} deep
- * @returns {boolean}
- */
-
-export const isEqual = (a, b, deep = true) =>
-    a === b ? true
-        // are same date?
-    : isDate(a) && isDate(b) ? a.getTime() === b.getTime()
-        // are lexically same functions? (Closures not compared)
-    : isFunc(a) && isFunc(b) ? '' + a === '' + b
-        // are nonobjects?
-    : !a || !b || typeof a !== 'object' || typeof b !== 'object' ? a === b
-        // have same prototype?
-    : Reflect.getPrototypeOf(a) !== Reflect.getPrototypeOf(b) ? false
-        // have same length ?
-    : Reflect.ownKeys(a).length !== Reflect.ownKeys(b).length ? false
-        // have same properties and values? (Recursively if deep)
-    : Reflect.ownKeys(a).every(k =>
-            deep ? isEqual(a[k], b[k]) : a[k] === b[k],
-        )
-
-export const equals = isEqual
-
-/**
- * Clone - Performs deep cloning of most types.
- * @param {*} v
- * @param {boolean} [deep]
- * @param {boolean} [immutable]
- * @returns {*}
- */
-
-// TODO: Remove support for node and typed arrays? Too many checks, potentially slow. Measure. (No biggie, a few percent)
-
-export const clone = (v, deep = true, immutable = false) => {
-    /** @param {*} v */
-    const maybeClone = v => (deep ? traverse(v) : v)
-
-    /** @param {*} v */
-    const maybeFreeze = v => (immutable ? Object.freeze(v) : v)
-
-    let seen = new WeakMap()
-
-    /**
-     * @param {*} v
-     * @returns {*}
-     */
-    const traverse = (v, isnode = isNode(v)) => {
-        // Return primitives and functions as is.
-        if (typeof v != 'object' || isNull(v)) return v
-
-        // Handle circular references
-        if (seen.has(v)) return seen.get(v)
-
-        let cloned =
-            isnode ?
-                // Node has its own clone method
-                v.cloneNode(deep)
-            :   attempt(
-                    // try constructor w/o arguments, except for typed arrays
-                    () => new v.constructor(isTypedArr(v) ? v : undefined),
-                    // good enough :-)
-                    () => Object.create(Reflect.getPrototypeOf(v)),
-                )
-
-        seen.set(v, cloned)
-
-        if (isnode) return cloned
-
-        // use native methods to add members for some types
-        if (isMap(v))
-            v.forEach((val, key) =>
-                cloned.set(maybeClone(key), maybeClone(val)),
-            )
-        else if (isSet(v)) v.forEach(val => cloned.add(maybeClone(val)))
-        else if (isDate(v)) cloned.setTime(v.getTime())
-
-        // all objects, add members via keys
-        return maybeFreeze(
-            Object.assign(
-                cloned,
-                ...Object.keys(v).map(key => ({
-                    [key]: maybeClone(v[key]),
-                })),
-            ),
-        )
-    }
-
-    return traverse(v)
-}
-
-/**
- * Immutable - Returns a freezed clone of `v`.
- * @param {*} v
- * @param {boolean} deep
- * @returns {*}
- */
-
-export const immutable = (v, deep = true) => clone(v, deep, true)
-
-/**
- * Identity
- * @template T
- * @param {T} v
- * @returns {T}
- */
-
-export const id = v => v
-
-/**
- * Pipe - Pipes function calls for a value.
- * @param {*} v
- * @param  {...function} funcs
- * @returns {*}
- */
-
-export const pipe = (v, ...funcs) => funcs.reduce((x, f) => f(x), v)
-
-/**
- * Flow - Pipes function calls, and returns a function that takes the value to pipe.
- * @param  {...function} funcs
- * @returns {(v: any) => any}
- */
-
-export const flow =
-    (...funcs) =>
-    v =>
-        pipe(v, ...funcs)
-
-/** @deprecated */
-export const toPiped = flow
-
-/**
- * PipeAsync
- * @param {*} v
- * @param  {...function} funcs
- * @returns {Promise<*>}
- */
-
-export const pipeAsync = async (v, ...funcs) =>
-    await funcs.reduce(async (x, f) => f(await x), v)
-
-/**
- * flowAsync
- * @param  {...function} funcs
- * @returns {(v: *) => Promise<*>}
- */
-
-export const flowAsync =
-    (...funcs) =>
-    v =>
-        pipeAsync(v, ...funcs)
-
-/** @deprecated */
-export const toPipedAsync = flowAsync
-
-/**
- * Curry - Returns a curried version of `f`.
- * @param {function} f
- * @returns {(...args: *) => ((...newArgs: *) => * | *)}
- */
-
-export const curry =
-    f =>
-    (...args) =>
-        f.length > args.length ?
-            (...newArgs) => curry(f)(...args, ...newArgs)
-        :   f(...args)
-
-/**
- * Memoise - Creates and returns memoised functions.
- * @param {function} f
- * @param {(...args: *) => (string | number)} [keymaker]
- * @returns {(...args: *) => *}
- */
-
-export const memoise = (f, keymaker) => {
-    let cache = new Map()
-
-    return (...args) => {
-        let key =
-            isFunc(keymaker) ? keymaker(...args)
-            : args.length > 1 ? args.join('-')
-            : args[0]
-
-        if (cache.has(key)) return cache.get(key)
-
-        let result = f(...args)
-        cache.set(key, result)
-
-        return result
-    }
-}
-
-// for the yankees
-export const memoize = memoise
-
-/**
- * CreateEnum - Creates and returns an enumerable.
- * @template T
- * @param {T} v This lies a bit. TODO: Find solution
- * @param {Array<string>} rest
- * @returns {Readonly<T>}
- */
-
-export const createEnum = (v, ...rest) => {
-    if (rest.length == 0 && isObj(v)) return Object.freeze(v)
-
-    let enu = Object.create(null)
-    for (let val of isArr(v) ? [...v, ...rest] : [v, ...rest])
-        enu[val] = Symbol(String(val))
-
-    return Object.freeze(enu)
-}
-
-export const Enum = createEnum
 
 /**
  * Mathy

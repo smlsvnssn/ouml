@@ -87,6 +87,8 @@ export const observable = (v, wrapPrimitive = true) => {
     return v
 }
 
+export default observable
+
 /**
  * isObservable
  * @param {*} obj
