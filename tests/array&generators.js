@@ -71,26 +71,28 @@ describe('ö.range', () => {
     })
 })
 
-describe('ö.times', () => {
-    it('should call a function "times" times and return an array with results', () => {
-        let result = ö.times(2, i => i)
+describe('ö.cycle', () => {
+    it('should yield members in iterable repeatedly', () => {
+        let result = ö.take(ö.cycle('hello'), 10)
 
-        expect(result).toMatchObject([0, 1])
-
-        result = ö.times(10, i => i)
-        expect(result).toHaveLength(10)
+        expect(result).toMatchObject([
+            'h',
+            'e',
+            'l',
+            'l',
+            'o',
+            'h',
+            'e',
+            'l',
+            'l',
+            'o',
+        ])
     })
 
-    it('should handle negative input gracefully', () => {
-        let result = ö.times(-2, i => i)
+    it('should handle an empty iterable', () => {
+        let result = ö.take(ö.cycle(''), 2)
 
-        expect(result).toMatchObject([0, 1])
-    })
-
-    it('should handle 0 as input gracefully', () => {
-        let result = ö.times(0, i => i)
-
-        expect(result).toMatchObject([])
+        expect(result).toMatchObject([undefined, undefined])
     })
 })
 
@@ -591,6 +593,16 @@ describe('ö.split, ö.take, ö.drop', () => {
 
         expect(result[0]).toEqual(ö.take(arr, predicate))
         expect(result[1]).toEqual(ö.drop(arr, predicate))
+    })
+
+    it('should take from an infinite iterator, and return an array', () => {
+        let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+        let range = ö.range(1, Infinity)
+        let result = ö.take(range, 5)
+
+        expect(result).toBeInstanceOf(Array)
+        expect(result).toEqual(ö.take(arr, 5))
+        expect(result).toEqual([1, 2, 3, 4, 5])
     })
 
     it('should return an array of two arrays, split by predicate', () => {

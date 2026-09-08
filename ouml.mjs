@@ -235,6 +235,13 @@ export const createEnum = (v, ...rest) => {
 export const Enum = createEnum
 
 /**
+ * Helper, faster array conversion if array isn't mutated in function
+ * @param {Iterable<*> | any[]} iterable @returns {any[]}
+ * */
+const iterableToArr = iterable =>
+    isArray(iterable) ? iterable : Array.from(iterable)
+
+/**
  * Generators
  */
 
@@ -277,6 +284,21 @@ export const range = function* (start, end, step = 1) {
 }
 
 /**
+ * Cycle - Yields members of iterable infinitely.
+ * @param {Iterable<*>} iterable
+ * @yields {IterableIterator<*>}
+ */
+
+export const cycle = function* (iterable) {
+    let arr = iterableToArr(iterable)
+    let i = 0
+    while (true) {
+        yield arr.at(i)
+        i = (i + 1) % arr.length
+    }
+}
+
+/**
  * Iterators
  */
 
@@ -306,13 +328,6 @@ export const times = (times = 0, f = id) => {
 /**
  * Array/Iterable
  */
-
-/**
- * Faster if array isn't mutated in function
- * @param {Iterable<*> | any[]} iterable @returns {any[]}
- * */
-const iterableToArr = iterable =>
-    isArray(iterable) ? iterable : Array.from(iterable)
 
 /**
  * RangeArray - Returns an `Array` populated with given range.
@@ -497,9 +512,11 @@ export const shuffle = iterable => shuffleArr(Array.from(iterable))
  */
 
 export const sample = (iterable, samples = 1) => {
-    let arr = Array.from(iterable)
+    let arr = iterableToArr(iterable)
 
-    return samples == 1 ? arr[random(arr.length)] : shuffleArr(arr, samples)
+    return samples == 1 ?
+            arr[random(arr.length)]
+        :   shuffleArr(Array.from(arr), samples)
 }
 
 /**
@@ -509,7 +526,7 @@ export const sample = (iterable, samples = 1) => {
  * @returns {any[]} */
 
 export const rotate = (iterable, steps = 1) => {
-    let arr = Array.from(iterable)
+    let arr = iterableToArr(iterable)
 
     return arr
         .slice(steps % arr.length)
@@ -525,7 +542,7 @@ export const rotate = (iterable, steps = 1) => {
  * @returns {any[][]} */
 
 export const chunk = (iterable, chunkSize = 1, stepSize = chunkSize) => {
-    let arr = Array.from(iterable)
+    let arr = iterableToArr(iterable)
     let chunk = clamp(Math.abs(chunkSize), 1, arr.length)
     let step = clamp(Math.abs(stepSize), 1, arr.length)
 
@@ -555,7 +572,7 @@ const getSplitIndex = (arr, index) => {
  * @returns {any[] | any[][]} */
 
 export const split = (iterable, index) => {
-    let arr = Array.from(iterable)
+    let arr = iterableToArr(iterable)
     index = getSplitIndex(arr, index)
     return [arr.slice(0, index), arr.slice(index)]
 }
@@ -563,12 +580,15 @@ export const split = (iterable, index) => {
 /**
  * Take - Returns array part before index/predicate returning false
  * Takes an index, or a function returning a boolean
+ * @todo If
  * @param {Iterable<any>} iterable
  * @param {number | ((v:any, i:number, a:any[]) => boolean)} index
  * @returns {any[]} */
 
 export const take = (iterable, index) => {
-    let arr = Array.from(iterable)
+    if (iterable instanceof Iterator && isNum(index))
+        return [...iterable.take(index)]
+    let arr = iterableToArr(iterable)
     return arr.slice(0, getSplitIndex(arr, index))
 }
 
@@ -580,7 +600,7 @@ export const take = (iterable, index) => {
  * @returns {any[]} */
 
 export const drop = (iterable, index) => {
-    let arr = Array.from(iterable)
+    let arr = iterableToArr(iterable)
     return arr.slice(getSplitIndex(arr, index))
 }
 
@@ -592,7 +612,7 @@ export const drop = (iterable, index) => {
  * @returns {any[][]} */
 
 export const partition = (iterable, f) =>
-    Array.from(iterable).reduce(
+    iterableToArr(iterable).reduce(
         (acc, v, i, a) => (f(v, i, a) ? acc[0].push(v) : acc[1].push(v), acc),
         [[], []],
     )
@@ -633,7 +653,7 @@ export const transpose = unzip
  */
 
 export const combinations = (iterable = [], k) => {
-    let arr = Array.from(iterable)
+    let arr = iterableToArr(iterable)
 
     /**
      * @param {any[]} current

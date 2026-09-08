@@ -69,6 +69,14 @@ Yields `Object` with `x, y` coordinates. If `height` is omitted, `width` is assu
 for (let i of ö.grid(8)) drawChessboard(i.x, i.y)
 ```
 
+#### ö.cycle( iterable ) yields value
+
+Yields members of `iterable` repeatedly, in an infinite sequence.
+
+```js
+ö.take(ö.cycle('hello'), 10) // returns
+```
+
 #### ö.times( times, f? = i => i) → Array
 
 Calls a function `times` times, with `index` as argument.
