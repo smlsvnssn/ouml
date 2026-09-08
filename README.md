@@ -145,12 +145,14 @@ Rotates an iterable to the left if `steps` is positive, and to the right if `ste
 ö.rotate([1, 2, 3, 4], -1) // returns[ 4, 1, 2, 3 ]
 ```
 
-#### ö.chunk( iterable, chunkSize? = 1 ) → [ Arrays ]
+#### ö.chunk( iterable, chunkSize? = 1, stepSize? = chunkSize ) → [ Arrays ]
 
-Returns an array of arrays with `chunkSize` length.
+Returns an array of arrays with `chunkSize` length, optionally starting `stepSize` steps apart.
 
 ```js
 ö.chunk([1, 2, 3, 4, 5, 6, 7], 3) // returns [ [1, 2, 3], [4, 5, 6], [7] ]
+ö.chunk([1, 2, 3, 4, 5, 6, 7], 3, 2) // returns [ [1, 2, 3], [3, 4, 5], [5, 6, 7], [7] ]
+ö.chunk([1, 2, 3, 4, 5, 6, 7], 3, 4) // returns [ [1, 2, 3], [5, 6, 7] ]
 ```
 
 #### ö.split( iterable, index ) → [ Array, Array ]

@@ -518,18 +518,22 @@ export const rotate = (iterable, steps = 1) => {
 
 /**
  * Chunk - Partitions an array into chunks of n length
- * @todo Take a "step" param, like clojure's partition, to create sliding windows
+ * @todo Pad param, to ensure equal length arrays?
  * @param {Iterable<any>} iterable
  * @param {number} [chunkSize = 1]
+ * @param {number} [stepSize = chunkSize]
  * @returns {any[][]} */
 
-export const chunk = (iterable, chunkSize = 1) => {
+export const chunk = (iterable, chunkSize = 1, stepSize = chunkSize) => {
     let arr = Array.from(iterable)
-    let s = clamp(Math.abs(chunkSize), 1, arr.length)
+    let chunk = clamp(Math.abs(chunkSize), 1, arr.length)
+    let step = clamp(Math.abs(stepSize), 1, arr.length)
 
     if (!arr.length) return [] // no 0 division
 
-    return times(Math.ceil(arr.length / s), i => arr.slice(i * s, (i + 1) * s))
+    return times(Math.ceil(arr.length / step), i =>
+        arr.slice(i * step, i * step + chunk),
+    )
 }
 
 /**

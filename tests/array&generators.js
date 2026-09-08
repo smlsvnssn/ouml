@@ -442,12 +442,56 @@ describe('ö.rotate', () => {
 })
 
 describe('ö.chunk', () => {
-    it('should return an array of length 4, with chunks of 3', () => {
+    it('should return an array of arrays of length chunkSize, not overlapping by default', () => {
         let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
         let result = ö.chunk(arr, 3)
 
         expect(result.length).toBe(4)
         expect(result).toEqual([[1, 2, 3], [4, 5, 6], [7, 8, 9], [0]])
+
+        expect(ö.chunk([1, 2, 3, 4, 5, 6, 7], 3)).toEqual([
+            [1, 2, 3],
+            [4, 5, 6],
+            [7],
+        ])
+    })
+
+    it('should return an array of arrays of length chunkSize, overlapping if stepSize is smaller', () => {
+        let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+        let result = ö.chunk(arr, 3, 2)
+
+        expect(result.length).toBe(5)
+        expect(result).toEqual([
+            [1, 2, 3],
+            [3, 4, 5],
+            [5, 6, 7],
+            [7, 8, 9],
+            [9, 0],
+        ])
+
+        expect(ö.chunk([1, 2, 3, 4, 5, 6, 7], 3, 2)).toEqual([
+            [1, 2, 3],
+            [3, 4, 5],
+            [5, 6, 7],
+            [7],
+        ])
+    })
+
+    it('should return an array of arrays of length chunkSize, spread out if stepSize is larger', () => {
+        let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+        let result = ö.chunk(arr, 3, 4)
+
+        expect(result.length).toBe(3)
+        expect(result).toEqual([
+            [1, 2, 3],
+            [5, 6, 7],
+            [9, 0],
+        ])
+
+        expect(ö.chunk([1, 2, 3, 4, 5, 6, 7], 3, 4)).toEqual([
+            [1, 2, 3],
+            [5, 6, 7],
+        ])
     })
 
     it("shouldn't mutate", () => {
@@ -465,6 +509,22 @@ describe('ö.chunk', () => {
 
         expect(result).toHaveLength(1)
         expect(result).toEqual([[1, 2]])
+    })
+
+    it('should handle negative sizes', () => {
+        let arr = [1, 2]
+        let result = ö.chunk(arr, -2, -1)
+
+        expect(result).toHaveLength(2)
+        expect(result).toEqual([[1, 2], [2]])
+    })
+
+    it('should handle zero sizes, defaulting to 1', () => {
+        let arr = [1, 2, 3]
+        let result = ö.chunk(arr, 0, 0)
+
+        expect(result).toHaveLength(3)
+        expect(result).toEqual([[1], [2], [3]])
     })
 
     it('should handle a an empty array', () => {
