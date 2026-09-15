@@ -5,7 +5,6 @@ TypelessScript™
 /**
  * @todo quick rewrite as class, performance test (not so quick, postponing)
  * @todo Change skipping behaviour? Stoopid? Better to throw by default?
- * @todo Add "new" keyword, for creating map, set, date etc wo function. Signature: .new(Set, arg2, arg3)
  */
 
 import * as ö from '../ouml.mjs'
@@ -23,7 +22,7 @@ export const _ = Symbol('chain value placeholder')
 
 // check for placeholder symbol in args
 const insertValueAtPlaceholder = (v, args, i = args.indexOf(_)) =>
-    i >= 0 ? args.toSpliced(i, 1, v) : args.toSpliced(0, 0, v)
+    i >= 0 ? args.with(i, v) : [v, ...args]
 
 const lookup = (v, path, pathString, isThrowing) => {
     let parent = getParent(v, path)

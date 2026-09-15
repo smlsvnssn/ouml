@@ -1,4 +1,30 @@
 // @ts-check
+/**
+ * Helpers
+ */
+
+/**
+ * Faster array conversion if array isn't mutated in function
+ * @param {Iterable<*> | any[]} iterable @returns {any[]}
+ */
+const iterableToArr = iterable =>
+    isArray(iterable) ? iterable : Array.from(iterable)
+
+/**
+ * allows both iterable as unary arg and variadic args
+ * @param {(args: any[]) =>  *} f
+ * @returns { (args: *) =>  *}
+ */
+const maybeVariadic =
+    f =>
+    (...args) =>
+        f(
+            args.length == 1 && isIterable(args.at(0)) ?
+                iterableToArr(args.at(0))
+            :   args,
+        )
+
+
 
 /**
  * Logical
@@ -234,12 +260,6 @@ export const createEnum = (v, ...rest) => {
 
 export const Enum = createEnum
 
-/**
- * Helper, faster array conversion if array isn't mutated in function
- * @param {Iterable<*> | any[]} iterable @returns {any[]}
- * */
-const iterableToArr = iterable =>
-    isArray(iterable) ? iterable : Array.from(iterable)
 
 /**
  * Generators
@@ -289,14 +309,13 @@ export const range = function* (start, end, step = 1) {
  * @yields {IterableIterator<*>}
  */
 
-export const cycle = function* (iterable) {
-    let arr = iterableToArr(iterable)
+export const cycle = maybeVariadic(function* (arr) {
     let i = 0
     while (true) {
         yield arr.at(i)
         i = (i + 1) % arr.length
     }
-}
+})
 
 /**
  * Iterators
@@ -761,20 +780,6 @@ export const frequencies = (iterable, key = id) =>
 /**
  * Iterable analysis and helpers
  */
-
-/**
- * allows both iterable as unary arg and variadic args
- * @param {(args: any[]) =>  *} f
- * @returns { (args: *) =>  *}
- */
-const maybeVariadic =
-    f =>
-    (...args) =>
-        f(
-            args.length == 1 && isIterable(args.at(0)) ?
-                iterableToArr(args.at(0))
-            :   args,
-        )
 
 /** @param {mapCB} f */
 const compare = f => maybeVariadic(arr => arr.every(f))

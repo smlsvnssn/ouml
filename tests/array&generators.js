@@ -87,6 +87,8 @@ describe('ö.cycle', () => {
             'l',
             'o',
         ])
+
+        expect(ö.take(ö.cycle('h', 'o'), 6).join('')).toBe('hohoho')
     })
 
     it('should handle an empty iterable', () => {
