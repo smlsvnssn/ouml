@@ -349,15 +349,17 @@ export const times = (times = 0, f = id) => {
  */
 
 /**
- * RangeArray - Returns an `Array` populated with given range.
+ * RangeArr - Returns an `Array` populated with given range.
  * @param {number} start
  * @param {number} [end = start]
  * @param {number} [step = 1]
  * @returns {number[]}
  */
 
-export const rangeArray = (start, end, step) =>
+export const rangeArr = (start, end, step) =>
     range(start, end, step).toArray()
+
+export const rangeArray = rangeArr
 
 /**
  * @callback reduceCB

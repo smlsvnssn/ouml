@@ -71,7 +71,7 @@ for (let i of ö.grid(8)) drawChessboard(i.x, i.y)
 
 #### ö.cycle( iterable | ...args ) yields value
 
-Yields members of `iterable` repeatedly, in an infinite sequence. Also takes multiple args.
+Yields members of `iterable` repeatedly, in an infinite sequence. Optionally cycles args.
 
 ```js
 ö.take(ö.cycle([1, 2, 3]), 10) // returns [1, 2, 3, 1, 2, 3, 1, 2, 3, 1]
@@ -93,7 +93,7 @@ Returns an array containing the return values of `f`, or an array containing ind
 
 Methods for manipulating arrays or array-like objects. Inputs are coerced to `Array`, so `String`, `Set` and the like works as input as well. All methods are non-mutating.
 
-#### ö.rangeArray( start, end?, step? = 1 ) → Array
+#### ö.rangeArr( start, end?, step? = 1 ) → Array
 
 Returns an `Array` populated with given range.
 
